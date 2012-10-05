@@ -3,6 +3,10 @@
 // yocto.js may be freely distributed under the MIT license.
 
 
+// TODOS
+// - Try to be as destructive as possible. Don't copy!
+
+
 (function(exports){
 
 	"use strict";
@@ -32,6 +36,13 @@
 		return typeof value === 'string';
 	}
 
+	// Array Remove - By John Resig (MIT Licensed)
+	// http://ejohn.org/blog/javascript-array-remove/
+	function arrayRemove(array, from, to) {
+		var rest = array.slice((to || from) + 1 || array.length);
+		array.length = from < 0 ? array.length + from : from;
+		return array.push.apply(array, rest);
+	}
 
 
 
@@ -42,6 +53,7 @@
 		}
 
 		this.objects	= [];
+		this.next		= [];
 		this.config		= {
 			name : 'yocto'
 		};
@@ -55,8 +67,9 @@
 
 
 
-		drop : function() {
-			this.objects = [];
+		drop : function() {			
+			arrayRemove(this.objects, 0, this.objects.length);
+			arrayRemove(this.next, 0, this.next.length);
 			return this;
 		},
 
@@ -75,8 +88,8 @@
 				});
 
 				// Merge appended array into internal objects array.
-				this.objects = this.objects.concat(obj);
-
+				this.objects	= this.objects.concat.apply(obj);
+				this.next		= this.next.concat.apply(obj);
 				success = !success;
 			}
 
@@ -84,11 +97,13 @@
 
 			if (isObject(obj) && !isArray(obj)) {								
 				this.objects.push(obj);
+				this.next.push(obj);
 				success = !success;
 			}
 
 			if (success && onSuccess && isFunction(onSuccess)) {
-				onSuccess.call(this, obj);
+				onSuccess.call(this, this.next);
+				arrayRemove(this.next, 0, this.next.length);
 			}
 
 			return this;
@@ -97,18 +112,19 @@
 
 
 		get : function(template, onSuccess, time) {
-			var objects = [];
 
 			if (isObject(template) && !isArray(template)) {	
-				objects = this.objects.filter(function(obj) {
+				this.next = this[(this.next.length === 0) ? 'objects' : 'next'].filter(function(obj) {
 					return Object.keys(template).every(function(key) {
 						return obj[key] === template[key];
 					});
 				});
 			}
 
+
 			if (onSuccess && isFunction(onSuccess)) {
-				onSuccess.call(this, objects);
+				onSuccess.call(this, this.next);
+				arrayRemove(this.next, 0, this.next.length);
 			}
 			
 			return this;
@@ -125,10 +141,8 @@
 
 		sort : function(key, onSuccess) {
 
-			var objects = [];
-
 			if (isString(key)) {
-				objects = this.objects.sort(function(object1, object2) {
+				this.next = this[(this.next.length === 0) ? 'objects' : 'next'].sort(function(object1, object2) {
 					var key1 = '',
 						key2 = '';
 
@@ -153,9 +167,10 @@
 					}
 				});
 			}
-			
+		
 			if (onSuccess && isFunction(onSuccess)) {
-				onSuccess.call(this, objects);
+				onSuccess.call(this, this.next);
+				arrayRemove(this.next, 0, this.next.length);
 			}
 			
 			return this;

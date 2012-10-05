@@ -2,7 +2,7 @@
 <html>
 <body>
 </body>
-<script src="yocto.js"></script>
+<script src="src/yocto.js"></script>
 <script>
 
 /*
@@ -47,7 +47,7 @@ var mockA = [
 	{id:1,gender:"M",first:"John",last:"Smith",city:"Seattle, WA",active:true},
 	{id:2,gender:"F",first:"Kelly",last:"Ruth",city:"Dallas, TX",active:false},
 	{id:3,gender:"M",first:"Jeff",last:"Stevenson",city:"Washington, D.C.",active:true},
-	{id:4,gender:"F",first:"Jennifer",last:"Gill",city:"Seattle, WA",active:false}	
+	{id:4,gender:"F",first:"Jennifer",last:"Gill",city:"Seattle, WA",active:true}	
 ];
 
 var mockB = [
@@ -65,6 +65,24 @@ var mockC = [
 
 var ydb = yocto.db();
 
+
+ydb.put(mockA).get({gender:'M'}).sort('first', function(records){
+	console.log(records[0], records[1]);
+})
+
+console.log('###########################################')
+
+ydb.get({active: true}, function(records){
+	console.log(records[0], records[1], records[2]);
+})
+
+console.log('###########################################')
+ydb.sort('id', function(records){
+	console.log(records[0], records[1], records[2], records[3]);	
+})
+
+
+/*
 ydb.put(mockA, function(records) {
 	console.log('onPut A', records);
 });
@@ -88,6 +106,8 @@ ydb.get({gender: 'M'}, function(records) {
 ydb.get({id: 4}, function(records) {
 	console.log('onGet', records);
 })
+*/
+
 
 
 /*
