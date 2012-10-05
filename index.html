@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+<body>
+</body>
+<script src="yocto.js"></script>
+<script>
+
+/*
+
+// Create DB - modifies the DB
+var mydb = DB({name:''});								// return DB []
+
+// Drop whole DB
+mydb.drop();											// return empty [];
+
+// Insert record to the DB - modified the DB
+mydb.put({'foo': 'c'}, onPut);							// return new []
+mydb.put([{'foo': 'd'}, {'foo': 'e'}], onPut);			// return new []
+
+// Take matching records out of the DB
+mydb.take({'foo': 'c'}, 30, onSuccess);						// return new []
+mydb.take([{'foo': 'd'}, {'foo': 'e'}], 30, onSuccess);		// return new []
+
+
+
+// Query the DB
+mydb.get({foo : 'a'}, 30, onSuccess);					// return new []
+
+
+// Query the DB and then sort the query
+mydb.get({foo : 'a'}).sort('foo');						// return new []
+
+
+// Query the DB and loop over each item
+mydb.get({foo : 'a'}).forEach(function(item){
+	console.log(item);
+})
+
+
+// Stats
+mydb.size();									// return {records : num, fileSize : num}
+
+
+*/
+
+var mockA = [
+	{id:1,gender:"M",first:"John",last:"Smith",city:"Seattle, WA",active:true},
+	{id:2,gender:"F",first:"Kelly",last:"Ruth",city:"Dallas, TX",active:false},
+	{id:3,gender:"M",first:"Jeff",last:"Stevenson",city:"Washington, D.C.",active:true},
+	{id:4,gender:"F",first:"Jennifer",last:"Gill",city:"Seattle, WA",active:false}	
+];
+
+var mockB = [
+	{id:5,gender:"F",first:"Siv",last:"Tessem",city:"Gjøvik",active:true},
+	{id:6,gender:"F",first:"Live",last:"Glesne",city:"Oslo",active:true}	
+];
+
+var mockC = [
+	{id:7,gender:"F",first:"Hege",last:"Otterheim",city:"Gjøvik",active:true},
+	'Error',
+	['foo', 'bar'],
+	{id:7,gender:"F",first:"Anita",last:"Lipsky",city:"Oslo",active:false},
+];
+
+
+var ydb = yocto.db();
+
+ydb.put(mockA, function(records) {
+	console.log('onPut A', records);
+});
+
+ydb.put(mockB, function(records) {
+	console.log('onPut B', records);
+});
+
+ydb.put(mockC, function(records) {
+	console.log('onPut C', records);
+});
+
+ydb.sort('first', function(records) {
+	console.log('onSort', records);
+})
+
+ydb.get({gender: 'M'}, function(records) {
+	console.log('onGet', records);
+})
+
+ydb.get({id: 4}, function(records) {
+	console.log('onGet', records);
+})
+
+
+/*
+
+function DB(data) {
+  if(!(this instanceof DB)){
+    return new DB(data);
+  }
+
+  this.data = data || [];
+  return this;
+}
+
+DB.prototype = {
+
+  foo : function(val) {
+    this.data.push(val);
+    return this;
+  },
+
+  bar : function(val) {
+    this.data.splice(val);
+    return this;
+  }
+
+}
+
+var a = DB(['a','b','d','c','f']).foo('h');
+console.log('A', a);
+a.bar(4);
+console.log('A', a);
+
+
+
+// #######################################################
+
+
+function Que() {
+	this.methods 	= [];
+	this.response 	= null;
+	this.flushed 	= false;
+}
+
+Que.prototype = {
+	add : function(fn) {
+		if (this.flushed) {
+			fn.call(null, this.response);
+		} else {
+			this.methods.push(fn);
+		}
+	},
+
+	flush : function(response) {
+		if (this.flushed) {
+			return;
+		}
+
+		this.response 	= response;
+		this.flushed 	= true;
+
+		while (this.methods[0]) {
+			this.methods.shift()(response);
+		}
+	}
+}
+
+
+
+function Ydb(arr) {
+	if(!(this instanceof Ydb)){
+		return new Ydb(arr);
+	}
+
+	this.que = new Que;
+	this.data = arr || [];
+
+	var self = this;
+}
+
+Ydb.prototype = {
+
+	foo : function(obj) {
+		this.que.add(function(self){
+			self.data.push(obj);
+		})
+
+		return this;
+	},
+
+	bar : function(index) {
+		this.que.add(function(self){
+			self.data.splice(index);
+		})
+
+		this.que.flush();
+
+		return this;
+	}
+
+}
+
+
+var b = Ydb(['a','b','d','c','f']).foo('g');
+console.log(b);
+b.bar(3);
+console.log(b);
+
+
+
+
+
+
+var a = yocto([{color:"blue",bar:"foo",n: 100},{color:"green",bar:"xyz", n: 4},{color:"red", n: 2},{color:"green", n: 90}]);
+
+var DB();
+
+
+
+
+
+var y = ydb([{color:"blue",bar:"foo",n: 100},{color:"green",bar:"xyz", n: 4},{color:"red", n: 2},{color:"green", n: 90}]);
+
+console.log(y.VERSION);
+var f = y.find({color : "green"}).sort();
+
+console.log(f);
+*/
+</script>
+</html>
