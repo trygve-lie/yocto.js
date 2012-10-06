@@ -63,23 +63,54 @@ var mockC = [
 ];
 
 
-var ydb = yocto.db();
+var y = yocto.db();
+y.put(mockA, function(records){
+	console.log(records.length);
+})
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// var ydb = yocto.db();
+/*
+console.log('#### put > get > sort');
 
 ydb.put(mockA).get({gender:'M'}).sort('first', function(records){
 	console.log(records[0], records[1]);
 })
 
-console.log('###########################################')
+console.log('#### get');
 
 ydb.get({active: true}, function(records){
 	console.log(records[0], records[1], records[2]);
 })
 
-console.log('###########################################')
+console.log('#### sort');
+
 ydb.sort('id', function(records){
 	console.log(records[0], records[1], records[2], records[3]);	
 })
+
+*/
+// console.log('#### forEach');
+// ydb.put(mockA);
+/*
+ydb.sort('id', function(e) {
+	console.log('sorted');
+});
+*/
+
+
 
 
 /*
