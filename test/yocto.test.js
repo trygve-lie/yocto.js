@@ -35,7 +35,7 @@ var testCase = buster.testCase("yocto.js Test", {
         ];
 
         this.arrayOfRecordsB = [
-            {id: "NOR_00725", lat: 60.15918, lng: 10.25634, name: "Eikliveien, Hønefoss", street: "Osloveien", streetNumber: "1", points: 4, open24h:true, free: true, maxTime: 8},
+            {id: "NOR_00725", lat: 60.15918, lng: 10.25634, name: "Eikliveien, Hønefoss", street: "Osloveien", streetNumber: "1", points: 4, open24h:true, free: false, maxTime: 8},
             {id: "NOR_00039", lat: 60.46547, lng:  5.32418, name: "Åsane Storsenter, Bergen", street: "Åsane senter", streetNumber: "16", points: 2, open24h: false, free: true, maxTime: 1}
 
         ];
@@ -56,10 +56,16 @@ var testCase = buster.testCase("yocto.js Test", {
     },
 
 
+
+    // ### CORE
+
     "test library initialization - should return a object": function() {
         buster.assert.isObject(this.db);
     },
 
+
+
+    // ### PUT
 
     "test put of one single object and run callback - in callback _objects_ and _next_ should be 1, after execution _objects_ should be 1 and _next_ 0": function() {
         var self = this;
@@ -146,7 +152,7 @@ var testCase = buster.testCase("yocto.js Test", {
     },
 
 
-    "test put of single array with non object - in callback and after execution _objects_ and _next_ should be 0": function() {
+    "test put of single array with non objects - in callback and after execution _objects_ and _next_ should be 0": function() {
         var self = this;
 
         this.db.put(this.arrayOfRecordsWithNonObjects, function(records){
@@ -156,9 +162,44 @@ var testCase = buster.testCase("yocto.js Test", {
 
         buster.assert.equals(this.db.objects.length, 0);
         buster.assert.equals(this.db.next.length, 0);
+    },
+
+
+
+    // ### GET
+
+    "test get of single object - in callback returned number of objects should be 1 and its _id_ should have the value NOR_00481": function() {
+        this.db.put(this.arrayOfRecordsA).get({id : "NOR_00481"}, function(records){
+            buster.assert.equals(records.length, 1);
+            buster.assert.equals(records[0].id, 'NOR_00481');
+        })
+    },
+
+
+    "test get of multiple objects - in callback, returned number of objects should be 2 and _open24h_ and _free_ should be true": function() {
+
+        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).get({open24h: true, free: true}, function(records) {
+            buster.assert.equals(records.length, 2);
+            buster.assert.equals(records[0].free, true);
+            buster.assert.equals(records[0].open24h, true);
+            buster.assert.equals(records[1].free, true);
+            buster.assert.equals(records[1].open24h, true);
+        })
+    },
+
+
+
+    // ### SORT
+
+    "test sort on strings": function() {
+        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).sort('id', function(records) {
+            buster.assert.equals(records[0].id, 'NOR_00039');
+            buster.assert.equals(records[1].id, 'NOR_00097');
+            buster.assert.equals(records[2].id, 'NOR_00481');
+            buster.assert.equals(records[3].id, 'NOR_00725');
+            buster.assert.equals(records[4].id, 'NOR_01338');
+        });
     }
-
-
 
 // TESTS TO WRITE
 // - all - misc form for chaining
