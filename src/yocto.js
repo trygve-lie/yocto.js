@@ -40,6 +40,13 @@
 	}
 
 
+	// Check if runtime environment has localstorage
+
+	function hasLocalStorage() {
+		return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));
+	}
+
+
 	// Array Remove - 
 	// Source: John Resig - MIT Licensed - http://ejohn.org/blog/javascript-array-remove/
 
@@ -317,6 +324,8 @@
 
 
 
+		// Loop over each item in a returned list of records
+
 		each : function(onEach) {
 			var arr	= (this.next.length === 0) ? 'objects' : 'next',
 				i	= 0,
@@ -326,6 +335,29 @@
 				for (i = 0; i < l; i += 1) {					
 					onEach.call(this, this[arr][i]);
 				}
+			}
+
+			return this;
+		},
+
+
+
+		// Saves a list of records to localstorage
+
+		save : function(name, onSuccess) {
+
+// TODO: Do not save if this.next is null!
+
+			if(name && isString(name)) {
+				window.localStorage.setItem(name, JSON.stringify({
+					creator		: 'yocto',
+					timestamp	: +new Date(),
+					records		: this.next
+				}));
+			}			
+
+			if (onSuccess && isFunction(onSuccess)) {
+
 			}
 
 			return this;

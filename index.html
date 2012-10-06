@@ -64,10 +64,9 @@ var mockC = [
 
 
 var y = yocto.db();
-y.put(mockA, function(records){
-	console.log(records.length);
-})
 
+y.put(mockA).save('foo');
+y.get({id : 2}).save('bar');
 
 
 
