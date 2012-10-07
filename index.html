@@ -44,8 +44,9 @@ mydb.size();									// return {records : num, fileSize : num}
 */
 
 var mockA = [
+	{id:0,gender:"F",first:"Kelly",last:"Ruth",city:"Dallas, TX",active:false},
 	{id:1,gender:"M",first:"John",last:"Smith",city:"Seattle, WA",active:true},
-	{id:2,gender:"F",first:"Kelly",last:"Ruth",city:"Dallas, TX",active:false},
+	{id:2,gender:"F",first:"Babe",last:"Ruth",city:"Dallas, TX",active:false},
 	{id:3,gender:"M",first:"Jeff",last:"Stevenson",city:"Washington, D.C.",active:true},
 	{id:4,gender:"F",first:"Jennifer",last:"Gill",city:"Seattle, WA",active:true}	
 ];
@@ -63,10 +64,29 @@ var mockC = [
 ];
 
 
-var y = yocto.db();
 
-y.put(mockA).save('foo');
-y.get({id : 2}).save('bar');
+
+
+template = {
+	city : 'TX',
+	first : 'e'
+}
+
+var y = yocto.db();
+y.put(mockA).put(mockB).search(template).each(function(record){
+	console.log(record);
+});
+
+
+
+/*
+var m = Object.keys(template).every(function(key) {
+	console.log('key', obj[key].indexOf(template[key]), obj[key].indexOf(template[key]) !== -1);
+	return obj[key].indexOf(template[key]) !== -1;
+});
+*/
+//console.log(m)
+
 
 
 
