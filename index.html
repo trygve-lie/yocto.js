@@ -68,12 +68,11 @@ var mockC = [
 
 
 template = {
-	city : 'TX',
-	first : 'e'
+	gender : "M"
 }
 
 var y = yocto.db();
-y.put(mockA).put(mockB).search(template).each(function(record){
+y.put(mockA).put(mockB).take(template).each(function(record){
 	console.log(record);
 });
 
