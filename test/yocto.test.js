@@ -6,7 +6,7 @@ var testCase = buster.testCase("yocto.js Test", {
         this.db = yocto.db();
         this.singleRecordA = {  id: "NOR_01359",
                                 lat: 63.68496,
-                                lng: 9.66531,
+                                lng:  9.66531,
                                 name: "Brekstad Hurtigladestasjon, Ørland",
                                 street: "Landfestet",
                                 streetNumber: "1-5",
@@ -29,7 +29,7 @@ var testCase = buster.testCase("yocto.js Test", {
                             };
 
         this.arrayOfRecordsA = [
-            {id: "NOR_01338", lat: 59.92943, lng: 10.46686, name: "Coop Extra Rykkinn", street: "Valkyrieveien", streetNumber: "2", points: 1, open24h: true, free: true, maxTime: 6},
+            {id: "NOR_01338", lat: 59.92943, lng: 10.46686, name: "Coop Extra, Trondheim", street: "Valkyrieveien", streetNumber: "2", points: 1, open24h: true, free: true, maxTime: 6},
             {id: "NOR_00481", lat: 63.41034, lng: 10.43997, name: "Moholt Storsenter, Trondheim", street: "Brøsetvegen", streetNumber: "177", points: 2, open24h: true, free : true, maxTime: 1},
             {id: "NOR_00097", lat: 60.79564, lng: 11.08045, name: "Eidsiva Energi, Hamar", street: "Vangsvegen", streetNumber: "73", points: 2, open24h: false, free: true, maxTime: 2}
         ];
@@ -184,6 +184,23 @@ var testCase = buster.testCase("yocto.js Test", {
             buster.assert.equals(records[0].open24h, true);
             buster.assert.equals(records[1].free, true);
             buster.assert.equals(records[1].open24h, true);
+        })
+    },
+
+
+
+    // ### SEARCH
+
+    "test search with single attribute in template - in callback, returned number of objects should be 2": function() {
+        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).search({name : 'trondheim'}, function(records) {
+            buster.assert.equals(records.length, 2);
+        })
+    },
+
+
+    "test search with multiple attributes in template - in callback, returned number of objects should be 1": function() {
+        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).search({name : 'trondheim', street : 'vegen'}, function(records) {
+            buster.assert.equals(records.length, 1);
         })
     },
 

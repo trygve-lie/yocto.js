@@ -251,7 +251,7 @@
 
 		// Get object(s) from the database based on a template object
 
-		get : function(template, onSuccess, time) {
+		get : function(template, onSuccess) {
 
 			var arr = (this.next.length === 0) ? 'objects' : 'next';
 
@@ -274,8 +274,8 @@
 
 
 
-		// Get object(s) from the database based on a template object where 
-		// the value in the keys can be a partial match.
+		// Search for object(s) from the database based on a template object  
+		// where the value in the keys can be a partial match.
 
 		search : function(template, onSuccess) {
 // TODO: If no match a full list is returned. Should return an empty array.
@@ -301,7 +301,7 @@
 
 
 
-		take : function(template, time) {
+		take : function(template) {
 
 			return this;
 		},
