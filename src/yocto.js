@@ -6,6 +6,7 @@
 // TODOS
 // - Try to be as destructive as possible. Don't copy!
 
+/*global window:true */
 
 (function(exports){
 
