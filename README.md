@@ -107,7 +107,7 @@ The take() method takes data out of the database. All matches of the take method
 
 
 
-## .sort() - Sort 
+## .sort() - Sort any list of objects
 
 One can sort any list by passing which object parameter one want to sort on as a string to the first parameter to the sort() method. The second parameter to the take method is a onSuccess callback where the value for the first argument to the callback is an array of the sorted list of objects.
 
@@ -116,4 +116,49 @@ One can sort any list by passing which object parameter one want to sort on as a
 	});
 
 
+
+## .search - Search for partial string occurances
+
+To be documented!
+
+
+
+## .each - Loop over each object in a list
+
+To be documented!
+
+
+
+## .observe - Observe if an object matching a template enters or leaves the database
+
+Not implemented yet!!
+
+
+
+## .save - Persist data in the client
+
+To be documented!
+
+
+
+## .drop - Delete all in memory data
+
+To be documented!
+
+
+
+## .destroy - Delete all in memory and persisted data
+
+Not implemented yet!!
+
+
+
+# Examples:
+
+To be documented!
+
+
+
 # Non ES5 compability
+
+To be documented!
