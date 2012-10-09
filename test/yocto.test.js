@@ -216,7 +216,35 @@ var testCase = buster.testCase("yocto.js Test", {
             buster.assert.equals(records[3].id, 'NOR_00725');
             buster.assert.equals(records[4].id, 'NOR_01338');
         });
+    },
+
+
+
+    // ### TAKE
+
+    "test take of single object - in callback, returned number of objects should be 1 and equal to the one taken, after execution _objects_ should be one less": function() {
+        var self = this;
+
+        this.db.put(this.arrayOfRecordsA).take({id: 'NOR_00481'}, function(records) {
+            buster.assert.equals(records.length, 1);
+            buster.assert.equals(records[0].id, 'NOR_00481');
+            buster.assert.equals(self.db.objects.length, 2);
+        });
+
     }
+
+
+
+    // ### DROP
+
+
+
+    // ### DESTROY
+
+
+
+    // ### SAVE
+
 
 // TESTS TO WRITE
 // - all - misc form for chaining

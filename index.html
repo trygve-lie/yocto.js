@@ -66,15 +66,15 @@ var mockC = [
 
 
 
+var db = yocto.db();
 
-template = {
-	gender : "M"
-}
+db.put(mockA).get({gender: "F", city: "Dallas, TX"}).sort(first).each(function(record){
+	
+})
 
-var y = yocto.db();
-y.put(mockA).put(mockB).take(template).each(function(record){
-	console.log(record);
-});
+
+
+
 
 
 

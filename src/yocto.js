@@ -3,8 +3,8 @@
 // yocto.js may be freely distributed under the MIT license.
 
 
-// TODOS
-// - Try to be as destructive as possible. Don't copy!
+// TODOS:
+// - Try to be as destructive as possible.
 
 /*global window:true */
 
@@ -81,12 +81,21 @@
 
 
 
-		// Drop all records in the database
+		// Drop all database records memory.
+		// Data stored in localstorage is NOT removed!
 
 		drop : function() {			
 			arrayRemove(this.objects, 0, this.objects.length);
 			arrayRemove(this.next, 0, this.next.length);
 			return this;
+		},
+
+
+
+		// Drop all database records memory and in localstorage.
+
+		destroy : function() {
+
 		},
 
 
