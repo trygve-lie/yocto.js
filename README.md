@@ -115,7 +115,7 @@ Sorts any list by passing which object parameter to sort on to the first paramet
 
 
 
-### .search - Search for partial string occurances
+### .search() - Search for partial string occurances
 
 Searches object key values in the database by passing a template object as the first parameter to the seach() method. The search will only perform on string values and is case insensitive. The second parameter to the search method is a callback where the value for the first argument to the callback is an array of the data the search method found in the database.
 
@@ -125,7 +125,7 @@ Searches object key values in the database by passing a template object as the f
 
 
 
-### .each - Loop over each object in a list
+### .each() - Loop over each object in a list
 
 Loops over each object in any list. The first argument to the each() method is a callback where the value for the first argument is the object in the iteration.
 
@@ -135,7 +135,7 @@ Loops over each object in any list. The first argument to the each() method is a
 
 
 
-### .save - Persist data in the client
+### .save() - Persist data in the client
 
 Saves the whole database or an array of objects to localstorage if localstorage is available in the run time. The first argument to the save() method is an config object for interacting with the storage. The second parameter to the save() method is a callback where the value for the first argument to the callback is an array of the data the save() method stored.
 
@@ -162,7 +162,7 @@ NB: Do note that saving to localstorage is blocking.
 
 
 
-### .drop - Delete all in memory data
+### .drop() - Delete all in memory data
 
 Deletes all database records in memory. Persisted data are not deleted.
 
@@ -170,13 +170,13 @@ Deletes all database records in memory. Persisted data are not deleted.
 
 
 
-### .destroy - Delete all in memory and persisted data
+### .destroy() - Delete all in memory and persisted data
 
 Not implemented yet!!
 
 
 
-### .observe - Observe if objects enters or leaves the database
+### .observe() - Observe if objects enters or leaves the database
 
 Not implemented yet!
 
@@ -219,4 +219,4 @@ There is probably plenty of room to improve both in the API, the code, performan
 ## License
 
 MIT License
- Copyright (c) Trygve Lie
+Copyright (c) Trygve Lie
