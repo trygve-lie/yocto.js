@@ -280,12 +280,17 @@
 
 		// Saves a list of records to localstorage
 
-		save : function(name, onSuccess) {
+		save : function(config, onSuccess) {
 
 // TODO: Do not save if this.next is null!
+			
+			var type = 'localStorage';
+			if (config && config['type'] === 'session') {
+				type = 'sessionStorage';				
+			}
 
-			if(name && isString(name)) {
-				window.localStorage.setItem(name, JSON.stringify({
+			if (config && isString(config.name)) {
+				window[type].setItem(config.name, JSON.stringify({
 					creator		: 'yocto',
 					timestamp	: +new Date(),
 					records		: this.next

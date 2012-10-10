@@ -1,16 +1,14 @@
 # yocto.js
-======
 
-yocto.js is a tiny in-memory database with an tuple space inspired API. In a way its a set of convinient methods to work on a list of objects.
+yocto.js is a tiny in-memory database with an [tuple space inspired API](http://code.google.com/p/gruple/wiki/TuplespaceUsage). In a way its a set of convinient methods to work on a list of objects.
 
-yocto.js is intended to be used in the browser but has methods for persisting and recovering data to and from local storage. Though; yocto.js can also be used in node.js but then without the features of persisting to disk.
+yocto.js is intended to be used in the browser but has methods for persisting and recovering data to and from local storage. Though; yocto.js can also be used in [node.js](http://nodejs.org/) but then without the features of persisting to disk.
 
 yocto.js does utilize some ES5 features. Runtimes which does not have these features, such as older browsers, are still supported by a provided set of ES5 shims. Please see "Non ES5 compability" for further details.
 
 
 
-# Working with yocto.js
-======
+## Working with yocto.js
 
 yocto.js operate on lists of objects. All objects put into the base is then traversed by matching with a template object that contains the keys and values one want to match on.
 
@@ -39,7 +37,7 @@ If this template is passed on to one of the methods for finding objects in yocto
 
 
 
-## Chaining
+### Chaining
 
 Almost all methods in yocto.js is chained. When using chaining each method in the chain work on the returned result from the previous method in the chain. The chain is terminated by executing a callback where one want to do something on the final result.
 
@@ -51,13 +49,13 @@ In this example, again working on the above database, we get all objects in the 
 
 
 
-# API
-======
+## API
 
 yocto.js has the following methods:
 
 
-## .db() - Creating a database
+
+### .db() - Creating a database
 
 You create a database by invoking the db method:
 
@@ -67,9 +65,9 @@ All further methods does then operate on the assigned variable.
 
 
 
-## .put() - Put data into the database
+### .put() - Put data into the database
 
-One can put a single object into the database by passing it as the first parameter to the put() method. The second parameter to the put method is a onSuccess callback where the value for the first argument to the callback is an array of the data put into the database.
+One can put a single object into the database by passing it as the first parameter to the put() method. The second parameter to the put() method is a callback where the value for the first argument to the callback is an array of the data put into the database.
 
 	db.put({}, function(arr){
 
@@ -85,9 +83,9 @@ Multiple calls to the put method will append data to the database.
 
 
 
-## .get() - Get data from the database
+### .get() - Get data from the database
 
-One can get data from the database by passing a template object as the first parameter to the get() method. The key/values given in the template object will be used to exactly match with keys/values objects in the database. The second parameter to the get method is a onSuccess callback where the value for the first argument to the callback is an array of the data the get method found in the database.
+One can get data from the database by passing a template object as the first parameter to the get() method. The key/values given in the template object will be used to exactly match with keys/values objects in the database. The second parameter to the get method is a callback where the value for the first argument to the callback is an array of the data the get method found in the database.
 
 	db.get({}, function(arr){
 
@@ -95,70 +93,95 @@ One can get data from the database by passing a template object as the first par
 
 
 
-## .take() - Take data out of the database
+### .take() - Take data out of the database
 
-One can take data from the database by passing a template object as the first parameter to the take() method. The key/values given in the template object will be used to exactly match with keys/values objects in the database. The second parameter to the take method is a onSuccess callback where the value for the first argument to the callback is an array of the data the take method found in the database.
+Takes data from the database by passing a template object as the first parameter to the take() method. The key/values given in the template object will be used to exactly match with keys/values objects in the database. The second parameter to the take method is a callback where the value for the first argument to the callback is an array of the data the take method found in the database.
 
 	db.take({}, function(arr){
 
 	});
 
-The take() method takes data out of the database. All matches of the take method is removed from the database. take() can also be looked upon as deleting data in the database.
+The take() method takes data out of the database. All matchingobjects of the take method is removed from the database. take() can also be looked upon as deleting data in the database.
 
 
 
-## .sort() - Sort any list of objects
+### .sort() - Sort any list of objects
 
-One can sort any list by passing which object parameter one want to sort on as a string to the first parameter to the sort() method. The second parameter to the take method is a onSuccess callback where the value for the first argument to the callback is an array of the sorted list of objects.
+Sorts any list by passing which object parameter to sort on to the first parameter to the sort() method. The second parameter to the take method is a callback where the value for the first argument to the callback is an array of the sorted list of objects.
 
-	.sort('', function(arr){
+	db.sort('', function(arr){
 		
 	});
 
 
 
-## .search - Search for partial string occurances
+### .search - Search for partial string occurances
+
+Searches object key values in the database by passing a template object as the first parameter to the seach() method. The search will only perform on string values and is case insensitive. The second parameter to the search method is a callback where the value for the first argument to the callback is an array of the data the search method found in the database.
+
+	db.search({}, function(arr){
+
+	});
+
+
+
+### .each - Loop over each object in a list
+
+Loops over each object in any list. The first argument to the each() method is a callback where the value for the first argument is the object in the iteration.
+
+	db.each(function(obj){
+
+	});
+
+
+
+### .save - Persist data in the client
 
 To be documented!
 
 
 
-## .each - Loop over each object in a list
+### .drop - Delete all in memory data
 
-To be documented!
+Deletes all database records in memory. Persisted data are not deleted.
+
+	db.drop();
 
 
 
-## .observe - Observe if an object matching a template enters or leaves the database
+### .destroy - Delete all in memory and persisted data
 
 Not implemented yet!!
 
 
 
-## .save - Persist data in the client
-
-To be documented!
-
-
-
-## .drop - Delete all in memory data
-
-To be documented!
-
-
-
-## .destroy - Delete all in memory and persisted data
+### .observe - Observe if objects enters or leaves the database
 
 Not implemented yet!!
 
 
 
-# Examples:
+## Examples:
 
 To be documented!
 
 
 
-# Non ES5 compability
+## Non ES5 compability
 
 To be documented!
+
+
+
+## About and contribution
+
+This small library did spinn out of the fact that I saw myself doing a lot of simmilar tasks on lists in different applications. I've found myself fetching a lot of generic lists of objects from a server and then wanting to select data in them without doing a round trip to the server. I've also found myself using localstorage to store these lists and object in the client to reduce round trips to a server. So; this small library came out of small needs I had and I found the methods used in a tuple space to kinda fit the workflow I wanted to operate on. 
+
+There is probably plenty of room to improve both in the API, patterns in the code, performance, tests, doc etc, etc so if you have any ideas and feedback on how to make this small library better, please feel free to create an issue or submit a pull request!
+
+
+
+## License
+
+MIT License
+Copyright (c) Trygve Lie
