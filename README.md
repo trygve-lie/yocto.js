@@ -12,7 +12,7 @@ yocto.js does utilize some ES5 features. Runtimes which does not have these feat
 
 yocto.js operate on lists of objects. All objects put into the base is then traversed by matching with a template object that contains the keys and values one want to match on.
 
-Internally the database looks like this:
+Lets say we want to have a database of LP Records. This can be represented as a list of objects like this:
 
 	[
 		{id: 0, album: 'High Visibility', artist: 'The Hellacopters', year: 2002, style: 'Punk rock'},
@@ -22,7 +22,7 @@ Internally the database looks like this:
 		{id: 4, album: 'Money for Soul', artist: 'Baby Woodrose', year: 2003, style 'Psychedelic rock'}
 	]
 
-A template used to look up objects in the database can look like this:
+A template object used to look up objects in the database can then look like this:
 
 	{
 		artist: 'The Hellacopters',
@@ -39,7 +39,7 @@ If this template is passed on to one of the methods for finding objects in yocto
 
 ### Chaining
 
-Almost all methods in yocto.js is chained. When using chaining each method in the chain work on the returned result from the previous method in the chain. The chain is terminated by executing a callback where one want to do something on the final result.
+The interface of yocto.js aims to be [fluent](http://en.wikipedia.org/wiki/Fluent_interface) so almost all methods can be chained. When using chaining each method in the chain work on the returned result from the previous method in the chain. The chain is terminated by executing a callback where one want to do something on the final result.
 
 In this example, again working on the above database, we get all objects in the database where the artist is "The Hellacopters" and then we sort the result on the property "year" before we loop over each item:
 
@@ -137,7 +137,28 @@ Loops over each object in any list. The first argument to the each() method is a
 
 ### .save - Persist data in the client
 
-To be documented!
+Saves the whole database or an array of objects to localstorage if localstorage is available in the run time. The first argument to the save() method is an config object for interacting with the storage. The second parameter to the save() method is a callback where the value for the first argument to the callback is an array of the data the save() method stored.
+
+	db.save({}, function(arr){
+
+	});
+
+The config object has the following parameters:
+
+ - name - A string with the name the data should be stored under.
+ - type - 'local' or 'session'. If 'local' is provided the data will be stored on the 'localStorage' object. If 'session' is provided, the data will be stored on the 'sessionStorage' object.
+
+The save() method will save data as an stringified object in localstorage. The object looks like this:
+
+	{
+		creator		: 'yocto',
+		timestamp	: num,
+		records		: []
+	}
+
+'creator' is a reference to what wrote the object. 'timestamp' is number of milliseconds since the epoch and 'records' is the list of objects stored.
+
+NB: Do note that saving to localstorage is blocking.
 
 
 
@@ -157,31 +178,45 @@ Not implemented yet!!
 
 ### .observe - Observe if objects enters or leaves the database
 
-Not implemented yet!!
+Not implemented yet!
 
 
 
 ## Examples:
 
-To be documented!
+To be made!
 
 
 
-## Non ES5 compability
+## Non ES5 compability and JSON support
 
-To be documented!
+yocto.js utalize some new ES5 methods when working with lists and objects. These are not nesseserly pressent in older browsers. The good news is that these ES5 methods can be added by shims to older browsers.
+
+yocto.js use the following ES5 methods: 
+ - Object.keys
+ - Array.every
+ - Array.indexOf
+ - Array.filter
+
+yocto.js provide a separate es5.js file containing just these methods as a shim for older browsers. This shim extends the native types in the run time. If you need to support older browsers and don't already have a shim for the above methods, please include the es5.js shim file in your project also.
+
+To see if you need to include the ES5 shims in your build, please see [Kangax's ECMAScript 5 compatibility table](http://kangax.github.com/es5-compat-table/).
+
+All methods in the es5.js shim file is taken from the [JavaScript documentation on the Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/JavaScript). There is other ES5 shims out there which also can be used; [es5-shim.js](https://github.com/kriskowal/es5-shim) should also work.
+
+yocto.js does also use native JSON.parse() and JSON.stringify() to persist data in the client. This is also absent in some older browsers but can also be shimmed in in the same way as the ES5 features.  If you need to support older browsers and don't already have a shim for JSON.parse() and JSON.stringify() in your project, I recommend that you include [JSON-js](https://github.com/douglascrockford/JSON-js) in your project.
 
 
 
 ## About and contribution
 
-This small library did spinn out of the fact that I saw myself doing a lot of simmilar tasks on lists in different applications. I've found myself fetching a lot of generic lists of objects from a server and then wanting to select data in them without doing a round trip to the server. I've also found myself using localstorage to store these lists and object in the client to reduce round trips to a server. So; this small library came out of small needs I had and I found the methods used in a tuple space to kinda fit the workflow I wanted to operate on. 
+This small library did spinn out of the fact that I saw myself doing a lot of simmilar tasks on lists in different applications. I've found myself fetching a lot of generic lists of objects from a server and then wanting to select subsets in them without doing a round trip to the server. I've also found myself using localstorage to store these lists and object in the client to reduce round trips to a server. So; this small library came out of small needs I had and I found the API used in a tuple space to kinda fit the operations I do. 
 
-There is probably plenty of room to improve both in the API, patterns in the code, performance, tests, doc etc, etc so if you have any ideas and feedback on how to make this small library better, please feel free to create an issue or submit a pull request!
+There is probably plenty of room to improve both in the API, the code, performance, tests, doc etc, etc so if you have any ideas and feedback on how to make this small library better, please feel free to create an issue or submit a pull request!
 
 
 
 ## License
 
 MIT License
-Copyright (c) Trygve Lie
+ Copyright (c) Trygve Lie
