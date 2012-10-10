@@ -15,27 +15,31 @@ yocto.js operate on lists of objects. All objects put into the base is then trav
 Lets say we want to have a database of LP Records. This can be represented as a list of objects like this:
 
 ```javascript
-	[
-		{id: 0, album: 'High Visibility', artist: 'The Hellacopters', year: 2002, style: 'Punk rock'},
-		{id: 1, album: 'Tender Is the Savage', artist: 'Gluecifer', year: 2000, style: 'Rock'},
-		{id: 2, album: 'Deathcrush', artist: 'Mayhem', year: 1987, style: 'Black metal'},
-		{id: 3, album: 'Supershitty to the Max!', artist: 'The Hellacopters', year: 1996, style: 'Punk rock'},
-		{id: 4, album: 'Money for Soul', artist: 'Baby Woodrose', year: 2003, style 'Psychedelic rock'}
-	]
+[
+	{id: 0, album: 'High Visibility', artist: 'The Hellacopters', year: 2002, style: 'Punk rock'},
+	{id: 1, album: 'Tender Is the Savage', artist: 'Gluecifer', year: 2000, style: 'Rock'},
+	{id: 2, album: 'Deathcrush', artist: 'Mayhem', year: 1987, style: 'Black metal'},
+	{id: 3, album: 'Supershitty to the Max!', artist: 'The Hellacopters', year: 1996, style: 'Punk rock'},
+	{id: 4, album: 'Money for Soul', artist: 'Baby Woodrose', year: 2003, style 'Psychedelic rock'}
+]
 ```
 
 A template object used to look up objects in the database can then look like this:
 
-	{
-		artist: 'The Hellacopters',
-		year: 1996
-	}
+```javascript
+{
+	artist: 'The Hellacopters',
+	year: 1996
+}
+```
 
 If this template is passed on to one of the methods for finding objects in yocto.js, it will match with one object in the above example database. The method executing the match will then fire a callback method where the following list is provided to the callback:
 
-	[
-		{id: 3, album: 'Supershitty to the Max!', artist: 'The Hellacopters', year: 1996, style: 'Punk rock'}
-	]
+```javascript
+[
+	{id: 3, album: 'Supershitty to the Max!', artist: 'The Hellacopters', year: 1996, style: 'Punk rock'}
+]
+```
 
 
 
@@ -45,9 +49,11 @@ The interface of yocto.js aims to be [fluent](http://en.wikipedia.org/wiki/Fluen
 
 In this example, again working on the above database, we get all objects in the database where the artist is "The Hellacopters" and then we sort the result on the property "year" before we loop over each item:
 
-	db.get({artist: 'The Hellacopters'}).sort('year').each(function(obj){
-		console.log(obj.artist + ' did release ' + obj.album + ' in ' + obj.year.toString());
-	})
+```javascript
+db.get({artist: 'The Hellacopters'}).sort('year').each(function(obj){
+	console.log(obj.artist + ' did release ' + obj.album + ' in ' + obj.year.toString());
+})
+```
 
 
 
@@ -61,7 +67,9 @@ yocto.js has the following methods:
 
 You create a database by invoking the db method:
 
-	var db = yocto.db();
+```javascript
+var db = yocto.db();
+```
 
 All further methods does then operate on the assigned variable.
 
@@ -71,15 +79,15 @@ All further methods does then operate on the assigned variable.
 
 One can put a single object into the database by passing it as the first parameter to the put() method. The second parameter to the put() method is a callback where the value for the first argument to the callback is an array of the data put into the database.
 
-	db.put({}, function(arr){
-
-	});
+```javascript
+db.put({}, function(arr){ });
+```
 
 Instead of putting just a single object into the database one can also put a whole array of objects:
 
-	db.put([{},{},{}], function(arr){
-
-	});
+```javascript
+db.put([{},{},{}], function(arr){ });
+```
 
 Multiple calls to the put method will append data to the database.
 
@@ -89,9 +97,9 @@ Multiple calls to the put method will append data to the database.
 
 One can get data from the database by passing a template object as the first parameter to the get() method. The key/values given in the template object will be used to exactly match with keys/values objects in the database. The second parameter to the get method is a callback where the value for the first argument to the callback is an array of the data the get method found in the database.
 
-	db.get({}, function(arr){
-
-	});
+```javascript
+db.get({}, function(arr){ });
+```
 
 
 
@@ -99,9 +107,9 @@ One can get data from the database by passing a template object as the first par
 
 Takes data from the database by passing a template object as the first parameter to the take() method. The key/values given in the template object will be used to exactly match with keys/values objects in the database. The second parameter to the take method is a callback where the value for the first argument to the callback is an array of the data the take method found in the database.
 
-	db.take({}, function(arr){
-
-	});
+```javascript
+db.take({}, function(arr){ });
+```
 
 The take() method takes data out of the database. All matchingobjects of the take method is removed from the database. take() can also be looked upon as deleting data in the database.
 
@@ -111,9 +119,9 @@ The take() method takes data out of the database. All matchingobjects of the tak
 
 Sorts any list by passing which object parameter to sort on to the first parameter to the sort() method. The second parameter to the take method is a callback where the value for the first argument to the callback is an array of the sorted list of objects.
 
-	db.sort('', function(arr){
-		
-	});
+```javascript
+db.sort('', function(arr){ });
+```
 
 
 
@@ -121,9 +129,9 @@ Sorts any list by passing which object parameter to sort on to the first paramet
 
 Searches object key values in the database by passing a template object as the first parameter to the seach() method. The search will only perform on string values and is case insensitive. The second parameter to the search method is a callback where the value for the first argument to the callback is an array of the data the search method found in the database.
 
-	db.search({}, function(arr){
-
-	});
+```javascript
+db.search({}, function(arr){ });
+```
 
 
 
@@ -131,9 +139,9 @@ Searches object key values in the database by passing a template object as the f
 
 Loops over each object in any list. The first argument to the each() method is a callback where the value for the first argument is the object in the iteration.
 
-	db.each(function(obj){
-
-	});
+```javascript
+db.each(function(obj){ });
+```
 
 
 
@@ -141,9 +149,9 @@ Loops over each object in any list. The first argument to the each() method is a
 
 Saves the whole database or an array of objects to localstorage if localstorage is available in the run time. The first argument to the save() method is an config object for interacting with the storage. The second parameter to the save() method is a callback where the value for the first argument to the callback is an array of the data the save() method stored.
 
-	db.save({}, function(arr){
-
-	});
+```javascript
+db.save({}, function(arr){ });
+```
 
 The config object has the following parameters:
 
@@ -152,11 +160,13 @@ The config object has the following parameters:
 
 The save() method will save data as an stringified object in localstorage. The object looks like this:
 
-	{
-		creator		: 'yocto',
-		timestamp	: num,
-		records		: []
-	}
+```javascript
+{
+	creator		: 'yocto',
+	timestamp	: num,
+	records		: []
+}
+```
 
 'creator' is a reference to what wrote the object. 'timestamp' is number of milliseconds since the epoch and 'records' is the list of objects stored.
 
@@ -168,7 +178,9 @@ NB: Do note that saving to localstorage is blocking.
 
 Deletes all database records in memory. Persisted data are not deleted.
 
-	db.drop();
+```javascript
+db.drop();
+```
 
 
 
