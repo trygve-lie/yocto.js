@@ -10,7 +10,7 @@ yocto.js does utilize some ES5 features. Runtimes which does not have these feat
 
 ## Working with yocto.js
 
-yocto.js operate on lists of objects. All objects put into the base is then traversed by matching with a template object that contains the keys and values one want to match on.
+yocto.js operate on lists of objects. All objects put into the base is looked up by matching with a template object that contains the keys and values one want to match on.
 
 Lets say we want to have a database of [LP Records](http://en.wikipedia.org/wiki/LP_record). This can be represented as a list of objects like this:
 

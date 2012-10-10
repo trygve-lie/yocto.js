@@ -68,6 +68,7 @@
 
 		this.objects	= [];
 		this.next		= [];
+		this.observers	= [];
 		this.config		= {
 			name : 'yocto'
 		};
