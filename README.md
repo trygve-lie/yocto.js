@@ -14,6 +14,7 @@ yocto.js operate on lists of objects. All objects put into the base is then trav
 
 Lets say we want to have a database of LP Records. This can be represented as a list of objects like this:
 
+```javascript
 	[
 		{id: 0, album: 'High Visibility', artist: 'The Hellacopters', year: 2002, style: 'Punk rock'},
 		{id: 1, album: 'Tender Is the Savage', artist: 'Gluecifer', year: 2000, style: 'Rock'},
@@ -21,6 +22,7 @@ Lets say we want to have a database of LP Records. This can be represented as a 
 		{id: 3, album: 'Supershitty to the Max!', artist: 'The Hellacopters', year: 1996, style: 'Punk rock'},
 		{id: 4, album: 'Money for Soul', artist: 'Baby Woodrose', year: 2003, style 'Psychedelic rock'}
 	]
+```
 
 A template object used to look up objects in the database can then look like this:
 
