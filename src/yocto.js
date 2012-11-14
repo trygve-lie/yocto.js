@@ -15,14 +15,14 @@
 
 	// Check if a value is an Object
 
-	function isObject(value) { 
+	function isObject(value) {
 		return value instanceof Object;
 	}
 
 
 	// Check if a value is an Function
 
-	function isFunction(value) { 
+	function isFunction(value) {
 		return typeof value === 'function';
 	}
 
@@ -48,7 +48,13 @@
 	}
 
 
-	// Array Remove - 
+	function objectMap(obj, template) {
+		return Object.keys(template).every(function(key) {
+			return obj[key] === template[key];
+		});
+	}
+
+	// Array Remove -
 	// Source: John Resig - MIT Licensed - http://ejohn.org/blog/javascript-array-remove/
 
 	function arrayRemove(array, from, to) {
@@ -59,9 +65,18 @@
 
 
 
+	function arrayMap(arr, template) {
+		return arr.filter(function(obj, index, orgArray) {
+			return objectMap(obj, template);
+		});
+	}
+
+
+
+
 // TODO: Add onLoad and onError functions to trigger when loading from localstorage
 	exports.db = function(config) {
-		
+
 		if (!(this instanceof exports.db)) {
 			return new exports.db(config);
 		}
@@ -72,7 +87,7 @@
 		this.config		= {
 			name : 'yocto'
 		};
-		
+
 		return this;
 	};
 
@@ -85,7 +100,7 @@
 		// Drop all database records memory.
 		// Data stored in localstorage is NOT removed!
 
-		drop : function() {			
+		drop : function() {
 			arrayRemove(this.objects, 0, this.objects.length);
 			arrayRemove(this.next, 0, this.next.length);
 			return this;
@@ -105,12 +120,12 @@
 
 		put : function(obj, onSuccess) {
 			var success = false;
-			
+
 			// Array of objects applied
 
 			if (isArray(obj)) {
 
-				// Filter out non object entries. 
+				// Filter out non object entries.
 				obj = obj.filter(function(element){
 					return (isObject(element) && !isArray(element));
 				});
@@ -123,7 +138,7 @@
 
 			// Single object applied
 
-			if (isObject(obj) && !isArray(obj)) {								
+			if (isObject(obj) && !isArray(obj)) {
 				this.objects.push(obj);
 				this.next.push(obj);
 				success = !success;
@@ -145,12 +160,8 @@
 
 			var arr = (this.next.length === 0) ? 'objects' : 'next';
 
-			if (isObject(template) && !isArray(template)) {	
-				this.next = this[arr].filter(function(obj) {
-					return Object.keys(template).every(function(key) {
-						return obj[key] === template[key];
-					});
-				});
+			if (isObject(template) && !isArray(template)) {
+				this.next = arrayMap(this[arr], template);
 			}
 
 
@@ -158,13 +169,13 @@
 				onSuccess.call(this, this.next);
 				arrayRemove(this.next, 0, this.next.length);
 			}
-			
+
 			return this;
 		},
 
 
 
-		// Search for object(s) from the database based on a template object  
+		// Search for object(s) from the database based on a template object
 		// where the value in the keys can be a partial match.
 
 		search : function(template, onSuccess) {
@@ -172,7 +183,7 @@
 // TODO: See if using regex.test() is more suited.
 			var arr = (this.next.length === 0) ? 'objects' : 'next';
 
-			if (isObject(template) && !isArray(template)) {	
+			if (isObject(template) && !isArray(template)) {
 				this.next = this[arr].filter(function(obj) {
 					return Object.keys(template).every(function(key) {
 						return isString(obj[key]) ? (obj[key].toLowerCase().indexOf(template[key].toLowerCase()) !== -1) : false;
@@ -185,7 +196,7 @@
 				onSuccess.call(this, this.next);
 				arrayRemove(this.next, 0, this.next.length);
 			}
-			
+
 			return this;
 		},
 
@@ -195,8 +206,8 @@
 
 		take : function(template, onSuccess) {
 
-			if (isObject(template) && !isArray(template)) {	
-				this.next = this.objects.filter(function(obj, index, orgArray) {					
+			if (isObject(template) && !isArray(template)) {
+				this.next = this.objects.filter(function(obj, index, orgArray) {
 					return Object.keys(template).every(function(key) {
 						if (obj[key] === template[key]) {
 							arrayRemove(orgArray, index);
@@ -212,7 +223,7 @@
 				onSuccess.call(this, this.next);
 				arrayRemove(this.next, 0, this.next.length);
 			}
-			
+
 			return this;
 		},
 
@@ -229,33 +240,25 @@
 					var key1 = '',
 						key2 = '';
 
-					if (typeof object1 === 'object' && 
-						typeof object2 === 'object' && 
-						object1 && object2) {
-							
-							key1 = object1[key];
-							key2 = object2[key];
-							if (key1 === key2) {
-								return object1;
-							}
-							if (typeof key1 === typeof key2) {
-								return key1 < key2 ? -1 : 1;
-							}
-
-					} else {
-						throw {
-							name: 'Error',
-							message: 'Expected Object when sorting by ' + key
-						};
+					if (isObject(object1) && isObject(object2) && object1 && object2) {
+						key1 = object1[key];
+						key2 = object2[key];
+						if (key1 === key2) {
+							return object1;
+						}
+						if (typeof key1 === typeof key2) {
+							return key1 < key2 ? -1 : 1;
+						}
 					}
+
 				});
 			}
-		
+
 			if (onSuccess && isFunction(onSuccess)) {
 				onSuccess.call(this, this.next);
 				arrayRemove(this.next, 0, this.next.length);
 			}
-			
+
 			return this;
 		},
 
@@ -269,7 +272,7 @@
 				l	= this[arr].length;
 
 			if (onEach && isFunction(onEach)) {
-				for (i = 0; i < l; i += 1) {					
+				for (i = 0; i < l; i += 1) {
 					onEach.call(this, this[arr][i]);
 				}
 			}
@@ -284,10 +287,10 @@
 		save : function(config, onSuccess) {
 
 // TODO: Do not save if this.next is null!
-			
+
 			var type = 'localStorage';
 			if (config && config['type'] === 'session') {
-				type = 'sessionStorage';				
+				type = 'sessionStorage';
 			}
 
 			if (config && isString(config.name)) {
@@ -296,7 +299,7 @@
 					timestamp	: +new Date(),
 					records		: this.next
 				}));
-			}			
+			}
 
 			if (onSuccess && isFunction(onSuccess)) {
 
