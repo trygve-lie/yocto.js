@@ -125,16 +125,6 @@ db.sort('', function(arr){ });
 
 
 
-### .search() - Search for partial string occurances
-
-Searches object key values in the database by passing a template object as the first parameter to the seach() method. The search will only perform on string values and is case insensitive. The second parameter to the search method is a callback where the value for the first argument to the callback is an array of the data the search method found in the database.
-
-```javascript
-db.search({}, function(arr){ });
-```
-
-
-
 ### .each() - Loop over each object in a list
 
 Loops over each object in any list. The first argument to the each() method is a callback where the value for the first argument is the object in the iteration.
@@ -206,7 +196,7 @@ To be made!
 
 yocto.js utalize some new ES5 methods when working with lists and objects. These are not nesseserly pressent in older browsers. The good news is that these ES5 methods can be added by shims to older browsers.
 
-yocto.js use the following ES5 methods: 
+yocto.js use the following ES5 methods:
  - Object.keys
  - Array.every
  - Array.indexOf
@@ -224,7 +214,7 @@ yocto.js does also use native JSON.parse() and JSON.stringify() to persist data 
 
 ## About and contribution
 
-This small library did spinn out of the fact that I saw myself doing a lot of simmilar tasks on lists in different applications. I've found myself fetching a lot of generic lists of objects from a server and then wanting to select subsets in them without doing a round trip to the server. I've also found myself using localstorage to store these lists and object in the client to reduce round trips to a server. So; this small library came out of small needs I had and I found the API used in a tuple space to kinda fit the operations I do. 
+This small library did spinn out of the fact that I saw myself doing a lot of simmilar tasks on lists in different applications. I've found myself fetching a lot of generic lists of objects from a server and then wanting to select subsets in them without doing a round trip to the server. I've also found myself using localstorage to store these lists and object in the client to reduce round trips to a server. So; this small library came out of small needs I had and I found the API used in a tuple space to kinda fit the operations I do.
 
 There is probably plenty of room to improve both in the API, the code, performance, tests, doc etc, etc so if you have any ideas and feedback on how to make this small library better, please feel free to create an issue or submit a pull request!
 

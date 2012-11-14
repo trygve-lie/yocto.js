@@ -74,11 +74,11 @@ var testCase = buster.testCase("yocto.js Test", {
             buster.assert.equals(self.db.objects.length, 1);
             buster.assert.equals(self.db.next.length, 1);
         });
-        
+
         buster.assert.equals(this.db.objects.length, 1);
         buster.assert.equals(this.db.next.length, 0);
     },
- 
+
 
     "test put of multiple single objects and run callback - in callback _objects_ and _next_ should be 2, after execution _objects_ should be 2 and _next_ 0": function() {
         var self = this;
@@ -87,7 +87,7 @@ var testCase = buster.testCase("yocto.js Test", {
             buster.assert.equals(self.db.objects.length, 2);
             buster.assert.equals(self.db.next.length, 2);
         });
-        
+
         buster.assert.equals(this.db.objects.length, 2);
         buster.assert.equals(this.db.next.length, 0);
     },
@@ -123,7 +123,7 @@ var testCase = buster.testCase("yocto.js Test", {
         var self = this;
 
         this.db.put(this.singleRecordA);
-        
+
         buster.assert.equals(this.db.objects.length, 1);
         buster.assert.equals(this.db.next.length, 1);
     },
@@ -184,23 +184,6 @@ var testCase = buster.testCase("yocto.js Test", {
             buster.assert.equals(records[0].open24h, true);
             buster.assert.equals(records[1].free, true);
             buster.assert.equals(records[1].open24h, true);
-        })
-    },
-
-
-
-    // ### SEARCH
-
-    "test search with single attribute in template - in callback, returned number of objects should be 2": function() {
-        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).search({name : 'trondheim'}, function(records) {
-            buster.assert.equals(records.length, 2);
-        })
-    },
-
-
-    "test search with multiple attributes in template - in callback, returned number of objects should be 1": function() {
-        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).search({name : 'trondheim', street : 'vegen'}, function(records) {
-            buster.assert.equals(records.length, 1);
         })
     },
 

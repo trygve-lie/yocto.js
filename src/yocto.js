@@ -175,33 +175,6 @@
 
 
 
-		// Search for object(s) from the database based on a template object
-		// where the value in the keys can be a partial match.
-
-		search : function(template, onSuccess) {
-// TODO: If no match a full list is returned. Should return an empty array.
-// TODO: See if using regex.test() is more suited.
-			var arr = (this.next.length === 0) ? 'objects' : 'next';
-
-			if (isObject(template) && !isArray(template)) {
-				this.next = this[arr].filter(function(obj) {
-					return Object.keys(template).every(function(key) {
-						return isString(obj[key]) ? (obj[key].toLowerCase().indexOf(template[key].toLowerCase()) !== -1) : false;
-					});
-				});
-			}
-
-
-			if (onSuccess && isFunction(onSuccess)) {
-				onSuccess.call(this, this.next);
-				arrayRemove(this.next, 0, this.next.length);
-			}
-
-			return this;
-		},
-
-
-
 		// Takes matching objects out of the database
 
 		take : function(template, onSuccess) {
