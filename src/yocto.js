@@ -105,6 +105,22 @@
 		});
 	}
 
+var a = function(x){
+	console.log('a', x);
+	return 10 + (x ? x : 0);
+}
+
+var b = function(x){
+	console.log('b', x);
+	return 5 + (x ? x : 0);
+}
+
+var c = function(x){
+	console.log('c', x);
+	return 20 + (x ? x : 0);
+}
+
+
 
 
 
@@ -125,6 +141,7 @@
 
 		// NEW FUNCTIONS
 		this.chain		= [];
+		this.query 		= {};
 
 
 
@@ -140,30 +157,37 @@
 		// NEW FUNCTIONS
 		n_put : function(obj, onSuccess) {
 
-			if (success && onSuccess && isFunction(onSuccess)) {
+			if (onSuccess && isFunction(onSuccess)) {
 				// Execute loop
 			}
 		},
 
 		n_get : function(template, onSuccess) {
 
-			if (success && onSuccess && isFunction(onSuccess)) {
+			this.query = template;
+			this.chain.push(a);
+
+			if (onSuccess && isFunction(onSuccess)) {
 				// Execute loop
 			}
 		},
 
 		n_take : function(template, onSuccess) {
 
-			if (success && onSuccess && isFunction(onSuccess)) {
+			this.query = template;			
+			this.chain.push(b);
+
+			if (onSuccess && isFunction(onSuccess)) {
 				// Execute loop
 			}
 		},
 
 		n_each : function(onEach) {
-
-			if (success && onSuccess && isFunction(onSuccess)) {
-				// Execute loop
-			}
+			
+			this.chain.push(c);
+			// Execute loop
+			var run = compose(this.chain);
+			run(this.query);
 		}
 
 
