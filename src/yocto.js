@@ -49,6 +49,22 @@
 
 
 
+
+	// Array Remove -
+	// Source: John Resig - MIT Licensed - http://ejohn.org/blog/javascript-array-remove/
+
+	function arrayRemove(array, from, to) {
+		var rest = array.slice((to || from) + 1 || array.length);
+		array.length = from < 0 ? array.length + from : from;
+		return array.push.apply(array, rest);
+	}
+
+
+
+
+
+	// NEW FUNCTIONS
+
 	function compose(fnArray) {
 	    return function() {
 	        var i 		= fnArray.length,
@@ -58,10 +74,7 @@
 	        }
 	        return result[0];
 	    };
-	};
-
-
-
+	}
 
 
 	function objectRemove(obj, template, key, orgArray, index){
@@ -73,6 +86,7 @@
 		}
 	}
 
+
 	function objectEqual(obj, template, key) {
 		return obj[key] === template[key];
 	}
@@ -83,16 +97,6 @@
 			return objectEqual(obj, template, key)
 		});
 	}
-
-	// Array Remove -
-	// Source: John Resig - MIT Licensed - http://ejohn.org/blog/javascript-array-remove/
-
-	function arrayRemove(array, from, to) {
-		var rest = array.slice((to || from) + 1 || array.length);
-		array.length = from < 0 ? array.length + from : from;
-		return array.push.apply(array, rest);
-	}
-
 
 
 	function arrayMap(arr, template) {
@@ -118,12 +122,60 @@
 			name : 'yocto'
 		};
 
+
+		// NEW FUNCTIONS
+		this.chain		= [];
+
+
+
 		return this;
 	};
 
 
 
 	exports.db.prototype = {
+
+
+
+		// NEW FUNCTIONS
+		n_put : function(obj, onSuccess) {
+
+			if (success && onSuccess && isFunction(onSuccess)) {
+				// Execute loop
+			}
+		},
+
+		n_get : function(template, onSuccess) {
+
+			if (success && onSuccess && isFunction(onSuccess)) {
+				// Execute loop
+			}
+		},
+
+		n_take : function(template, onSuccess) {
+
+			if (success && onSuccess && isFunction(onSuccess)) {
+				// Execute loop
+			}
+		},
+
+		n_each : function(onEach) {
+
+			if (success && onSuccess && isFunction(onSuccess)) {
+				// Execute loop
+			}
+		}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
