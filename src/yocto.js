@@ -48,9 +48,39 @@
 	}
 
 
+
+	function compose(fnArray) {
+	    return function() {
+	        var i 		= fnArray.length,
+	        	result 	= arguments;
+	        while(i--) {
+	            result = [fnArray[i].apply(this,result)];
+	        }
+	        return result[0];
+	    };
+	};
+
+
+
+
+
+	function objectRemove(obj, template, key, orgArray, index){
+		if (obj[key] === template[key]) {
+			arrayRemove(orgArray, index);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	function objectEqual(obj, template, key) {
+		return obj[key] === template[key];
+	}
+
+
 	function objectMap(obj, template) {
 		return Object.keys(template).every(function(key) {
-			return obj[key] === template[key];
+			return objectEqual(obj, template, key)
 		});
 	}
 
@@ -180,6 +210,9 @@
 		take : function(template, onSuccess) {
 
 			if (isObject(template) && !isArray(template)) {
+				this.next = arrayMap(this[arr], template);
+
+/*
 				this.next = this.objects.filter(function(obj, index, orgArray) {
 					return Object.keys(template).every(function(key) {
 						if (obj[key] === template[key]) {
@@ -190,6 +223,7 @@
 						}
 					});
 				});
+*/
 			}
 
 			if (onSuccess && isFunction(onSuccess)) {
