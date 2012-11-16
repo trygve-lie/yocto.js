@@ -77,6 +77,41 @@
     }
 
 
+    function forEach(query, chain) {
+        var fn = compose(chain);
+        var result = fn(query);
+
+        return result;
+/*
+        return arr.filter(function(obj, index, orgArray) {
+            return objectMap(obj, template);
+        });
+*/
+    }
+
+    function n_get(obj, template) {
+        return Object.keys(template).every(function(key) {
+            return obj[key] === template[key];
+        });
+    }
+
+    function n_each(query, chain) {
+          var fn = compose(chain);
+
+          return arr.filter(function(obj, index, orgArray) {
+            return objectMap(obj, template);
+        });
+    }
+
+
+
+
+
+
+
+
+
+
     function objectRemove(obj, template, key, orgArray, index){
         if (obj[key] === template[key]) {
             arrayRemove(orgArray, index);
@@ -150,6 +185,7 @@ var c = function(x){
 
 
 
+
     exports.db.prototype = {
 
 
@@ -164,31 +200,49 @@ var c = function(x){
 
         n_get : function(template, onSuccess) {
 
-            this.query = template;
-            this.chain.push(a);
+            if (template){this.query = template;}
+            this.chain.unshift(a);
 
             if (onSuccess && isFunction(onSuccess)) {
-                // Execute loop
-                onSuccess.call(this, "ok");
+                var result = forEach(this.query, this.chain);
+                onSuccess.call(this, result);
+
+                this.chain = [];
+                this.query = {};
             }
+
+            return this;
         },
 
         n_take : function(template, onSuccess) {
 
-            this.query = template;
-            this.chain.push(b);
+            if (template){this.query = template;}
+            this.chain.unshift(b);
 
             if (onSuccess && isFunction(onSuccess)) {
-                // Execute loop
+                var result = forEach(this.query, this.chain);
+                onSuccess.call(this, result);
+
+                this.chain = [];
+                this.query = {};
             }
+
+            return this;
         },
 
         n_each : function(onEach) {
 
-            this.chain.push(c);
-            // Execute loop
-            var run = compose(this.chain);
-            run(this.query);
+            this.chain.unshift(c);
+
+            if (onEach && isFunction(onEach)) {
+                var result = forEach(this.query, this.chain);
+                onEach.call(this, result);
+
+                this.chain = [];
+                this.query = {};
+            }
+
+            return this;
         },
 
 

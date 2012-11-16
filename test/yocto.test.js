@@ -58,13 +58,35 @@ var testCase = buster.testCase("yocto.js Test", {
 
 
     // ### NEW FEATURES
-    "test a": function() {
-
-        this.db.n_get({streetNumber: 100}, function(records) {
-            buster.assert.equals(records, 'ok');
+    "test chain a": function() {
+        this.db.n_get(100, function(records) {
+            buster.assert.equals(records, 110);
         });
-
     },
+
+
+    "test chain a + c": function() {
+        this.db.n_get(100).n_each(function(records) {
+            buster.assert.equals(records, 130);
+        });
+    },
+
+
+    "test chain a + b + c": function() {
+        this.db.n_get(100).n_take().n_each(function(records) {
+            buster.assert.equals(records, 135);
+        });
+    },
+
+
+    "test functional a + b + c": function() {
+        this.db.n_get(100);
+        this.db.n_take();
+        this.db.n_each(function(records) {
+            buster.assert.equals(records, 135);
+        });
+    },
+
 
 
 
