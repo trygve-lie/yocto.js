@@ -60,7 +60,7 @@ var testCase = buster.testCase("yocto.js Test", {
     // ### NEW FEATURES
     "test a": function() {
 
-        this.db.n_get({streetNumber: "2"}, function(records) {
+        this.db.n_get({streetNumber: 100}, function(records) {
             buster.assert.equals(records, 'ok');
         });
 
