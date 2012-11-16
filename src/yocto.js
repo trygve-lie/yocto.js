@@ -10,114 +10,114 @@
 
 (function(exports){
 
-	"use strict";
+    "use strict";
 
 
-	// Check if a value is an Object
+    // Check if a value is an Object
 
-	function isObject(value) {
-		return value instanceof Object;
-	}
-
-
-	// Check if a value is an Function
-
-	function isFunction(value) {
-		return typeof value === 'function';
-	}
+    function isObject(value) {
+        return value instanceof Object;
+    }
 
 
-	// Check if a value is a Array
+    // Check if a value is an Function
 
-	function isArray(value) {
-		return value instanceof Array;
-	}
-
-
-	// Check if a value is a String
-
-	function isString(value) {
-		return typeof value === 'string';
-	}
+    function isFunction(value) {
+        return typeof value === 'function';
+    }
 
 
-	// Check if runtime environment has localstorage
+    // Check if a value is a Array
 
-	function hasLocalStorage() {
-		return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));
-	}
-
-
+    function isArray(value) {
+        return value instanceof Array;
+    }
 
 
-	// Array Remove -
-	// Source: John Resig - MIT Licensed - http://ejohn.org/blog/javascript-array-remove/
+    // Check if a value is a String
 
-	function arrayRemove(array, from, to) {
-		var rest = array.slice((to || from) + 1 || array.length);
-		array.length = from < 0 ? array.length + from : from;
-		return array.push.apply(array, rest);
-	}
+    function isString(value) {
+        return typeof value === 'string';
+    }
+
+
+    // Check if runtime environment has localstorage
+
+    function hasLocalStorage() {
+        return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));
+    }
 
 
 
 
+    // Array Remove -
+    // Source: John Resig - MIT Licensed - http://ejohn.org/blog/javascript-array-remove/
 
-	// NEW FUNCTIONS
-
-	function compose(fnArray) {
-	    return function() {
-	        var i 		= fnArray.length,
-	        	result 	= arguments;
-	        while(i--) {
-	            result = [fnArray[i].apply(this,result)];
-	        }
-	        return result[0];
-	    };
-	}
+    function arrayRemove(array, from, to) {
+        var rest = array.slice((to || from) + 1 || array.length);
+        array.length = from < 0 ? array.length + from : from;
+        return array.push.apply(array, rest);
+    }
 
 
-	function objectRemove(obj, template, key, orgArray, index){
-		if (obj[key] === template[key]) {
-			arrayRemove(orgArray, index);
-			return true;
-		} else {
-			return false;
-		}
-	}
 
 
-	function objectEqual(obj, template, key) {
-		return obj[key] === template[key];
-	}
+
+    // NEW FUNCTIONS
+
+    function compose(fnArray) {
+        return function() {
+            var i       = fnArray.length,
+                result  = arguments;
+            while(i--) {
+                result = [fnArray[i].apply(this,result)];
+            }
+            return result[0];
+        };
+    }
 
 
-	function objectMap(obj, template) {
-		return Object.keys(template).every(function(key) {
-			return objectEqual(obj, template, key)
-		});
-	}
+    function objectRemove(obj, template, key, orgArray, index){
+        if (obj[key] === template[key]) {
+            arrayRemove(orgArray, index);
+            return true;
+        } else {
+            return false;
+        }
+    }
 
 
-	function arrayMap(arr, template) {
-		return arr.filter(function(obj, index, orgArray) {
-			return objectMap(obj, template);
-		});
-	}
+    function objectEqual(obj, template, key) {
+        return obj[key] === template[key];
+    }
+
+
+    function objectMap(obj, template) {
+        return Object.keys(template).every(function(key) {
+            return objectEqual(obj, template, key);
+        });
+    }
+
+
+    function arrayMap(arr, template) {
+        return arr.filter(function(obj, index, orgArray) {
+            return objectMap(obj, template);
+        });
+    }
 
 var a = function(x){
-	console.log('a', x);
-	return 10 + (x ? x : 0);
+    console.log('a', x);
+    return 10 + (x ? x : 0);
 }
 
 var b = function(x){
-	console.log('b', x);
-	return 5 + (x ? x : 0);
+    console.log('b', x);
+    return 5 + (x ? x : 0);
 }
 
 var c = function(x){
-	console.log('c', x);
-	return 20 + (x ? x : 0);
+    console.log('c', x);
+    return 20 + (x ? x : 0);
 }
 
 
@@ -125,71 +125,71 @@ var c = function(x){
 
 
 // TODO: Add onLoad and onError functions to trigger when loading from localstorage
-	exports.db = function(config) {
+    exports.db = function(config) {
 
-		if (!(this instanceof exports.db)) {
-			return new exports.db(config);
-		}
+        if (!(this instanceof exports.db)) {
+            return new exports.db(config);
+        }
 
-		this.objects	= [];
-		this.next		= [];
-		this.observers	= [];
-		this.config		= {
-			name : 'yocto'
-		};
+        this.objects    = [];
+        this.next       = [];
+        this.observers  = [];
+        this.config     = {
+            name : 'yocto'
+        };
 
 
-		// NEW FUNCTIONS
-		this.chain		= [];
-		this.query 		= {};
+        // NEW FUNCTIONS
+        this.chain      = [];
+        this.query      = {};
 
 
 
-		return this;
-	};
+        return this;
+    };
 
 
 
-	exports.db.prototype = {
+    exports.db.prototype = {
 
 
 
-		// NEW FUNCTIONS
-		n_put : function(obj, onSuccess) {
+        // NEW FUNCTIONS
+        n_put : function(obj, onSuccess) {
 
-			if (onSuccess && isFunction(onSuccess)) {
-				// Execute loop
-			}
-		},
+            if (onSuccess && isFunction(onSuccess)) {
+                // Execute loop
+            }
+        },
 
-		n_get : function(template, onSuccess) {
+        n_get : function(template, onSuccess) {
 
-			this.query = template;
-			this.chain.push(a);
+            this.query = template;
+            this.chain.push(a);
 
-			if (onSuccess && isFunction(onSuccess)) {
-				// Execute loop
-			}
-		},
+            if (onSuccess && isFunction(onSuccess)) {
+                // Execute loop
+                onSuccess.call(this, "ok");
+            }
+        },
 
-		n_take : function(template, onSuccess) {
+        n_take : function(template, onSuccess) {
 
-			this.query = template;			
-			this.chain.push(b);
+            this.query = template;
+            this.chain.push(b);
 
-			if (onSuccess && isFunction(onSuccess)) {
-				// Execute loop
-			}
-		},
+            if (onSuccess && isFunction(onSuccess)) {
+                // Execute loop
+            }
+        },
 
-		n_each : function(onEach) {
-			
-			this.chain.push(c);
-			// Execute loop
-			var run = compose(this.chain);
-			run(this.query);
-		}
+        n_each : function(onEach) {
 
+            this.chain.push(c);
+            // Execute loop
+            var run = compose(this.chain);
+            run(this.query);
+        },
 
 
 
@@ -203,195 +203,196 @@ var c = function(x){
 
 
 
-		// Drop all database records memory.
-		// Data stored in localstorage is NOT removed!
 
-		drop : function() {
-			arrayRemove(this.objects, 0, this.objects.length);
-			arrayRemove(this.next, 0, this.next.length);
-			return this;
-		},
+        // Drop all database records memory.
+        // Data stored in localstorage is NOT removed!
 
+        drop : function() {
+            arrayRemove(this.objects, 0, this.objects.length);
+            arrayRemove(this.next, 0, this.next.length);
+            return this;
+        },
 
 
-		// Drop all database records memory and in localstorage.
 
-		destroy : function() {
+        // Drop all database records memory and in localstorage.
 
-		},
+        destroy : function() {
 
+        },
 
 
-		// Put a single object or an array of objects into the database
 
-		put : function(obj, onSuccess) {
-			var success = false;
+        // Put a single object or an array of objects into the database
 
-			// Array of objects applied
+        put : function(obj, onSuccess) {
+            var success = false;
 
-			if (isArray(obj)) {
+            // Array of objects applied
 
-				// Filter out non object entries.
-				obj = obj.filter(function(element){
-					return (isObject(element) && !isArray(element));
-				});
+            if (isArray(obj)) {
 
-				// Merge appended array into internal objects array.
-				this.objects	= this.objects.concat(obj);
-				this.next		= this.next.concat(obj);
-				success = !success;
-			}
+                // Filter out non object entries.
+                obj = obj.filter(function(element){
+                    return (isObject(element) && !isArray(element));
+                });
 
-			// Single object applied
+                // Merge appended array into internal objects array.
+                this.objects    = this.objects.concat(obj);
+                this.next       = this.next.concat(obj);
+                success = !success;
+            }
 
-			if (isObject(obj) && !isArray(obj)) {
-				this.objects.push(obj);
-				this.next.push(obj);
-				success = !success;
-			}
+            // Single object applied
 
-			if (success && onSuccess && isFunction(onSuccess)) {
-				onSuccess.call(this, this.next);
-				arrayRemove(this.next, 0, this.next.length);
-			}
+            if (isObject(obj) && !isArray(obj)) {
+                this.objects.push(obj);
+                this.next.push(obj);
+                success = !success;
+            }
 
-			return this;
-		},
+            if (success && onSuccess && isFunction(onSuccess)) {
+                onSuccess.call(this, this.next);
+                arrayRemove(this.next, 0, this.next.length);
+            }
 
+            return this;
+        },
 
 
-		// Get object(s) from the database based on a template object
 
-		get : function(template, onSuccess) {
+        // Get object(s) from the database based on a template object
 
-			var arr = (this.next.length === 0) ? 'objects' : 'next';
+        get : function(template, onSuccess) {
 
-			if (isObject(template) && !isArray(template)) {
-				this.next = arrayMap(this[arr], template);
-			}
+            var arr = (this.next.length === 0) ? 'objects' : 'next';
 
+            if (isObject(template) && !isArray(template)) {
+                this.next = arrayMap(this[arr], template);
+            }
 
-			if (onSuccess && isFunction(onSuccess)) {
-				onSuccess.call(this, this.next);
-				arrayRemove(this.next, 0, this.next.length);
-			}
 
-			return this;
-		},
+            if (onSuccess && isFunction(onSuccess)) {
+                onSuccess.call(this, this.next);
+                arrayRemove(this.next, 0, this.next.length);
+            }
 
+            return this;
+        },
 
 
-		// Takes matching objects out of the database
 
-		take : function(template, onSuccess) {
+        // Takes matching objects out of the database
 
-			if (isObject(template) && !isArray(template)) {
-				this.next = arrayMap(this[arr], template);
+        take : function(template, onSuccess) {
+
+            if (isObject(template) && !isArray(template)) {
+                this.next = arrayMap(this[arr], template);
 
 /*
-				this.next = this.objects.filter(function(obj, index, orgArray) {
-					return Object.keys(template).every(function(key) {
-						if (obj[key] === template[key]) {
-							arrayRemove(orgArray, index);
-							return true;
-						} else {
-							return false;
-						}
-					});
-				});
+                this.next = this.objects.filter(function(obj, index, orgArray) {
+                    return Object.keys(template).every(function(key) {
+                        if (obj[key] === template[key]) {
+                            arrayRemove(orgArray, index);
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    });
+                });
 */
-			}
+            }
 
-			if (onSuccess && isFunction(onSuccess)) {
-				onSuccess.call(this, this.next);
-				arrayRemove(this.next, 0, this.next.length);
-			}
+            if (onSuccess && isFunction(onSuccess)) {
+                onSuccess.call(this, this.next);
+                arrayRemove(this.next, 0, this.next.length);
+            }
 
-			return this;
-		},
-
-
-
-		// Sort a return from the database based on a objects property name
-
-		sort : function(key, onSuccess) {
-
-			var arr = (this.next.length === 0) ? 'objects' : 'next';
-
-			if (isString(key)) {
-				this.next = this[arr].sort(function(object1, object2) {
-					var key1 = '',
-						key2 = '';
-
-					if (isObject(object1) && isObject(object2) && object1 && object2) {
-						key1 = object1[key];
-						key2 = object2[key];
-						if (key1 === key2) {
-							return object1;
-						}
-						if (typeof key1 === typeof key2) {
-							return key1 < key2 ? -1 : 1;
-						}
-					}
-
-				});
-			}
-
-			if (onSuccess && isFunction(onSuccess)) {
-				onSuccess.call(this, this.next);
-				arrayRemove(this.next, 0, this.next.length);
-			}
-
-			return this;
-		},
+            return this;
+        },
 
 
 
-		// Loop over each item in a returned list of records
+        // Sort a return from the database based on a objects property name
 
-		each : function(onEach) {
-			var arr	= (this.next.length === 0) ? 'objects' : 'next',
-				i	= 0,
-				l	= this[arr].length;
+        sort : function(key, onSuccess) {
 
-			if (onEach && isFunction(onEach)) {
-				for (i = 0; i < l; i += 1) {
-					onEach.call(this, this[arr][i]);
-				}
-			}
+            var arr = (this.next.length === 0) ? 'objects' : 'next';
 
-			return this;
-		},
+            if (isString(key)) {
+                this.next = this[arr].sort(function(object1, object2) {
+                    var key1 = '',
+                        key2 = '';
+
+                    if (isObject(object1) && isObject(object2) && object1 && object2) {
+                        key1 = object1[key];
+                        key2 = object2[key];
+                        if (key1 === key2) {
+                            return object1;
+                        }
+                        if (typeof key1 === typeof key2) {
+                            return key1 < key2 ? -1 : 1;
+                        }
+                    }
+
+                });
+            }
+
+            if (onSuccess && isFunction(onSuccess)) {
+                onSuccess.call(this, this.next);
+                arrayRemove(this.next, 0, this.next.length);
+            }
+
+            return this;
+        },
 
 
 
-		// Saves a list of records to localstorage
+        // Loop over each item in a returned list of records
 
-		save : function(config, onSuccess) {
+        each : function(onEach) {
+            var arr = (this.next.length === 0) ? 'objects' : 'next',
+                i   = 0,
+                l   = this[arr].length;
+
+            if (onEach && isFunction(onEach)) {
+                for (i = 0; i < l; i += 1) {
+                    onEach.call(this, this[arr][i]);
+                }
+            }
+
+            return this;
+        },
+
+
+
+        // Saves a list of records to localstorage
+
+        save : function(config, onSuccess) {
 
 // TODO: Do not save if this.next is null!
 
-			var type = 'localStorage';
-			if (config && config['type'] === 'session') {
-				type = 'sessionStorage';
-			}
+            var type = 'localStorage';
+            if (config && config['type'] === 'session') {
+                type = 'sessionStorage';
+            }
 
-			if (config && isString(config.name)) {
-				window[type].setItem(config.name, JSON.stringify({
-					creator		: 'yocto',
-					timestamp	: +new Date(),
-					records		: this.next
-				}));
-			}
+            if (config && isString(config.name)) {
+                window[type].setItem(config.name, JSON.stringify({
+                    creator     : 'yocto',
+                    timestamp   : +new Date(),
+                    records     : this.next
+                }));
+            }
 
-			if (onSuccess && isFunction(onSuccess)) {
+            if (onSuccess && isFunction(onSuccess)) {
 
-			}
+            }
 
-			return this;
-		}
+            return this;
+        }
 
-	};
+    };
 
 
 })(typeof exports === 'undefined' ? this.yocto = {}: exports);

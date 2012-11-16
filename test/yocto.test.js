@@ -57,6 +57,17 @@ var testCase = buster.testCase("yocto.js Test", {
 
 
 
+    // ### NEW FEATURES
+    "test a": function() {
+
+        this.db.n_get({streetNumber: "2"}, function(records) {
+            buster.assert.equals(records, 'ok');
+        });
+
+    },
+
+
+
     // ### CORE
 
     "test library initialization - should return a object": function() {
@@ -199,10 +210,10 @@ var testCase = buster.testCase("yocto.js Test", {
             buster.assert.equals(records[3].id, 'NOR_00725');
             buster.assert.equals(records[4].id, 'NOR_01338');
         });
-    },
+    }
 
 
-
+/*
     // ### TAKE
 
     "test take of single object - in callback, returned number of objects should be 1 and equal to the one taken, after execution _objects_ should be one less": function() {
@@ -215,7 +226,7 @@ var testCase = buster.testCase("yocto.js Test", {
         });
 
     }
-
+*/
 
 
     // ### DROP
