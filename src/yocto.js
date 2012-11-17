@@ -103,44 +103,6 @@
 
 
 
-
-
-
-
-
-    function objectRemove(obj, template, key, orgArray, index){
-        if (obj[key] === template[key]) {
-            arrayRemove(orgArray, index);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-
-    function objectEqual(obj, template, key) {
-        return obj[key] === template[key];
-    }
-
-
-    function objectMap(obj, template) {
-        return Object.keys(template).every(function(key) {
-            return objectEqual(obj, template, key);
-        });
-    }
-
-
-    function arrayMap(arr, template) {
-        return arr.filter(function(obj, index, orgArray) {
-            return objectMap(obj, template);
-        });
-    }
-
-
-
-
-
-
 // TODO: Add onLoad and onError functions to trigger when loading from localstorage
     exports.db = function(config) {
 
@@ -235,7 +197,7 @@
 
         n_each : function(onEach) {
 
-            this.chain.unshift(n_callback)
+            this.chain.unshift(n_callback);
 
             if (onEach && isFunction(onEach)) {                
                 var result = n_each(this.objects, this.query, this.chain, onEach);
