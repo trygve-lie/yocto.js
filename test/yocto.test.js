@@ -57,39 +57,6 @@ var testCase = buster.testCase("yocto.js Test", {
 
 
 
-    // ### NEW FEATURES
-    "test chain a": function() {
-        this.db.n_get(100, function(records) {
-            buster.assert.equals(records, 110);
-        });
-    },
-
-
-    "test chain a + c": function() {
-        this.db.n_get(100).n_each(function(records) {
-            buster.assert.equals(records, 130);
-        });
-    },
-
-
-    "test chain a + b + c": function() {
-        this.db.n_get(100).n_take().n_each(function(records) {
-            buster.assert.equals(records, 135);
-        });
-    },
-
-
-    "test functional a + b + c": function() {
-        this.db.n_get(100);
-        this.db.n_take();
-        this.db.n_each(function(records) {
-            buster.assert.equals(records, 135);
-        });
-    },
-
-
-
-
     // ### CORE
 
     "test library initialization - should return a object": function() {
@@ -232,7 +199,61 @@ var testCase = buster.testCase("yocto.js Test", {
             buster.assert.equals(records[3].id, 'NOR_00725');
             buster.assert.equals(records[4].id, 'NOR_01338');
         });
-    }
+    },
+
+
+
+
+
+    // ### NEW FEATURES
+
+    "test chain a": function() {
+console.log('test', this.db.objects);
+buster.assert.equals(this.db.objects.length, 1);
+/*        
+        this.db.n_get({id : "NOR_00481"}, function(records) {
+            // buster.assert.equals(records, 110);
+
+            buster.assert.equals(records.length, 1);
+            buster.assert.equals(records[0].id, 'NOR_00481');
+        });
+*/
+    },
+
+/*
+    "test chain a": function() {
+        this.db.n_get(100, function(records) {
+            buster.assert.equals(records, 110);
+        });
+    },
+
+
+    "test chain a + c": function() {
+        this.db.n_get(100).n_each(function(records) {
+            buster.assert.equals(records, 130);
+        });
+    },
+
+
+    "test chain a + b + c": function() {
+        this.db.n_get(100).n_take().n_each(function(records) {
+            buster.assert.equals(records, 135);
+        });
+    },
+
+
+    "test functional a + b + c": function() {
+        this.db.n_get(100);
+        this.db.n_take();
+        this.db.n_each(function(records) {
+            buster.assert.equals(records, 135);
+        });
+    },
+*/
+
+
+
+
 
 
 /*

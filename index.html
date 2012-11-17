@@ -67,10 +67,16 @@ var mockC = [
 
 
 var db = yocto.db();
+db.n_put(mockA);
+db.n_get({gender:"M"}).n_each(function(fo){
+	console.log('callback', fo);
+});
 
-db.put(mockA).get({gender: "F", city: "Dallas, TX"}).sort(first).each(function(record){
-	
+/*
+db.n_get({gender:"M"}, function(fo){
+	console.log('callback', fo);
 })
+*/
 
 
 

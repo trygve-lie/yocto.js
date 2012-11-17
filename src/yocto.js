@@ -77,29 +77,25 @@
     }
 
 
-    function forEach(query, chain) {
+    function n_get(parameters) {
+        parameters.match = Object.keys(parameters.template).every(function(key) {
+            return parameters.obj[key] === parameters.template[key];
+        });
+        return parameters;
+    }
+
+    function n_callback(parameters) {
+        if (parameters.match) {
+            parameters.callback.call(null, parameters.obj);
+        }
+        return parameters;
+    }
+
+    function n_each(arr, template, chain, callback) {
         var fn = compose(chain);
-        var result = fn(query);
-
-        return result;
-/*
         return arr.filter(function(obj, index, orgArray) {
-            return objectMap(obj, template);
-        });
-*/
-    }
-
-    function n_get(obj, template) {
-        return Object.keys(template).every(function(key) {
-            return obj[key] === template[key];
-        });
-    }
-
-    function n_each(query, chain) {
-          var fn = compose(chain);
-
-          return arr.filter(function(obj, index, orgArray) {
-            return objectMap(obj, template);
+            var result = fn({obj : obj, template : template, match : true, callback : callback});
+            return result.match;
         });
     }
 
@@ -140,20 +136,6 @@
         });
     }
 
-var a = function(x){
-    console.log('a', x);
-    return 10 + (x ? x : 0);
-}
-
-var b = function(x){
-    console.log('b', x);
-    return 5 + (x ? x : 0);
-}
-
-var c = function(x){
-    console.log('c', x);
-    return 20 + (x ? x : 0);
-}
 
 
 
@@ -191,20 +173,54 @@ var c = function(x){
 
 
         // NEW FUNCTIONS
+        
+        // Put a single object or an array of objects into the database
+
         n_put : function(obj, onSuccess) {
 
-            if (onSuccess && isFunction(onSuccess)) {
-                // Execute loop
+            var insertArray = [];
+
+            // Array of objects applied
+
+            if (isArray(obj)) {
+
+                // Filter out non object entries.
+                obj = obj.filter(function(element){
+                    return (isObject(element) && !isArray(element));
+                });
+
+                // Merge appended array into internal objects array.
+                this.objects = this.objects.concat(obj);
+                insertArray = obj;
             }
+
+            // Single object applied
+
+            if (isObject(obj) && !isArray(obj)) {
+                this.objects.push(obj);
+                insertArray.push(obj);
+            }
+
+            if (onSuccess && isFunction(onSuccess)) {
+                onSuccess.call(this, insertArray);
+            }
+
+            return this;
+
         },
+
+
+        // Get object(s) from the database based on a template object
 
         n_get : function(template, onSuccess) {
 
             if (template){this.query = template;}
-            this.chain.unshift(a);
+            
+            this.chain.unshift(n_get);
 
             if (onSuccess && isFunction(onSuccess)) {
-                var result = forEach(this.query, this.chain);
+
+                var result = n_each(this.objects, this.query, this.chain);
                 onSuccess.call(this, result);
 
                 this.chain = [];
@@ -214,33 +230,19 @@ var c = function(x){
             return this;
         },
 
-        n_take : function(template, onSuccess) {
 
-            if (template){this.query = template;}
-            this.chain.unshift(b);
-
-            if (onSuccess && isFunction(onSuccess)) {
-                var result = forEach(this.query, this.chain);
-                onSuccess.call(this, result);
-
-                this.chain = [];
-                this.query = {};
-            }
-
-            return this;
-        },
+        // Loop over each item in a returned list of records
 
         n_each : function(onEach) {
 
-            this.chain.unshift(c);
+            this.chain.unshift(n_callback)
 
-            if (onEach && isFunction(onEach)) {
-                var result = forEach(this.query, this.chain);
-                onEach.call(this, result);
-
-                this.chain = [];
-                this.query = {};
+            if (onEach && isFunction(onEach)) {                
+                var result = n_each(this.objects, this.query, this.chain, onEach);
             }
+
+            this.chain = [];
+            this.query = {};
 
             return this;
         },
@@ -277,71 +279,14 @@ var c = function(x){
 
 
 
-        // Put a single object or an array of objects into the database
-
-        put : function(obj, onSuccess) {
-            var success = false;
-
-            // Array of objects applied
-
-            if (isArray(obj)) {
-
-                // Filter out non object entries.
-                obj = obj.filter(function(element){
-                    return (isObject(element) && !isArray(element));
-                });
-
-                // Merge appended array into internal objects array.
-                this.objects    = this.objects.concat(obj);
-                this.next       = this.next.concat(obj);
-                success = !success;
-            }
-
-            // Single object applied
-
-            if (isObject(obj) && !isArray(obj)) {
-                this.objects.push(obj);
-                this.next.push(obj);
-                success = !success;
-            }
-
-            if (success && onSuccess && isFunction(onSuccess)) {
-                onSuccess.call(this, this.next);
-                arrayRemove(this.next, 0, this.next.length);
-            }
-
-            return this;
-        },
-
-
-
-        // Get object(s) from the database based on a template object
-
-        get : function(template, onSuccess) {
-
-            var arr = (this.next.length === 0) ? 'objects' : 'next';
-
-            if (isObject(template) && !isArray(template)) {
-                this.next = arrayMap(this[arr], template);
-            }
-
-
-            if (onSuccess && isFunction(onSuccess)) {
-                onSuccess.call(this, this.next);
-                arrayRemove(this.next, 0, this.next.length);
-            }
-
-            return this;
-        },
-
 
 
         // Takes matching objects out of the database
 
         take : function(template, onSuccess) {
 
-            if (isObject(template) && !isArray(template)) {
-                this.next = arrayMap(this[arr], template);
+//            if (isObject(template) && !isArray(template)) {
+//                this.next = arrayMap(this[arr], template);
 
 /*
                 this.next = this.objects.filter(function(obj, index, orgArray) {
@@ -355,7 +300,7 @@ var c = function(x){
                     });
                 });
 */
-            }
+//            }
 
             if (onSuccess && isFunction(onSuccess)) {
                 onSuccess.call(this, this.next);
@@ -400,23 +345,6 @@ var c = function(x){
             return this;
         },
 
-
-
-        // Loop over each item in a returned list of records
-
-        each : function(onEach) {
-            var arr = (this.next.length === 0) ? 'objects' : 'next',
-                i   = 0,
-                l   = this[arr].length;
-
-            if (onEach && isFunction(onEach)) {
-                for (i = 0; i < l; i += 1) {
-                    onEach.call(this, this[arr][i]);
-                }
-            }
-
-            return this;
-        },
 
 
 
