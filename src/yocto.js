@@ -64,14 +64,29 @@
 
 
     // NEW FUNCTIONS
+    // This object is passed into each function in the chain as a single function variable.
+    // Each function in the chain can then manipulate the object before it returns it.
+    // The manipulated returned object is then passed on as a variable to the next function
+    // in the chain.
+    // {
+    //      objects     : [],
+    //      index       : Number,
+    //      obj         : obj,
+    //      template    : {},
+    //      match       : ture,
+    //      callback    : function(){}
+    // }
 
     function compose(fnArray) {
         return function() {
-            var i       = fnArray.length,
+            var i       = 0,
+                l       = fnArray.length,
                 result  = arguments;
-            while(i--) {
+
+            for (i = 0; i < l; i += 1) {
                 result = [fnArray[i].apply(this,result)];
             }
+
             return result[0];
         };
     }
@@ -79,22 +94,41 @@
 
     function n_get(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
-            return parameters.obj[key] === parameters.template[key];
+            return parameters.objects[parameters.index][key] === parameters.template[key];
         });
         return parameters;
     }
 
+// NBNBNBNBNB: CAN'T DELETE WHILE LOOPING!!!!!!!!!!!!
+    function n_take(parameters) {
+
+        if (parameters.match) {
+            console.log('M', parameters.objects[parameters.index]);
+            arrayRemove(parameters.objects, parameters.index);
+        }
+
+        return parameters;
+    }
+
+
     function n_callback(parameters) {
         if (parameters.match) {
-            parameters.callback.call(null, parameters.obj);
+            parameters.callback.call(null, parameters.objects[parameters.index]);
         }
         return parameters;
     }
 
-    function n_each(arr, template, chain, callback) {
+
+    function n_each(objects, template, chain, callback) {
         var fn = compose(chain);
-        return arr.filter(function(obj, index, orgArray) {
-            var result = fn({obj : obj, template : template, match : true, callback : callback});
+        return objects.filter(function(obj, index) {
+            var result = fn({
+                objects     : objects,
+                index       : index,
+                template    : template,
+                match       : true,
+                callback    : callback
+            });
             return result.match;
         });
     }
@@ -119,8 +153,9 @@
 
 
         // NEW FUNCTIONS
-        this.chain      = [];
-        this.query      = {};
+        this.chain          = [];
+        this.query          = {};
+        this.appendedObjs   = [];
 
 
 
@@ -128,19 +163,15 @@
     };
 
 
-
-
     exports.db.prototype = {
 
 
 
         // NEW FUNCTIONS
-        
+
         // Put a single object or an array of objects into the database
 
         n_put : function(obj, onSuccess) {
-
-            var insertArray = [];
 
             // Array of objects applied
 
@@ -153,22 +184,22 @@
 
                 // Merge appended array into internal objects array.
                 this.objects = this.objects.concat(obj);
-                insertArray = obj;
+                this.appendedObjs = this.appendedObjs.concat(obj);
             }
 
             // Single object applied
-
             if (isObject(obj) && !isArray(obj)) {
                 this.objects.push(obj);
-                insertArray.push(obj);
+                this.appendedObjs.push(obj);
             }
 
+
             if (onSuccess && isFunction(onSuccess)) {
-                onSuccess.call(this, insertArray);
+                onSuccess.call(this, this.appendedObjs);
+                this.appendedObjs = [];
             }
 
             return this;
-
         },
 
 
@@ -177,8 +208,30 @@
         n_get : function(template, onSuccess) {
 
             if (template){this.query = template;}
-            
-            this.chain.unshift(n_get);
+
+            this.chain.push(n_get);
+
+            if (onSuccess && isFunction(onSuccess)) {
+
+                var result = n_each(this.objects, this.query, this.chain);
+                onSuccess.call(this, result);
+
+                this.chain = [];
+                this.query = {};
+            }
+
+            return this;
+        },
+
+
+        // Takes matching objects out of the database
+
+        n_take : function(template, onSuccess) {
+
+            if (template){this.query = template;}
+
+            this.chain.push(n_get);
+            this.chain.push(n_take);
 
             if (onSuccess && isFunction(onSuccess)) {
 
@@ -197,10 +250,11 @@
 
         n_each : function(onEach) {
 
-            this.chain.unshift(n_callback);
+            this.chain.push(n_callback);
 
-            if (onEach && isFunction(onEach)) {                
-                var result = n_each(this.objects, this.query, this.chain, onEach);
+            if (onEach && isFunction(onEach)) {
+                n_each((this.appendedObjs.length === 0) ? this.objects : this.appendedObjs, this.query, this.chain, onEach);
+                this.appendedObjs = [];
             }
 
             this.chain = [];
@@ -242,35 +296,6 @@
 
 
 
-
-        // Takes matching objects out of the database
-
-        take : function(template, onSuccess) {
-
-//            if (isObject(template) && !isArray(template)) {
-//                this.next = arrayMap(this[arr], template);
-
-/*
-                this.next = this.objects.filter(function(obj, index, orgArray) {
-                    return Object.keys(template).every(function(key) {
-                        if (obj[key] === template[key]) {
-                            arrayRemove(orgArray, index);
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    });
-                });
-*/
-//            }
-
-            if (onSuccess && isFunction(onSuccess)) {
-                onSuccess.call(this, this.next);
-                arrayRemove(this.next, 0, this.next.length);
-            }
-
-            return this;
-        },
 
 
 
@@ -334,6 +359,14 @@
             }
 
             return this;
+        },
+
+
+        is : {
+            arr : isArray,
+            fn  : isFunction,
+            obj : isObject,
+            str : isString
         }
 
     };
