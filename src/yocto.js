@@ -1,3 +1,5 @@
+/*jshint browser:true, strict:true es5:true*/
+
 // yocto.js 0.0.1
 // (c) 2012 Trygve Lie
 // yocto.js may be freely distributed under the MIT license.
@@ -5,8 +7,6 @@
 
 // TODOS:
 // - Try to be as destructive as possible.
-
-/*global window:true */
 
 (function(exports){
 
@@ -104,7 +104,11 @@
 
     function n_get(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
-            return parameters.objects[parameters.index][key] === parameters.template[key];
+            if (isFunction(parameters.template[key])) {
+                return parameters.template[key].call(null, parameters.objects[parameters.index][key]);
+            } else {
+                return parameters.objects[parameters.index][key] === parameters.template[key];
+            }
         });
         return parameters;
     }
@@ -352,7 +356,7 @@
 // TODO: Do not save if this.next is null!
 
             var type = 'localStorage';
-            if (config && config['type'] === 'session') {
+            if (config && config[type] === 'session') {
                 type = 'sessionStorage';
             }
 
