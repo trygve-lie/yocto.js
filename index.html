@@ -186,20 +186,12 @@ db.n_get({gender:"M"}).n_each(function(element){
 });
 
 console.log('take > each =====================');
-console.log(db.objects);
 
-db.n_take({gender:"M"}).n_each(function(element){
+db.n_take({gender:"F"}).n_each(function(element){
 	console.log('callback', element);
 });
 
 console.log('=====================');
-console.log(db.objects);
-
-/*
-db.n_get({gender:"M"}, function(fo){
-	console.log('callback', fo);
-})
-*/
 
 
 
@@ -241,7 +233,7 @@ function insertionSort(items) {
         for (j=i-1; j > -1 && items[j] > value; j--) {
             items[j+1] = items[j];
         }
-console.log('a', value);
+console.log(value, items[j+1]);
         items[j+1] = value;
     }
 
@@ -256,8 +248,8 @@ var n = insertionSort(nums);
 var lets = ['b','k','f','i','e','c','g','h','d','j','a'];
 var sl = insertionSort(lets);
 console.log(sl);
-*/
 
+*/
 
 
 

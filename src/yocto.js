@@ -70,35 +70,26 @@
     // in the chain.
     // {
     //      objects     : [],
+    //      object      : {},
     //      index       : Number,
     //      obj         : obj,
     //      template    : {},
-    //      match       : ture,
+    //      match       : true,
     //      callback    : function(){}
     // }
 
-    function compose(fnArray) {
+    function compose(functions) {
         return function() {
             var i       = 0,
-                l       = fnArray.length,
+                l       = functions.length,
                 result  = arguments;
 
             for (i = 0; i < l; i += 1) {
-                result = [fnArray[i].apply(this,result)];
+                result = [functions[i].apply(this,result)];
             }
 
             return result[0];
         };
-    }
-
-
-    function filter(arr, match){
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i].text === match) {
-                return true;
-            }
-        }
-        return false;
     }
 
 
@@ -107,13 +98,15 @@
             if (isFunction(parameters.template[key])) {
 //TODO: Return null or this here???
                 return parameters.template[key].call(null, parameters.objects[parameters.index][key]);
+
             } else {
                 return parameters.objects[parameters.index][key] === parameters.template[key];
+
             }
         });
 
         if (parameters.match) {
-            parameters.result.push(parameters.objects[parameters.index]);
+            parameters.object = parameters.objects[parameters.index];
         }
 
         return parameters;
@@ -122,7 +115,7 @@
 
     function n_take(parameters) {
         if (parameters.match) {
-            arrayRemove(parameters.objects, parameters.index);
+            parameters.object = parameters.objects.splice(parameters.index, 1)[0];
         }
         return parameters;
     }
@@ -130,7 +123,7 @@
 
     function n_callback(parameters) {
         if (parameters.match) {
-            parameters.callback.call(null, parameters.objects[parameters.index]);
+            parameters.callback.call(null, parameters.object || parameters.objects[parameters.index]);
         }
         return parameters;
     }
@@ -143,11 +136,10 @@
             result  = [],
             item    = {};
 
-        for (i = 0; i < l; i += 1) {            
-
+        for (i = 0; i < l; i += 1) {
             item = fn({
                 objects     : objects,
-                result      : result,
+                object      : undefined,
                 index       : i,
                 template    : template,
                 match       : true,
@@ -155,12 +147,11 @@
             });
 
             if (item.match) {
-
-                // result.push(item.object || objects[i]);
-                
                 if (l != objects.length) {
                     l = objects.length;
+                    i--;
                 }
+                result.push(item.object);
             }
         }
 
@@ -246,10 +237,7 @@
             this.chain.push(n_get);
 
             if (onSuccess && isFunction(onSuccess)) {
-
-                var result = n_each(this.objects, this.query, this.chain);
-                onSuccess.call(this, result);
-
+                onSuccess.call(this, n_each(this.objects, this.query, this.chain));
                 this.chain = [];
                 this.query = {};
             }
@@ -268,10 +256,7 @@
             this.chain.push(n_take);
 
             if (onSuccess && isFunction(onSuccess)) {
-
-                var result = n_each(this.objects, this.query, this.chain);
-                onSuccess.call(this, result);
-
+                onSuccess.call(this, n_each(this.objects, this.query, this.chain));
                 this.chain = [];
                 this.query = {};
             }
