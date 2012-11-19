@@ -123,12 +123,12 @@ var mockA = [
 	{id:1,gender:"M",first:"John",last:"Smith",city:"Seattle, WA",active:true},
 	{id:2,gender:"F",first:"Babe",last:"Ruth",city:"Dallas, TX",active:false},
 	{id:3,gender:"M",first:"Jeff",last:"Stevenson",city:"Washington, D.C.",active:true},
-	{id:4,gender:"F",first:"Jennifer",last:"Gill",city:"Seattle, WA",active:true}	
+	{id:4,gender:"F",first:"Jennifer",last:"Gill",city:"Seattle, WA",active:true}
 ];
 
 var mockB = [
 	{id:5,gender:"F",first:"Siv",last:"Tessem",city:"Gjøvik",active:true},
-	{id:6,gender:"F",first:"Live",last:"Glesne",city:"Oslo",active:true}	
+	{id:6,gender:"F",first:"Live",last:"Glesne",city:"Oslo",active:true}
 ];
 
 var mockC = [
@@ -138,14 +138,54 @@ var mockC = [
 	{id:7,gender:"F",first:"Anita",last:"Lipsky",city:"Oslo",active:false},
 ];
 
+var mockD = [
+	{id:8,gender:"M",first:"Gregers Gram",last:"Rygg",city:"Oslo",active:true},
+	{id:9,gender:"M",first:"Sveinung",last:"Rødsaker",city:"Oslo",active:false}
+];
 
 
 
 var db = yocto.db();
-db.n_put(mockA);
-db.n_get({gender:"M"}).n_each(function(fo){
-	console.log('callback', fo);
+
+console.log('put =====================');
+
+db.n_put(mockA, function(elements){
+	console.log(elements);
 });
+
+console.log('put > each =====================');
+
+db.n_put(mockB).n_each(function(element){
+	console.log(element);
+});
+
+console.log('put > put > each =====================');
+
+db.n_put(mockC).n_put(mockD).n_each(function(element){
+	console.log(element);
+});
+
+console.log('get =====================');
+
+db.n_get({gender:"M"}, function(elements){
+	console.log('callback', elements);
+});
+
+console.log('get > each =====================');
+
+db.n_get({gender:"M"}).n_each(function(element){
+	console.log('callback', element);
+});
+
+console.log('take > each =====================');
+console.log(db.objects);
+
+db.n_take({gender:"F"}).n_each(function(element){
+	console.log('callback', element);
+});
+
+console.log('=====================');
+console.log(db.objects);
 
 /*
 db.n_get({gender:"M"}, function(fo){
@@ -173,7 +213,42 @@ var m = Object.keys(template).every(function(key) {
 
 
 
+function insertionSort(items) {
 
+    var len     = items.length,     // number of items in the array
+        value,                      // the value currently being compared
+        i,                          // index into unsorted section
+        j;                          // index into sorted section
+
+    for (i=0; i < len; i++) {
+
+        // store the current value because it may shift later
+        value = items[i];
+
+        /*
+         * Whenever the value in the sorted section is greater than the value
+         * in the unsorted section, shift all items in the sorted section over
+         * by one. This creates space in which to insert the value.
+         */
+        for (j=i-1; j > -1 && items[j] > value; j--) {
+            items[j+1] = items[j];
+        }
+console.log('a', value);
+        items[j+1] = value;
+    }
+
+    return items;
+}
+
+/*
+
+var nums = [13,4,6,2,20,5,6,3,0,6];
+var n = insertionSort(nums);
+
+var lets = ['b','k','f','i','e','c','g','h','d','j','a'];
+var sl = insertionSort(lets);
+console.log(sl);
+*/
 
 
 
@@ -197,7 +272,7 @@ ydb.get({active: true}, function(records){
 console.log('#### sort');
 
 ydb.sort('id', function(records){
-	console.log(records[0], records[1], records[2], records[3]);	
+	console.log(records[0], records[1], records[2], records[3]);
 })
 
 */
