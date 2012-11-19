@@ -105,6 +105,7 @@
     function n_get(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
             if (isFunction(parameters.template[key])) {
+//TODO: Return null or this here???
                 return parameters.template[key].call(null, parameters.objects[parameters.index][key]);
             } else {
                 return parameters.objects[parameters.index][key] === parameters.template[key];
@@ -117,7 +118,6 @@
     function n_take(parameters) {
 
         if (parameters.match) {
-            console.log('M', parameters.objects[parameters.index]);
             arrayRemove(parameters.objects, parameters.index);
         }
 
@@ -134,17 +134,28 @@
 
 
     function n_each(objects, template, chain, callback) {
-        var fn = compose(chain);
-        return objects.filter(function(obj, index) {
-            var result = fn({
+        var fn      = compose(chain),
+            i       = 0,
+            l       = objects.length,
+            result  = [],
+            item    = {};
+
+        for (i = 0; i < l; i += 1) {            
+
+            item = fn({
                 objects     : objects,
-                index       : index,
+                index       : i,
                 template    : template,
                 match       : true,
                 callback    : callback
             });
-            return result.match;
-        });
+
+            if (item.match) {
+                result.push(objects[i]);
+            }
+        }
+
+        return result;
     }
 
 
