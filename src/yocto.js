@@ -92,6 +92,16 @@
     }
 
 
+    function filter(arr, match){
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i].text === match) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     function n_get(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
             return parameters.objects[parameters.index][key] === parameters.template[key];
