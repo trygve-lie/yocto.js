@@ -172,9 +172,9 @@ Deletes all database records in memory. Persisted data are not deleted. The call
 db.drop(function(){ });
 ```
 
-The drop() method is intended to be a fast way to delete all database records in memory. Therefor it does not pass any values to the callback. But, in some cases
-one would like to do something upon all elements when the database is deleted. This can be achieved by passing an empty template to the take() method. The take()
-method will then iterate over all records in the database and perform a delete on each record and return the record.
+The drop() method is intended to be a fast way to delete all database records in memory. Therefor it does not pass any values to the callback.
+
+In some cases one would like to do something upon all elements when the database is deleted. This can be achieved by passing an empty template to the take() method. The take() method will then iterate over all records in the database and perform a delete on each record and return the record.
 
 ```javascript
 db.take({}).each(function(item){
