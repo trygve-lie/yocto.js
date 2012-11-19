@@ -1,3 +1,5 @@
+/*jshint browser:true, strict:true es5:true*/
+
 // yocto.js 0.0.1
 // (c) 2012 Trygve Lie
 // yocto.js may be freely distributed under the MIT license.
@@ -5,8 +7,6 @@
 
 // TODOS:
 // - Try to be as destructive as possible.
-
-/*global window:true */
 
 (function(exports){
 
@@ -342,7 +342,7 @@
 // TODO: Do not save if this.next is null!
 
             var type = 'localStorage';
-            if (config && config['type'] === 'session') {
+            if (config && config[type] === 'session') {
                 type = 'sessionStorage';
             }
 
