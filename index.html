@@ -95,7 +95,7 @@ function mergeSort(items){
         left    = items.slice(0, middle),
         right   = items.slice(middle),
         params = merge(mergeSort(left), mergeSort(right));
-    
+
     // Add the arguments to replace everything between 0 and last item in the array
     params.unshift(0, items.length);
     items.splice.apply(items, params);
@@ -168,6 +168,14 @@ db.n_put(mockC).n_put(mockD).n_each(function(element){
 console.log('get =====================');
 
 db.n_get({gender:"M"}, function(elements){
+	console.log('callback', elements);
+});
+
+console.log('get(id:function) =====================');
+
+db.n_get({gender:"M", id:function(element){
+	return (element >= 3 && element <= 6);
+}}, function(elements){
 	console.log('callback', elements);
 });
 

@@ -94,7 +94,11 @@
 
     function n_get(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
-            return parameters.objects[parameters.index][key] === parameters.template[key];
+            if (isFunction(parameters.template[key])) {
+                return parameters.template[key].call(null, parameters.objects[parameters.index][key]);
+            } else {
+                return parameters.objects[parameters.index][key] === parameters.template[key];
+            }
         });
         return parameters;
     }
