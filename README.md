@@ -166,12 +166,23 @@ NB: Do note that saving to localstorage is blocking.
 
 ### .drop() - Delete all in memory data
 
-Deletes all database records in memory. Persisted data are not deleted.
+Deletes all database records in memory. Persisted data are not deleted. The callback function is not passed any variables.
 
 ```javascript
-db.drop();
+db.drop(function(){ });
 ```
 
+The drop() method is intended to be a fast way to delete all database records in memory. Therefor it does not pass any values to the callback. But, in some cases
+one would like to do something upon all elements when the database is deleted. This can be achieved by passing an empty template to the take() method. The take()
+method will then iterate over all records in the database and perform a delete on each record and return the record.
+
+```javascript
+db.take({}).each(function(item){
+	console.log('Deleted', item);
+});
+```
+
+This will be a tad slower than drop().
 
 
 ### .destroy() - Delete all in memory and persisted data

@@ -4,10 +4,6 @@
 // (c) 2012 Trygve Lie
 // yocto.js may be freely distributed under the MIT license.
 
-
-// TODOS:
-// - Try to be as destructive as possible.
-
 (function(exports){
 
     "use strict";
@@ -48,22 +44,6 @@
     }
 
 
-
-
-    // Array Remove -
-    // Source: John Resig - MIT Licensed - http://ejohn.org/blog/javascript-array-remove/
-
-    function arrayRemove(array, from, to) {
-        var rest = array.slice((to || from) + 1 || array.length);
-        array.length = from < 0 ? array.length + from : from;
-        return array.push.apply(array, rest);
-    }
-
-
-
-
-
-    // NEW FUNCTIONS
     // This object is passed into each function in the chain as a single function variable.
     // Each function in the chain can then manipulate the object before it returns it.
     // The manipulated returned object is then passed on as a variable to the next function
@@ -160,9 +140,6 @@
 
 
 
-
-
-// TODO: Add onLoad and onError functions to trigger when loading from localstorage
     exports.db = function(config) {
 
         if (!(this instanceof exports.db)) {
@@ -192,11 +169,9 @@
 
 
 
-        // NEW FUNCTIONS
-
         // Put a single object or an array of objects into the database
 
-        n_put : function(obj, onSuccess) {
+        put : function(obj, onSuccess) {
 
             // Array of objects applied
 
@@ -228,9 +203,10 @@
         },
 
 
+
         // Get object(s) from the database based on a template object
 
-        n_get : function(template, onSuccess) {
+        get : function(template, onSuccess) {
 
             if (template){this.query = template;}
 
@@ -246,9 +222,10 @@
         },
 
 
+
         // Takes matching objects out of the database
 
-        n_take : function(template, onSuccess) {
+        take : function(template, onSuccess) {
 
             if (template){this.query = template;}
 
@@ -265,9 +242,10 @@
         },
 
 
+
         // Loop over each item in a returned list of records
 
-        n_each : function(onEach) {
+        each : function(onEach) {
 
             this.chain.push(n_callback);
 
@@ -284,23 +262,14 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-        // Drop all database records memory.
+        // Drop all database records in memory.
         // Data stored in localstorage is NOT removed!
 
-        drop : function() {
-            arrayRemove(this.objects, 0, this.objects.length);
-            arrayRemove(this.next, 0, this.next.length);
+        drop : function(onSuccess) {
+            this.objects.splice(0, this.objects.length);
+            if (onSuccess && isFunction(onSuccess)) {
+                onSuccess.call(this);
+            }
             return this;
         },
 
@@ -345,7 +314,7 @@
 
             if (onSuccess && isFunction(onSuccess)) {
                 onSuccess.call(this, this.next);
-                arrayRemove(this.next, 0, this.next.length);
+                // arrayRemove(this.next, 0, this.next.length);
             }
 
             return this;

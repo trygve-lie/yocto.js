@@ -149,31 +149,31 @@ var db = yocto.db();
 
 console.log('put =====================');
 
-db.n_put(mockA, function(elements){
+db.put(mockA, function(elements){
 	console.log(elements);
 });
 
 console.log('put > each =====================');
 
-db.n_put(mockB).n_each(function(element){
+db.put(mockB).each(function(element){
 	console.log(element);
 });
 
 console.log('put > put > each =====================');
 
-db.n_put(mockC).n_put(mockD).n_each(function(element){
+db.put(mockC).put(mockD).each(function(element){
 	console.log(element);
 });
 
 console.log('get =====================');
 
-db.n_get({gender:"M"}, function(elements){
+db.get({gender:"M"}, function(elements){
 	console.log('callback', elements);
 });
 
 console.log('get(id:function) =====================');
 
-db.n_get({gender:"M", id:function(element){
+db.get({gender:"M", id:function(element){
 	return (element >= 3 && element <= 6);
 }}, function(elements){
 	console.log('callback', elements);
@@ -181,15 +181,22 @@ db.n_get({gender:"M", id:function(element){
 
 console.log('get > each =====================');
 
-db.n_get({gender:"M"}).n_each(function(element){
+db.get({gender:"M"}).each(function(element){
 	console.log('callback', element);
 });
 
 console.log('take > each =====================');
 
-db.n_take({gender:"F"}).n_each(function(element){
+db.take({gender:"F"}).each(function(element){
 	console.log('callback', element);
 });
+
+console.log('drop =====================');
+
+db.drop(function(elements){
+	console.log(db);
+})
+
 
 console.log('=====================');
 
