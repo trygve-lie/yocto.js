@@ -111,16 +111,19 @@
                 return parameters.objects[parameters.index][key] === parameters.template[key];
             }
         });
+
+        if (parameters.match) {
+            parameters.result.push(parameters.objects[parameters.index]);
+        }
+
         return parameters;
     }
 
-// NBNBNBNBNB: CAN'T DELETE WHILE LOOPING!!!!!!!!!!!!
-    function n_take(parameters) {
 
+    function n_take(parameters) {
         if (parameters.match) {
             arrayRemove(parameters.objects, parameters.index);
         }
-
         return parameters;
     }
 
@@ -144,6 +147,7 @@
 
             item = fn({
                 objects     : objects,
+                result      : result,
                 index       : i,
                 template    : template,
                 match       : true,
@@ -151,7 +155,12 @@
             });
 
             if (item.match) {
-                result.push(objects[i]);
+
+                // result.push(item.object || objects[i]);
+                
+                if (l != objects.length) {
+                    l = objects.length;
+                }
             }
         }
 
