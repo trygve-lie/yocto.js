@@ -44,6 +44,7 @@
     }
 
 
+
     // This object is passed into each function in the chain as a single function variable.
     // Each function in the chain can then manipulate the object before it returns it.
     // The manipulated returned object is then passed on as a variable to the next function
@@ -76,8 +77,7 @@
     function n_get(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
             if (isFunction(parameters.template[key])) {
-//TODO: Return null or this here???
-                return parameters.template[key].call(null, parameters.objects[parameters.index][key]);
+                return parameters.template[key].call(this, parameters.objects[parameters.index][key]);
 
             } else {
                 return parameters.objects[parameters.index][key] === parameters.template[key];
@@ -140,32 +140,20 @@
 
 
 
-    exports.db = function(config) {
 
-        if (!(this instanceof exports.db)) {
-            return new exports.db(config);
-        }
-
-        this.objects    = [];
-        this.next       = [];
-        this.observers  = [];
-        this.config     = {
+    var db = {
+        objects         : [],
+        next            : [],
+        observers       : [],
+        config          : {
             name : 'yocto'
-        };
+        },
 
 
         // NEW FUNCTIONS
-        this.chain          = [];
-        this.query          = {};
-        this.appendedObjs   = [];
-
-
-
-        return this;
-    };
-
-
-    exports.db.prototype = {
+        chain           : [],
+        query           : {},
+        appendedObjs    : [],        
 
 
 
@@ -263,7 +251,6 @@
 
 
         // Drop all database records in memory.
-        // Data stored in localstorage is NOT removed!
 
         drop : function(onSuccess) {
             this.objects.splice(0, this.objects.length);
@@ -280,10 +267,6 @@
         destroy : function() {
 
         },
-
-
-
-
 
 
 
@@ -322,7 +305,6 @@
 
 
 
-
         // Saves a list of records to localstorage
 
         save : function(config, onSuccess) {
@@ -357,7 +339,13 @@
             str : isString
         }
 
-    };
+
+    }
+
+
+    exports.db = function createYocto() {
+        return Object.create(db);
+    }
 
 
 })(typeof exports === 'undefined' ? this.yocto = {}: exports);
