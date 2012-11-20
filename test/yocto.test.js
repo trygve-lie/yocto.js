@@ -72,11 +72,9 @@ var testCase = buster.testCase("yocto.js Test", {
 
         this.db.put(this.singleRecordA, function(records) {
             buster.assert.equals(self.db.objects.length, 1);
-            buster.assert.equals(self.db.next.length, 1);
         });
 
         buster.assert.equals(this.db.objects.length, 1);
-        buster.assert.equals(this.db.next.length, 0);
     },
 
 
@@ -85,11 +83,9 @@ var testCase = buster.testCase("yocto.js Test", {
 
         this.db.put(this.singleRecordA).put(this.singleRecordB, function(records) {
             buster.assert.equals(self.db.objects.length, 2);
-            buster.assert.equals(self.db.next.length, 2);
         });
 
         buster.assert.equals(this.db.objects.length, 2);
-        buster.assert.equals(this.db.next.length, 0);
     },
 
 
@@ -98,11 +94,9 @@ var testCase = buster.testCase("yocto.js Test", {
 
         this.db.put(this.arrayOfRecordsA, function(records) {
             buster.assert.equals(self.db.objects.length, 3);
-            buster.assert.equals(self.db.next.length, 3);
         });
 
         buster.assert.equals(this.db.objects.length, 3);
-        buster.assert.equals(this.db.next.length, 0);
     },
 
 
@@ -111,11 +105,9 @@ var testCase = buster.testCase("yocto.js Test", {
 
         this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB, function(records) {
             buster.assert.equals(self.db.objects.length, 5);
-            buster.assert.equals(self.db.next.length, 5);
         });
 
         buster.assert.equals(this.db.objects.length, 5);
-        buster.assert.equals(this.db.next.length, 0);
     },
 
 
@@ -125,7 +117,6 @@ var testCase = buster.testCase("yocto.js Test", {
         this.db.put(this.singleRecordA);
 
         buster.assert.equals(this.db.objects.length, 1);
-        buster.assert.equals(this.db.next.length, 1);
     },
 
 
@@ -135,7 +126,6 @@ var testCase = buster.testCase("yocto.js Test", {
         this.db.put(this.arrayOfRecordsA);
 
         buster.assert.equals(this.db.objects.length, 3);
-        buster.assert.equals(this.db.next.length, 3);
     },
 
 
@@ -144,11 +134,9 @@ var testCase = buster.testCase("yocto.js Test", {
 
         this.db.put(this.singleRecordNonObject, function(records){
             buster.assert.equals(self.db.objects.length, 0);
-            buster.assert.equals(self.db.next.length, 0);
         });
 
         buster.assert.equals(this.db.objects.length, 0);
-        buster.assert.equals(this.db.next.length, 0);
     },
 
 
@@ -157,11 +145,9 @@ var testCase = buster.testCase("yocto.js Test", {
 
         this.db.put(this.arrayOfRecordsWithNonObjects, function(records){
             buster.assert.equals(self.db.objects.length, 0);
-            buster.assert.equals(self.db.next.length, 0);
         });
 
         buster.assert.equals(this.db.objects.length, 0);
-        buster.assert.equals(this.db.next.length, 0);
     },
 
 
@@ -189,74 +175,6 @@ var testCase = buster.testCase("yocto.js Test", {
 
 
 
-    // ### SORT
-
-    "test sort on strings": function() {
-        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).sort('id', function(records) {
-            buster.assert.equals(records[0].id, 'NOR_00039');
-            buster.assert.equals(records[1].id, 'NOR_00097');
-            buster.assert.equals(records[2].id, 'NOR_00481');
-            buster.assert.equals(records[3].id, 'NOR_00725');
-            buster.assert.equals(records[4].id, 'NOR_01338');
-        });
-    },
-
-
-
-
-
-    // ### NEW FEATURES
-
-    "test chain a": function() {
-console.log('test', this.db.objects);
-buster.assert.equals(this.db.objects.length, 1);
-/*        
-        this.db.n_get({id : "NOR_00481"}, function(records) {
-            // buster.assert.equals(records, 110);
-
-            buster.assert.equals(records.length, 1);
-            buster.assert.equals(records[0].id, 'NOR_00481');
-        });
-*/
-    },
-
-/*
-    "test chain a": function() {
-        this.db.n_get(100, function(records) {
-            buster.assert.equals(records, 110);
-        });
-    },
-
-
-    "test chain a + c": function() {
-        this.db.n_get(100).n_each(function(records) {
-            buster.assert.equals(records, 130);
-        });
-    },
-
-
-    "test chain a + b + c": function() {
-        this.db.n_get(100).n_take().n_each(function(records) {
-            buster.assert.equals(records, 135);
-        });
-    },
-
-
-    "test functional a + b + c": function() {
-        this.db.n_get(100);
-        this.db.n_take();
-        this.db.n_each(function(records) {
-            buster.assert.equals(records, 135);
-        });
-    },
-*/
-
-
-
-
-
-
-/*
     // ### TAKE
 
     "test take of single object - in callback, returned number of objects should be 1 and equal to the one taken, after execution _objects_ should be one less": function() {
@@ -269,7 +187,35 @@ buster.assert.equals(this.db.objects.length, 1);
         });
 
     }
+
+
+    // ### SORT
+/*
+    "test sort on strings": function() {
+        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).sort('id', function(records) {
+            buster.assert.equals(records[0].id, 'NOR_00039');
+            buster.assert.equals(records[1].id, 'NOR_00097');
+            buster.assert.equals(records[2].id, 'NOR_00481');
+            buster.assert.equals(records[3].id, 'NOR_00725');
+            buster.assert.equals(records[4].id, 'NOR_01338');
+        });
+    },
 */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     // ### DROP
