@@ -249,8 +249,10 @@
 
         // Drop all database records memory and in localstorage.
 
-        destroy : function() {
-
+        destroy : function(name) {
+            // if "name" is provided, delete single storage
+            // if "name" is NOT provided, loop trough all storages, find those containing "creator === yocto"
+            // and delete all of them
         },
 
 
@@ -307,11 +309,14 @@
             }
 
             if (config && is.string(config.name)) {
-                window[type].setItem(config.name, JSON.stringify({
-                    creator     : this.config.name,
-                    timestamp   : +new Date(),
-                    objects     : objects
-                }));
+
+                if (has.localStorage()) {
+                    window[type].setItem(config.name, JSON.stringify({
+                        creator     : this.config.name,
+                        timestamp   : +new Date(),
+                        objects     : objects
+                    }));
+                }
 
             } else {
                 throw new Error('Yocto tried to store data to ' + type + ' but no name was provided!');
