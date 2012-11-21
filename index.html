@@ -173,7 +173,7 @@ db.get({gender:"M"}, function(elements){
 
 console.log('get(id:function) =====================');
 
-db.get({gender:"M", id:function(element){
+db.get({gender:"M", id:function(element, is){
 	return (element >= 3 && element <= 6);
 }}, function(elements){
 	console.log('callback', elements);

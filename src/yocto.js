@@ -37,11 +37,28 @@
     }
 
 
+    // Check if a value is a Number
+
+    function isNumber(value) {
+        return typeof value === 'number';
+    }
+
+
     // Check if runtime environment has localstorage
 
     function hasLocalStorage() {
         return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));
     }
+
+
+
+    var is = {
+            array       : isArray,
+            function    : isFunction,
+            object      : isObject,
+            string      : isString,
+            number      : isNumber
+    };
 
 
 
@@ -74,10 +91,11 @@
     }
 
 
+
     function n_get(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
-            if (isFunction(parameters.template[key])) {
-                return parameters.template[key].call(this, parameters.objects[parameters.index][key]);
+            if (is.function(parameters.template[key])) {
+                return parameters.template[key].call(this, parameters.objects[parameters.index][key], is);
 
             } else {
                 return parameters.objects[parameters.index][key] === parameters.template[key];
@@ -140,7 +158,6 @@
 
 
 
-
     var db = {
         objects         : [],
         next            : [],
@@ -163,11 +180,11 @@
 
             // Array of objects applied
 
-            if (isArray(obj)) {
+            if (is.array(obj)) {
 
                 // Filter out non object entries.
                 obj = obj.filter(function(element){
-                    return (isObject(element) && !isArray(element));
+                    return (is.object(element) && !is.array(element));
                 });
 
                 // Merge appended array into internal objects array.
@@ -176,13 +193,13 @@
             }
 
             // Single object applied
-            if (isObject(obj) && !isArray(obj)) {
+            if (is.object(obj) && !is.array(obj)) {
                 this.objects.push(obj);
                 this.appendedObjs.push(obj);
             }
 
 
-            if (onSuccess && isFunction(onSuccess)) {
+            if (onSuccess && is.function(onSuccess)) {
                 onSuccess.call(this, this.appendedObjs);
                 this.appendedObjs = [];
             }
@@ -200,7 +217,7 @@
 
             this.chain.push(n_get);
 
-            if (onSuccess && isFunction(onSuccess)) {
+            if (onSuccess && is.function(onSuccess)) {
                 onSuccess.call(this, n_each(this.objects, this.query, this.chain));
                 this.chain = [];
                 this.query = {};
@@ -220,7 +237,7 @@
             this.chain.push(n_get);
             this.chain.push(n_take);
 
-            if (onSuccess && isFunction(onSuccess)) {
+            if (onSuccess && is.function(onSuccess)) {
                 onSuccess.call(this, n_each(this.objects, this.query, this.chain));
                 this.chain = [];
                 this.query = {};
@@ -237,7 +254,7 @@
 
             this.chain.push(n_callback);
 
-            if (onEach && isFunction(onEach)) {
+            if (onEach && is.function(onEach)) {
                 n_each((this.appendedObjs.length === 0) ? this.objects : this.appendedObjs, this.query, this.chain, onEach);
                 this.appendedObjs = [];
             }
@@ -254,7 +271,7 @@
 
         drop : function(onSuccess) {
             this.objects.splice(0, this.objects.length);
-            if (onSuccess && isFunction(onSuccess)) {
+            if (onSuccess && is.function(onSuccess)) {
                 onSuccess.call(this);
             }
             return this;
@@ -276,12 +293,12 @@
 
             var arr = (this.next.length === 0) ? 'objects' : 'next';
 
-            if (isString(key)) {
+            if (is.string(key)) {
                 this.next = this[arr].sort(function(object1, object2) {
                     var key1 = '',
                         key2 = '';
 
-                    if (isObject(object1) && isObject(object2) && object1 && object2) {
+                    if (is.object(object1) && is.object(object2) && object1 && object2) {
                         key1 = object1[key];
                         key2 = object2[key];
                         if (key1 === key2) {
@@ -295,7 +312,7 @@
                 });
             }
 
-            if (onSuccess && isFunction(onSuccess)) {
+            if (onSuccess && is.function(onSuccess)) {
                 onSuccess.call(this, this.next);
                 // arrayRemove(this.next, 0, this.next.length);
             }
@@ -316,7 +333,7 @@
                 type = 'sessionStorage';
             }
 
-            if (config && isString(config.name)) {
+            if (config && is.string(config.name)) {
                 window[type].setItem(config.name, JSON.stringify({
                     creator     : 'yocto',
                     timestamp   : +new Date(),
@@ -324,28 +341,19 @@
                 }));
             }
 
-            if (onSuccess && isFunction(onSuccess)) {
+            if (onSuccess && is.function(onSuccess)) {
 
             }
 
             return this;
-        },
-
-
-        is : {
-            arr : isArray,
-            fn  : isFunction,
-            obj : isObject,
-            str : isString
         }
 
-
-    }
+    };
 
 
     exports.db = function createYocto() {
         return Object.create(db);
-    }
+    };
 
 
 })(typeof exports === 'undefined' ? this.yocto = {}: exports);
