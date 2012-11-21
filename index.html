@@ -165,6 +165,12 @@ db.put(mockC).put(mockD).each(function(element){
 	console.log(element);
 });
 
+console.log('get > save =====================');
+
+db.get({gender:"M"}).save({name : 'test'}, function(elements){
+	console.log(elements);
+});
+
 console.log('get =====================');
 
 db.get({gender:"M"}, function(elements){

@@ -126,7 +126,6 @@
     }
 
 
-
     var db = {
         objects         : [],
         next            : [],
@@ -292,32 +291,44 @@
 
 
         // Saves a list of records to localstorage
+        // Takes the following object as configuration:
+        // {
+        //     type : 'local' || 'session'
+        //     name : ''
+        // }
 
         save : function(config, onSuccess) {
 
-// TODO: Do not save if this.next is null!
+            var type    = 'localStorage',
+                objects = n_each(this.objects, this.query, this.chain);
 
-            var type = 'localStorage';
             if (config && config[type] === 'session') {
                 type = 'sessionStorage';
             }
 
             if (config && is.string(config.name)) {
                 window[type].setItem(config.name, JSON.stringify({
-                    creator     : 'yocto',
+                    creator     : this.config.name,
                     timestamp   : +new Date(),
-                    records     : this.next
+                    objects     : objects
                 }));
+
+            } else {
+                throw new Error('Yocto tried to store data to ' + type + ' but no name was provided!');
             }
 
             if (onSuccess && is.function(onSuccess)) {
-
+                onSuccess.call(this, objects);
             }
+
+            this.chain = [];
+            this.query = {};
 
             return this;
         }
 
     };
+
 
 
     exports.db = function createYocto() {
