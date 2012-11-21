@@ -292,7 +292,7 @@
 
 
 
-        // Saves a list of records to localstorage
+        // Save a list of records to localstorage
         // Takes the following object as configuration:
         // {
         //     type : 'local' || 'session'
@@ -330,6 +330,27 @@
             this.query = {};
 
             return this;
+        },
+
+
+
+        // Load a list of records from localstorage
+
+        load : function(name, onLoaded) {
+
+            return this;
+        },
+
+
+
+        observe : function() {
+
+        },
+
+
+
+        unobserve : function() {
+
         }
 
     };
