@@ -9,55 +9,24 @@
     "use strict";
 
 
-    // Check if a value is an Object
 
-    function isObject(value) {
-        return value instanceof Object;
-    }
+    // Environment checks
 
-
-    // Check if a value is an Function
-
-    function isFunction(value) {
-        return typeof value === 'function';
-    }
+    var has = {
+        localStorage    : function() {return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));}
+    };
 
 
-    // Check if a value is a Array
 
-    function isArray(value) {
-        return value instanceof Array;
-    }
-
-
-    // Check if a value is a String
-
-    function isString(value) {
-        return typeof value === 'string';
-    }
-
-
-    // Check if a value is a Number
-
-    function isNumber(value) {
-        return typeof value === 'number';
-    }
-
-
-    // Check if runtime environment has localstorage
-
-    function hasLocalStorage() {
-        return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));
-    }
-
-
+    // Convenient "is" checks
+    // These checks is also passed on to any functions in a template
 
     var is = {
-            array       : isArray,
-            function    : isFunction,
-            object      : isObject,
-            string      : isString,
-            number      : isNumber
+            array       : function(value) {return value instanceof Array;},
+            object      : function(value) {return value instanceof Object;},
+            function    : function(value) {return typeof value === 'function';},
+            string      : function(value) {return typeof value === 'string';},
+            number      : function(value) {return typeof value === 'number';}
     };
 
 
@@ -170,7 +139,7 @@
         // NEW FUNCTIONS
         chain           : [],
         query           : {},
-        appendedObjs    : [],        
+        appendedObjs    : [],
 
 
 
