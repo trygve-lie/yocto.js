@@ -336,7 +336,37 @@
 
         // Load a list of records from localstorage
 
-        load : function(name, onLoaded) {
+        load : function(config, onLoaded) {
+
+            var type        = 'localStorage',
+                loadedData  = '',
+                parsedData  = [];
+
+            if (config && config[type] === 'session') {
+                type = 'sessionStorage';
+            }
+
+            if (config && is.string(config.name)) {
+
+                if (has.localStorage()) {
+                    loadedData = window[type].getItem(config.name);
+                    parsedData = JSON.parse(loadedData);
+
+                    // Merge appended array into internal objects array.
+                    if (parsedData.creator === this.config.name) {
+                        this.objects = this.objects.concat(parsedData.objects);
+                        this.appendedObjs = this.appendedObjs.concat(parsedData.objects);
+                    }
+                }
+
+            } else {
+                throw new Error('Yocto tried to read data from ' + type + ' but no name was provided!');
+            }
+
+            if (onLoaded && is.function(onLoaded)) {
+                onLoaded.call(this, this.appendedObjs);
+                this.appendedObjs = [];
+            }
 
             return this;
         },

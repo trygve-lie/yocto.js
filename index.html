@@ -5,6 +5,9 @@
 <script src="src/yocto.js"></script>
 <script>
 
+
+
+
 /*
 
 // Create DB - modifies the DB
@@ -167,7 +170,13 @@ db.put(mockC).put(mockD).each(function(element){
 
 console.log('get > save =====================');
 
-db.get({gender:"M"}).save({name : 'test'}, function(elements){
+db.get({gender:"M"}).save({name:"meee"}, function(elements){
+	console.log(elements);
+});
+
+console.log('load > each =====================');
+
+db.load({name:"test"}).each(function(elements) {
 	console.log(elements);
 });
 
