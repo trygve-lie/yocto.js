@@ -117,7 +117,7 @@
         }
 
         if (onLoopEnd) {
-            onLoopEnd.call(this, parameters.result);
+            onLoopEnd.call(null, parameters.result);
         }
 
         parameters.result = [];
@@ -228,7 +228,7 @@
 
             if (onEach && is.fn(onEach)) {
                 this.parameters.callback = onEach;
-                loop(this.parameters, this.chain)
+                loop(this.parameters, this.chain);
             }
 
             this.chain = [];
