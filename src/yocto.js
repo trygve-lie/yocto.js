@@ -60,7 +60,7 @@
 
 
 
-    function n_get(parameters) {
+    function match(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
             if (is.fn(parameters.template[key])) {
                 return parameters.template[key].call(this, parameters.object[key], is);
@@ -70,16 +70,11 @@
 
             }
         });
-/*
-        if (parameters.match) {
-            parameters.object = parameters.objects[parameters.index];
-        }
-*/
         return parameters;
     }
 
 
-    function n_take(parameters) {
+    function remove(parameters) {
         if (parameters.match) {
             parameters.object = parameters.objects.splice(parameters.index, 1)[0];
         }
@@ -87,7 +82,7 @@
     }
 
 
-    function n_callback(parameters) {
+    function callback(parameters) {
         if (parameters.match) {
             parameters.callback.call(null, parameters.object);
         }
@@ -95,66 +90,49 @@
     }
 
 
-    function n_each(parameters, chain, callback) {
-        var fn      = compose(chain),
-            objs    = (parameters.result.length === 0) ? parameters.objects : parameters.result,
-            i       = 0,
-            l       = objs.length;
-//            result  = [],
-//            item    = {};
-// console.log('A', l, objs);
-// console.log('F', parameters.result.length);        
+    function loop(parameters, chain, onLoopEnd) {
 
+        var composedFn      = compose(chain),
+            runOnResult     = (parameters.result.length !== 0) || false,
+            objs            = runOnResult ? parameters.result : parameters.objects,
+            i               = 0,
+            l               = objs.length;
 
         for (i = 0; i < l; i += 1) {
-
             parameters.index    = i;
             parameters.object   = objs[i];
 
-            fn(parameters);
-/*
-            item = fn({
-                objects     : objects,
-                object      : undefined,
-                index       : i,
-                template    : template,
-                match       : true,
-                callback    : callback
-            });
-*/
-/*
-            if (item.match) {
-                if (l != parameters.objects.length) {
-                    l = parameters.objects.length;
-                    i--;
-                }
-                result.push(item.object);
-            }
-*/
+            composedFn(parameters);
 
             if (parameters.match) {
-                parameters.result.push(objs[i]);
+                // When taking objects out of the tuple we need to compensate for
+                // the objects taken out to prevent out of bound error.
+                // This compensation should only be done on the tuple object array.
+                if (!runOnResult && l != objs.length) {
+                    l = objs.length;
+                    i--;
+                }
+                parameters.result.push(parameters.object);
             }
-
         }
 
-
-        if (callback) {
-            callback.call(this, parameters.result);
+        if (onLoopEnd) {
+            onLoopEnd.call(this, parameters.result);
         }
 
         parameters.result = [];
 
-        return parameters.result;
+        return parameters;
     }
 
 
     var db = {
-        
-        tuple : {
-            objects : [],
-            index   : {}
+
+        config          : {
+            name : 'yocto'
         },
+
+        chain           : [],
 
         parameters : {
             objects     : [],
@@ -170,13 +148,8 @@
         // objects         : [],
         next            : [],
         observers       : [],
-        config          : {
-            name : 'yocto'
-        },
-
 
         // NEW FUNCTIONS
-        chain           : [],
         query           : {},
         appendedObjs    : [],
 
@@ -187,7 +160,6 @@
         put : function(obj, onSuccess) {
 
             // Array of objects applied
-
             if (is.arr(obj)) {
 
                 // Filter out non object entries.
@@ -196,13 +168,14 @@
                 });
 
                 // Merge appended array into internal objects array.
-                this.tuple.objects = this.tuple.objects.concat(obj);
+                this.parameters.objects = this.parameters.objects.concat(obj);
                 this.parameters.result = this.parameters.result.concat(obj);
             }
 
+
             // Single object applied
             if (is.obj(obj) && !is.arr(obj)) {
-                this.tuple.objects.push(obj);
+                this.parameters.objects.push(obj);
                 this.parameters.result.push(obj);
             }
 
@@ -220,19 +193,11 @@
         // Get object(s) from the database based on a template object
 
         get : function(template, onSuccess) {
-
-            if (template){this.parameters.template = template;}
-
-            this.parameters.objects = this.tuple.objects;
-
-            this.chain.push(n_get);
+            this.parameters.template = template || {};
+            this.chain.push(match);
 
             if (onSuccess && is.fn(onSuccess)) {
-                
-//                onSuccess.call(this, n_each(this.parameters, this.chain));
-//                this.chain = [];
-//                this.parameters.template = {};
-                n_each(this.parameters, this.chain, onSuccess);
+                loop(this.parameters, this.chain, onSuccess);
             }
 
             return this;
@@ -243,16 +208,12 @@
         // Takes matching objects out of the database
 
         take : function(template, onSuccess) {
-
-            if (template){this.query = template;}
-
-            this.chain.push(n_get);
-            this.chain.push(n_take);
+            this.parameters.template = template || {};
+            this.chain.push(match);
+            this.chain.push(remove);
 
             if (onSuccess && is.fn(onSuccess)) {
-                onSuccess.call(this, n_each(this.tuple.objects, this.query, this.chain));
-                this.chain = [];
-                this.query = {};
+                loop(this.parameters, this.chain, onSuccess);
             }
 
             return this;
@@ -263,23 +224,14 @@
         // Loop over each item in a returned list of records
 
         each : function(onEach) {
-
-            this.chain.push(n_callback);
-
-            this.parameters.objects = this.tuple.objects;
-            this.parameters.callback = onEach;
+            this.chain.push(callback);
 
             if (onEach && is.fn(onEach)) {
-
-                n_each(this.parameters, this.chain)
-//                 n_each((this.appendedObjs.length === 0) ? this.tuple.objects : this.appendedObjs, this.query, this.chain, onEach);
-//                this.appendedObjs = [];
-                this.parameters.result = [];
+                this.parameters.callback = onEach;
+                loop(this.parameters, this.chain)
             }
 
             this.chain = [];
-            this.query = {};
-
             return this;
         },
 
@@ -352,7 +304,7 @@
         save : function(config, onSuccess) {
 
             var type    = 'localStorage',
-                objects = n_each(this.tuple.objects, this.query, this.chain);
+                objects = loop(this.tuple.objects, this.query, this.chain);
 
             if (config && config[type] === 'session') {
                 type = 'sessionStorage';
