@@ -22,11 +22,11 @@
     // These checks is also passed on to any functions in a template
 
     var is = {
-            array       : function(value) {return value instanceof Array;},
-            object      : function(value) {return value instanceof Object;},
-            function    : function(value) {return typeof value === 'function';},
-            string      : function(value) {return typeof value === 'string';},
-            number      : function(value) {return typeof value === 'number';}
+            arr     : function(value) {return value instanceof Array;},
+            obj     : function(value) {return value instanceof Object;},
+            fn      : function(value) {return typeof value === 'function';},
+            str     : function(value) {return typeof value === 'string';},
+            num     : function(value) {return typeof value === 'number';}
     };
 
 
@@ -39,7 +39,6 @@
     //      objects     : [],
     //      object      : {},
     //      index       : Number,
-    //      obj         : obj,
     //      template    : {},
     //      match       : true,
     //      callback    : function(){}
@@ -63,19 +62,19 @@
 
     function n_get(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
-            if (is.function(parameters.template[key])) {
-                return parameters.template[key].call(this, parameters.objects[parameters.index][key], is);
+            if (is.fn(parameters.template[key])) {
+                return parameters.template[key].call(this, parameters.object[key], is);
 
             } else {
-                return parameters.objects[parameters.index][key] === parameters.template[key];
+                return parameters.object[key] === parameters.template[key];
 
             }
         });
-
+/*
         if (parameters.match) {
             parameters.object = parameters.objects[parameters.index];
         }
-
+*/
         return parameters;
     }
 
@@ -90,20 +89,30 @@
 
     function n_callback(parameters) {
         if (parameters.match) {
-            parameters.callback.call(null, parameters.object || parameters.objects[parameters.index]);
+            parameters.callback.call(null, parameters.object);
         }
         return parameters;
     }
 
 
-    function n_each(objects, template, chain, callback) {
+    function n_each(parameters, chain, callback) {
         var fn      = compose(chain),
+            objs    = (parameters.result.length === 0) ? parameters.objects : parameters.result,
             i       = 0,
-            l       = objects.length,
-            result  = [],
-            item    = {};
+            l       = objs.length;
+//            result  = [],
+//            item    = {};
+// console.log('A', l, objs);
+// console.log('F', parameters.result.length);        
+
 
         for (i = 0; i < l; i += 1) {
+
+            parameters.index    = i;
+            parameters.object   = objs[i];
+
+            fn(parameters);
+/*
             item = fn({
                 objects     : objects,
                 object      : undefined,
@@ -112,22 +121,53 @@
                 match       : true,
                 callback    : callback
             });
-
+*/
+/*
             if (item.match) {
-                if (l != objects.length) {
-                    l = objects.length;
+                if (l != parameters.objects.length) {
+                    l = parameters.objects.length;
                     i--;
                 }
                 result.push(item.object);
             }
+*/
+
+            if (parameters.match) {
+                parameters.result.push(objs[i]);
+            }
+
         }
 
-        return result;
+
+        if (callback) {
+            callback.call(this, parameters.result);
+        }
+
+        parameters.result = [];
+
+        return parameters.result;
     }
 
 
     var db = {
-        objects         : [],
+        
+        tuple : {
+            objects : [],
+            index   : {}
+        },
+
+        parameters : {
+            objects     : [],
+            object      : undefined,
+            result      : [],
+            index       : 0,
+            template    : {},
+            match       : true,
+            callback    : undefined
+        },
+
+
+        // objects         : [],
         next            : [],
         observers       : [],
         config          : {
@@ -148,28 +188,28 @@
 
             // Array of objects applied
 
-            if (is.array(obj)) {
+            if (is.arr(obj)) {
 
                 // Filter out non object entries.
                 obj = obj.filter(function(element){
-                    return (is.object(element) && !is.array(element));
+                    return (is.obj(element) && !is.arr(element));
                 });
 
                 // Merge appended array into internal objects array.
-                this.objects = this.objects.concat(obj);
-                this.appendedObjs = this.appendedObjs.concat(obj);
+                this.tuple.objects = this.tuple.objects.concat(obj);
+                this.parameters.result = this.parameters.result.concat(obj);
             }
 
             // Single object applied
-            if (is.object(obj) && !is.array(obj)) {
-                this.objects.push(obj);
-                this.appendedObjs.push(obj);
+            if (is.obj(obj) && !is.arr(obj)) {
+                this.tuple.objects.push(obj);
+                this.parameters.result.push(obj);
             }
 
 
-            if (onSuccess && is.function(onSuccess)) {
-                onSuccess.call(this, this.appendedObjs);
-                this.appendedObjs = [];
+            if (onSuccess && is.fn(onSuccess)) {
+                onSuccess.call(this, this.parameters.result);
+                this.parameters.result = [];
             }
 
             return this;
@@ -181,14 +221,18 @@
 
         get : function(template, onSuccess) {
 
-            if (template){this.query = template;}
+            if (template){this.parameters.template = template;}
+
+            this.parameters.objects = this.tuple.objects;
 
             this.chain.push(n_get);
 
-            if (onSuccess && is.function(onSuccess)) {
-                onSuccess.call(this, n_each(this.objects, this.query, this.chain));
-                this.chain = [];
-                this.query = {};
+            if (onSuccess && is.fn(onSuccess)) {
+                
+//                onSuccess.call(this, n_each(this.parameters, this.chain));
+//                this.chain = [];
+//                this.parameters.template = {};
+                n_each(this.parameters, this.chain, onSuccess);
             }
 
             return this;
@@ -205,8 +249,8 @@
             this.chain.push(n_get);
             this.chain.push(n_take);
 
-            if (onSuccess && is.function(onSuccess)) {
-                onSuccess.call(this, n_each(this.objects, this.query, this.chain));
+            if (onSuccess && is.fn(onSuccess)) {
+                onSuccess.call(this, n_each(this.tuple.objects, this.query, this.chain));
                 this.chain = [];
                 this.query = {};
             }
@@ -222,9 +266,15 @@
 
             this.chain.push(n_callback);
 
-            if (onEach && is.function(onEach)) {
-                n_each((this.appendedObjs.length === 0) ? this.objects : this.appendedObjs, this.query, this.chain, onEach);
-                this.appendedObjs = [];
+            this.parameters.objects = this.tuple.objects;
+            this.parameters.callback = onEach;
+
+            if (onEach && is.fn(onEach)) {
+
+                n_each(this.parameters, this.chain)
+//                 n_each((this.appendedObjs.length === 0) ? this.tuple.objects : this.appendedObjs, this.query, this.chain, onEach);
+//                this.appendedObjs = [];
+                this.parameters.result = [];
             }
 
             this.chain = [];
@@ -238,8 +288,8 @@
         // Drop all database records in memory.
 
         drop : function(onSuccess) {
-            this.objects.splice(0, this.objects.length);
-            if (onSuccess && is.function(onSuccess)) {
+            this.tuple.objects.splice(0, this.tuple.objects.length);
+            if (onSuccess && is.fn(onSuccess)) {
                 onSuccess.call(this);
             }
             return this;
@@ -263,12 +313,12 @@
 
             var arr = (this.next.length === 0) ? 'objects' : 'next';
 
-            if (is.string(key)) {
+            if (is.str(key)) {
                 this.next = this[arr].sort(function(object1, object2) {
                     var key1 = '',
                         key2 = '';
 
-                    if (is.object(object1) && is.object(object2) && object1 && object2) {
+                    if (is.obj(object1) && is.obj(object2) && object1 && object2) {
                         key1 = object1[key];
                         key2 = object2[key];
                         if (key1 === key2) {
@@ -282,7 +332,7 @@
                 });
             }
 
-            if (onSuccess && is.function(onSuccess)) {
+            if (onSuccess && is.fn(onSuccess)) {
                 onSuccess.call(this, this.next);
                 // arrayRemove(this.next, 0, this.next.length);
             }
@@ -302,13 +352,13 @@
         save : function(config, onSuccess) {
 
             var type    = 'localStorage',
-                objects = n_each(this.objects, this.query, this.chain);
+                objects = n_each(this.tuple.objects, this.query, this.chain);
 
             if (config && config[type] === 'session') {
                 type = 'sessionStorage';
             }
 
-            if (config && is.string(config.name)) {
+            if (config && is.str(config.name)) {
 
                 if (has.localStorage()) {
                     window[type].setItem(config.name, JSON.stringify({
@@ -322,7 +372,7 @@
                 throw new Error('Yocto tried to store data to ' + type + ' but no name was provided!');
             }
 
-            if (onSuccess && is.function(onSuccess)) {
+            if (onSuccess && is.fn(onSuccess)) {
                 onSuccess.call(this, objects);
             }
 
@@ -346,7 +396,7 @@
                 type = 'sessionStorage';
             }
 
-            if (config && is.string(config.name)) {
+            if (config && is.str(config.name)) {
 
                 if (has.localStorage()) {
                     loadedData = window[type].getItem(config.name);
@@ -354,7 +404,7 @@
 
                     // Merge appended array into internal objects array.
                     if (parsedData.creator === this.config.name) {
-                        this.objects = this.objects.concat(parsedData.objects);
+                        this.tuple.objects = this.tuple.objects.concat(parsedData.objects);
                         this.appendedObjs = this.appendedObjs.concat(parsedData.objects);
                     }
                 }
@@ -363,7 +413,7 @@
                 throw new Error('Yocto tried to read data from ' + type + ' but no name was provided!');
             }
 
-            if (onLoaded && is.function(onLoaded)) {
+            if (onLoaded && is.fn(onLoaded)) {
                 onLoaded.call(this, this.appendedObjs);
                 this.appendedObjs = [];
             }

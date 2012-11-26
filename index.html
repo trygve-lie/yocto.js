@@ -130,15 +130,15 @@ var mockA = [
 ];
 
 var mockB = [
-	{id:5,gender:"F",first:"Siv",last:"Tessem",city:"Gjøvik",active:true},
-	{id:6,gender:"F",first:"Live",last:"Glesne",city:"Oslo",active:true}
+	{id:5,gender:"F",first:"Johanna",last:"Jane",city:"Gjøvik",active:true},
+	{id:6,gender:"F",first:"Live",last:"Alive",city:"Oslo",active:true}
 ];
 
 var mockC = [
-	{id:7,gender:"F",first:"Hege",last:"Otterheim",city:"Gjøvik",active:true},
+	{id:7,gender:"F",first:"Hanne",last:"Hanson",city:"Gjøvik",active:true},
 	'Error',
 	['foo', 'bar'],
-	{id:7,gender:"F",first:"Anita",last:"Lipsky",city:"Oslo",active:false},
+	{id:7,gender:"F",first:"Anna",last:"Banana",city:"Oslo",active:false},
 ];
 
 var mockD = [
@@ -167,7 +167,7 @@ console.log('put > put > each =====================');
 db.put(mockC).put(mockD).each(function(element){
 	console.log(element);
 });
-
+/*
 console.log('get > save =====================');
 
 db.get({gender:"M"}).save({name:"meee"}, function(elements){
@@ -179,7 +179,7 @@ console.log('load > each =====================');
 db.load({name:"test"}).each(function(elements) {
 	console.log(elements);
 });
-
+*/
 console.log('get =====================');
 
 db.get({gender:"M"}, function(elements){
@@ -188,8 +188,8 @@ db.get({gender:"M"}, function(elements){
 
 console.log('get(id:function) =====================');
 
-db.get({gender:"M", id:function(element, is){
-	return (element >= 3 && element <= 6);
+db.get({gender:"M", id:function(key, is){
+	return (key >= 3 && key <= 6);
 }}, function(elements){
 	console.log('callback', elements);
 });
@@ -199,7 +199,7 @@ console.log('get > each =====================');
 db.get({gender:"M"}).each(function(element){
 	console.log('callback', element);
 });
-
+/*
 console.log('take > each =====================');
 
 db.take({gender:"F"}).each(function(element){
@@ -215,7 +215,7 @@ db.drop(function(elements){
 
 console.log('=====================');
 
-
+*/
 
 
 
@@ -255,7 +255,7 @@ function insertionSort(items) {
         for (j=i-1; j > -1 && items[j] > value; j--) {
             items[j+1] = items[j];
         }
-console.log(value, items[j+1]);
+
         items[j+1] = value;
     }
 

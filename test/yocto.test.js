@@ -61,31 +61,27 @@ var testCase = buster.testCase("yocto.js Test", {
 
     "test library initialization - should return a object": function() {
         buster.assert.isObject(this.db);
-    },
+    }/*,
 
 
 
     // ### PUT
 
-    "test put of one single object and run callback - in callback _objects_ and _next_ should be 1, after execution _objects_ should be 1 and _next_ 0": function() {
+    "test put of one single object and run callback - in callback _objects.length_ should be 1": function() {
         var self = this;
 
         this.db.put(this.singleRecordA, function(records) {
             buster.assert.equals(self.db.objects.length, 1);
         });
-
-        buster.assert.equals(this.db.objects.length, 1);
     },
 
 
-    "test put of multiple single objects and run callback - in callback _objects_ and _next_ should be 2, after execution _objects_ should be 2 and _next_ 0": function() {
+    "test put of multiple single objects and run callback - in callback _objects.length_ should be 2": function() {
         var self = this;
 
         this.db.put(this.singleRecordA).put(this.singleRecordB, function(records) {
             buster.assert.equals(self.db.objects.length, 2);
         });
-
-        buster.assert.equals(this.db.objects.length, 2);
     },
 
 
@@ -187,7 +183,7 @@ var testCase = buster.testCase("yocto.js Test", {
         });
 
     }
-
+*/
 
     // ### SORT
 /*
