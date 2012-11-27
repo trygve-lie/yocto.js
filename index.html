@@ -200,24 +200,29 @@ db.get({gender:"M"}).each(function(element){
 	console.log('callback', element);
 });
 
+console.log('get > sort > each =====================');
+
+db.get({gender:"M"}).sort('id').each(function(element){
+	console.log('callback', element);
+});
+
 console.log('take > each =====================');
 
 db.take({gender:"F"}).each(function(element){
 	console.log('callback', element);
 });
 
-/*
+
+
 
 console.log('drop =====================');
 
-db.drop(function(elements){
-	console.log(db);
+db.drop(function(){
+	console.log('dropped');
 })
-
 
 console.log('=====================');
 
-*/
 
 
 

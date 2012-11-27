@@ -92,17 +92,17 @@
 
     function loop(parameters, chain, onLoopEnd) {
 
-        var composedFn      = compose(chain),
-            runOnResult     = (parameters.result.length !== 0) || false,
-            objs            = runOnResult ? parameters.result : parameters.objects,
-            i               = 0,
-            l               = objs.length;
+        var composedFunction    = compose(chain),
+            runOnResult         = (parameters.result.length !== 0) || false,
+            objs                = runOnResult ? parameters.result : parameters.objects,
+            i                   = 0,
+            l                   = objs.length;
 
         for (i = 0; i < l; i += 1) {
             parameters.index    = i;
             parameters.object   = objs[i];
 
-            composedFn(parameters);
+            composedFunction(parameters);
 
             if (parameters.match) {
                 // When taking objects out of the tuple we need to compensate for
@@ -133,6 +133,7 @@
         },
 
         chain           : [],
+        observers       : [],
 
         parameters : {
             objects     : [],
@@ -143,15 +144,6 @@
             match       : true,
             callback    : undefined
         },
-
-
-        // objects         : [],
-        next            : [],
-        observers       : [],
-
-        // NEW FUNCTIONS
-        query           : {},
-        appendedObjs    : [],
 
 
 
@@ -172,13 +164,11 @@
                 this.parameters.result = this.parameters.result.concat(obj);
             }
 
-
             // Single object applied
             if (is.obj(obj) && !is.arr(obj)) {
                 this.parameters.objects.push(obj);
                 this.parameters.result.push(obj);
             }
-
 
             if (onSuccess && is.fn(onSuccess)) {
                 onSuccess.call(this, this.parameters.result);
@@ -242,7 +232,7 @@
         drop : function(onSuccess) {
             this.parameters.objects.splice(0, this.parameters.objects.length);
             if (onSuccess && is.fn(onSuccess)) {
-                onSuccess.call(this);
+                onSuccess.call(null);
             }
             return this;
         },
@@ -262,31 +252,36 @@
         // Sort a return from the database based on a objects property name
 
         sort : function(key, onSuccess) {
-
-            var arr = (this.next.length === 0) ? 'objects' : 'next';
+            var self    = this,
+                sorted  = [];
 
             if (is.str(key)) {
-                this.next = this[arr].sort(function(object1, object2) {
-                    var key1 = '',
-                        key2 = '';
+                loop(this.parameters, this.chain, function(result){
+                    
+                    sorted = result.sort(function(object1, object2) {
+                        var key1 = '',
+                            key2 = '';
 
-                    if (is.obj(object1) && is.obj(object2) && object1 && object2) {
-                        key1 = object1[key];
-                        key2 = object2[key];
-                        if (key1 === key2) {
-                            return object1;
+                        if (is.obj(object1) && is.obj(object2) && object1 && object2) {
+                            key1 = object1[key];
+                            key2 = object2[key];
+                            if (key1 === key2) {
+                                return object1;
+                            }
+                            if (typeof key1 === typeof key2) {
+                                return key1 < key2 ? -1 : 1;
+                            }
                         }
-                        if (typeof key1 === typeof key2) {
-                            return key1 < key2 ? -1 : 1;
-                        }
+
+                    });
+
+                    if (onSuccess && is.fn(onSuccess)) {
+                        onSuccess.call(self, sorted);
+                        sorted = [];
                     }
-
                 });
-            }
 
-            if (onSuccess && is.fn(onSuccess)) {
-                onSuccess.call(this, this.next);
-                // arrayRemove(this.next, 0, this.next.length);
+                this.parameters.result = sorted;
             }
 
             return this;
