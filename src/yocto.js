@@ -240,7 +240,7 @@
         // Drop all database records in memory.
 
         drop : function(onSuccess) {
-            this.tuple.objects.splice(0, this.tuple.objects.length);
+            this.parameters.objects.splice(0, this.parameters.objects.length);
             if (onSuccess && is.fn(onSuccess)) {
                 onSuccess.call(this);
             }
@@ -303,33 +303,32 @@
 
         save : function(config, onSuccess) {
 
-            var type    = 'localStorage',
-                objects = loop(this.tuple.objects, this.query, this.chain);
+            var self    = this,
+                type    = 'localStorage';
 
             if (config && config[type] === 'session') {
                 type = 'sessionStorage';
             }
 
-            if (config && is.str(config.name)) {
+            if (config && is.str(config.name) && has.localStorage()) {
 
-                if (has.localStorage()) {
+                loop(this.parameters, this.chain, function(result){
                     window[type].setItem(config.name, JSON.stringify({
-                        creator     : this.config.name,
+                        creator     : self.config.name,
                         timestamp   : +new Date(),
-                        objects     : objects
+                        objects     : result
                     }));
-                }
+
+                    if (onSuccess && is.fn(onSuccess)) {
+                        onSuccess.call(null, result);
+                    }
+                });
 
             } else {
                 throw new Error('Yocto tried to store data to ' + type + ' but no name was provided!');
             }
 
-            if (onSuccess && is.fn(onSuccess)) {
-                onSuccess.call(this, objects);
-            }
-
             this.chain = [];
-            this.query = {};
 
             return this;
         },
