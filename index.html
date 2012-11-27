@@ -173,13 +173,13 @@ console.log('get > save =====================');
 db.get({gender:"M"}).save({name:"meee"}, function(elements){
 	console.log(elements);
 });
-/*
+
 console.log('load > each =====================');
 
-db.load({name:"test"}).each(function(elements) {
+db.load({name:"meee"}).each(function(elements) {
 	console.log(elements);
 });
-*/
+
 console.log('get =====================');
 
 db.get({gender:"M"}, function(elements){

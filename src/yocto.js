@@ -320,7 +320,7 @@
                     }));
 
                     if (onSuccess && is.fn(onSuccess)) {
-                        onSuccess.call(null, result);
+                        onSuccess.call(self, result);
                     }
                 });
 
@@ -341,23 +341,20 @@
 
             var type        = 'localStorage',
                 loadedData  = '',
-                parsedData  = [];
+                parsedData  = {};
 
             if (config && config[type] === 'session') {
                 type = 'sessionStorage';
             }
 
-            if (config && is.str(config.name)) {
+            if (config && is.str(config.name) && has.localStorage()) {
+                loadedData = window[type].getItem(config.name);
+                parsedData = JSON.parse(loadedData);
 
-                if (has.localStorage()) {
-                    loadedData = window[type].getItem(config.name);
-                    parsedData = JSON.parse(loadedData);
-
-                    // Merge appended array into internal objects array.
-                    if (parsedData.creator === this.config.name) {
-                        this.tuple.objects = this.tuple.objects.concat(parsedData.objects);
-                        this.appendedObjs = this.appendedObjs.concat(parsedData.objects);
-                    }
+                // Merge appended array into internal objects array.
+                if (parsedData.creator === this.config.name) {
+                    this.parameters.objects = this.parameters.objects.concat(parsedData.objects);
+                    this.parameters.result = this.parameters.result.concat(parsedData.objects);
                 }
 
             } else {
@@ -365,8 +362,8 @@
             }
 
             if (onLoaded && is.fn(onLoaded)) {
-                onLoaded.call(this, this.appendedObjs);
-                this.appendedObjs = [];
+                onLoaded.call(this, this.parameters.result);
+                this.parameters.result = [];
             }
 
             return this;
