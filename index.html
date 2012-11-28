@@ -211,18 +211,20 @@ console.log('take > each =====================');
 db.take({gender:"F"}).each(function(element){
 	console.log('callback', element);
 });
-
-
-
-
+/*
 console.log('drop =====================');
 
 db.drop(function(){
 	console.log('dropped');
 })
+*/
+console.log('destroy =====================');
+
+db.destroy({name:"meee"}, function(){
+	console.log('destroyed');
+})
 
 console.log('=====================');
-
 
 
 

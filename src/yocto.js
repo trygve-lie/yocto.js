@@ -1,13 +1,10 @@
 /*jshint browser:true, strict:true es5:true*/
+// yocto.js 0.0.1 - (c) 2012 Trygve Lie - MIT license.
 
-// yocto.js 0.0.1
-// (c) 2012 Trygve Lie
-// yocto.js may be freely distributed under the MIT license.
 
 (function(exports){
 
     "use strict";
-
 
 
     // Environment checks
@@ -15,7 +12,6 @@
     var has = {
         localStorage    : function() {return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));}
     };
-
 
 
     // Convenient "is" checks
@@ -28,7 +24,6 @@
             str     : function(value) {return typeof value === 'string';},
             num     : function(value) {return typeof value === 'number';}
     };
-
 
 
     // This object is passed into each function in the chain as a single function variable.
@@ -57,7 +52,6 @@
             return result[0];
         };
     }
-
 
 
     function match(parameters) {
@@ -126,7 +120,6 @@
     }
 
 
-
     var db = {
 
         config          : {
@@ -145,7 +138,6 @@
             match       : true,
             callback    : undefined
         },
-
 
 
         // Put a single object or an array of objects into the database
@@ -180,7 +172,6 @@
         },
 
 
-
         // Get object(s) from the database based on a template object
 
         get : function(template, onSuccess) {
@@ -193,7 +184,6 @@
 
             return this;
         },
-
 
 
         // Takes matching objects out of the database
@@ -211,7 +201,6 @@
         },
 
 
-
         // Loop over each item in a returned list of records
 
         each : function(onEach) {
@@ -227,7 +216,6 @@
         },
 
 
-
         // Drop all database records in memory.
 
         drop : function(onSuccess) {
@@ -239,15 +227,29 @@
         },
 
 
-
         // Drop all database records memory and in localstorage.
+        // Takes the following object as configuration:
+        // {
+        //     type : 'local' || 'session'
+        //     name : ''
+        // }
 
-        destroy : function(name) {
-            // if "name" is provided, delete single storage
-            // if "name" is NOT provided, loop trough all storages, find those containing "creator === yocto"
-            // and delete all of them
+        destroy : function(config, onSuccess) {
+            var self    = this,
+                type    = 'localStorage';
+
+            if (config && config[type] === 'session') {
+                type = 'sessionStorage';
+            }
+
+            if (config && is.str(config.name) && has.localStorage()) {
+                window[type].removeItem(config.name);
+            }
+
+            this.drop(onSuccess);
+
+            return this;
         },
-
 
 
         // Sort a return from the database based on a objects property name
@@ -258,11 +260,11 @@
 
             if (is.str(key)) {
                 loop(this.parameters, this.chain, function(result){
-                    
+
                     sorted = result.sort(function sortByObjectKey(object1, object2) {
                         var key1 = '',
                             key2 = '';
-                            
+
                         if (is.obj(object1) && is.obj(object2) && object1 && object2) {
                             key1 = object1[key];
                             key2 = object2[key];
@@ -286,7 +288,6 @@
 
             return this;
         },
-
 
 
         // Save a list of records to localstorage
@@ -329,7 +330,6 @@
         },
 
 
-
         // Load a list of records from localstorage
 
         load : function(config, onLoaded) {
@@ -365,11 +365,9 @@
         },
 
 
-
         observe : function() {
 
         },
-
 
 
         unobserve : function() {
@@ -377,7 +375,6 @@
         }
 
     };
-
 
 
     exports.db = function createYocto() {
