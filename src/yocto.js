@@ -2,6 +2,56 @@
 // yocto.js 0.0.1 - (c) 2012 Trygve Lie - MIT license.
 
 
+// # Internals
+//
+//
+// ## - Object storage and object structure
+//
+// All objects is stored in _one_ array which is only allowed to contain objects. Upon insertion
+// into the array all non object types is declined by a filter method.
+//
+// There is no restrictions on the structure of the objects stored in the array so the array can
+// hold a wide range of different objects. This does not affect the matching process.
+//
+// The matching process is done by comparing object keys and values in a template object and each
+// object in the array. This matching process does only a shallow match. Deeply nested object
+// values will not be compared. Though, doing a deep object structure match can be done by the
+// user by providing a dedicated function to a template key to do the match.
+// Doing a deep object structure match would probably be overkill for most usecases of yocto so
+// doing so is delibertly handed over to the user to implement here/him self.
+//
+//
+// ## - Chaining and function composition
+//
+// The public API can be chained and the chain is terminated by a callback to a, preferly the
+// last, method in the chain.
+// Since all objects are stored in an array retreiving the requested arrays will involve looping
+// over all objects to match those whit a template. The result of such a request will be a new
+// list with the matching objects which the user possible would like to do something upon each
+// object. This is a possible double loop.
+//
+// To reduce possible double loops, functions are upon chaining composed into one function which
+// will run inside _one_ loop upon termination of a chain.
+//
+// When composing function one parameter is sendt as function parameter to a function and then
+// returned again. The returned value will then be passed on as function paramter to the next
+// function in the composition.
+//
+// In yocto we pass one object which looks like this through to all composed functions:
+// {
+//    objects     : [],
+//    object      : undefined,
+//    result      : [],
+//    index       : 0,
+//    template    : {},
+//    match       : true,
+//    callback    : undefined
+// }
+//
+// Each function in the composition can then manipulate this object before its passed on to the
+// next function.
+
+
 (function(exports){
 
     "use strict";
@@ -26,18 +76,7 @@
     };
 
 
-    // This object is passed into each function in the chain as a single function variable.
-    // Each function in the chain can then manipulate the object before it returns it.
-    // The manipulated returned object is then passed on as a variable to the next function
-    // in the chain.
-    // {
-    //      objects     : [],
-    //      object      : {},
-    //      index       : Number,
-    //      template    : {},
-    //      match       : true,
-    //      callback    : function(){}
-    // }
+    // Compose an array of composition functions into one function
 
     function compose(functions) {
         return function() {
@@ -54,6 +93,8 @@
     }
 
 
+    // Composition function for matching an object with a template
+
     function match(parameters) {
         parameters.match = Object.keys(parameters.template).every(function(key) {
             if (is.fn(parameters.template[key])) {
@@ -68,6 +109,8 @@
     }
 
 
+    // Composition function for removing an object from the storage array
+
     function remove(parameters) {
         if (parameters.match) {
             parameters.object = parameters.objects.splice(parameters.index, 1)[0];
@@ -76,6 +119,8 @@
     }
 
 
+    // Composition function for executing a callback
+
     function callback(parameters) {
         if (parameters.match) {
             parameters.callback.call(null, parameters.object);
@@ -83,6 +128,9 @@
         return parameters;
     }
 
+
+    // Single loop
+    // Takes the array of composition functions and runs the composed function in one loop
 
     function loop(parameters, chain, onLoopEnd) {
 
@@ -201,7 +249,7 @@
         },
 
 
-        // Loop over each item in a returned list of records
+        // Loop over each object in a returned list of objects
 
         each : function(onEach) {
             this.chain.push(callback);
@@ -227,7 +275,7 @@
         },
 
 
-        // Drop all database records memory and in localstorage.
+        // Drop all database records in memory and in localstorage.
         // Takes the following object as configuration:
         // {
         //     type : 'local' || 'session'
@@ -252,7 +300,7 @@
         },
 
 
-        // Sort a return from the database based on a objects property name
+        // Sort a returned list of objects based on a objects property name
 
         sort : function(key, onSuccess) {
             var self    = this,
@@ -331,6 +379,11 @@
 
 
         // Load a list of records from localstorage
+        // Takes the following object as configuration:
+        // {
+        //     type : 'local' || 'session'
+        //     name : ''
+        // }
 
         load : function(config, onLoaded) {
 
