@@ -1,8 +1,8 @@
 # yocto.js
 
-yocto.js is a tiny in-memory database with an [tuple space inspired API](http://code.google.com/p/gruple/wiki/TuplespaceUsage). In a way its a set of convinient methods to work on a list of objects.
+yocto.js is a tiny in-memory database with an [tuple space inspired API](http://code.google.com/p/gruple/wiki/TuplespaceUsage).  In a way its a set of convinient methods to work on a list of objects.
 
-yocto.js is intended to be used in the browser but has methods for persisting and recovering data to and from local storage. Though; yocto.js can also be used in [node.js](http://nodejs.org/) but then without the features of persisting to disk.
+In many cases one does operate on small to medium sized data sets and in the browser this is mostly the case. yocto.js is intended to be used on such data sets in the browser but yocto.js can also be used in [node.js](http://nodejs.org/). yocto.js has methods for persisting and recovering data to and from local storage in the browser.
 
 yocto.js does utilize some ES5 features. Runtimes which does not have these features, such as older browsers, are still supported by a provided set of ES5 shims. Please see "Non ES5 compability" for further details.
 

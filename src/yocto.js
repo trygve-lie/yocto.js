@@ -126,6 +126,7 @@
     }
 
 
+
     var db = {
 
         config          : {
@@ -258,10 +259,10 @@
             if (is.str(key)) {
                 loop(this.parameters, this.chain, function(result){
                     
-                    sorted = result.sort(function(object1, object2) {
+                    sorted = result.sort(function sortByObjectKey(object1, object2) {
                         var key1 = '',
                             key2 = '';
-
+                            
                         if (is.obj(object1) && is.obj(object2) && object1 && object2) {
                             key1 = object1[key];
                             key2 = object2[key];
@@ -272,7 +273,6 @@
                                 return key1 < key2 ? -1 : 1;
                             }
                         }
-
                     });
 
                     if (onSuccess && is.fn(onSuccess)) {

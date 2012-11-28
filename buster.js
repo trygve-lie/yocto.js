@@ -8,6 +8,8 @@ config["Client tests"] = {
         "src/yocto.js"
     ],
     tests: [
-        "test/yocto.test.js"
+        "test/yocto.core.test.js",
+        "test/yocto.put.test.js",
+        "test/yocto.get.test.js"
     ]
 };
