@@ -95,58 +95,58 @@
 
     // Composition function for matching an object with a template
 
-    function match(parameters) {
-        parameters.match = Object.keys(parameters.template).every(function(key) {
-            if (is.fn(parameters.template[key])) {
-                return parameters.template[key].call(this, parameters.object[key], is);
+    function match(coreObj) {
+        coreObj.match = Object.keys(coreObj.template).every(function(key) {
+            if (is.fn(coreObj.template[key])) {
+                return coreObj.template[key].call(this, coreObj.object[key], is);
 
             } else {
-                return parameters.object[key] === parameters.template[key];
+                return coreObj.object[key] === coreObj.template[key];
 
             }
         });
-        return parameters;
+        return coreObj;
     }
 
 
     // Composition function for removing an object from the storage array
 
-    function remove(parameters) {
-        if (parameters.match) {
-            parameters.object = parameters.objects.splice(parameters.index, 1)[0];
+    function remove(coreObj) {
+        if (coreObj.match) {
+            coreObj.object = coreObj.objects.splice(coreObj.index, 1)[0];
         }
-        return parameters;
+        return coreObj;
     }
 
 
     // Composition function for executing a callback
 
-    function callback(parameters) {
-        if (parameters.match) {
-            parameters.callback.call(null, parameters.object);
+    function callback(coreObj) {
+        if (coreObj.match) {
+            coreObj.callback.call(null, coreObj.object);
         }
-        return parameters;
+        return coreObj;
     }
 
 
     // Single loop
     // Takes the array of composition functions and runs the composed function in one loop
 
-    function loop(parameters, chain, onLoopEnd) {
+    function loop(coreObj, chain, onLoopEnd) {
 
         var composedFunction    = compose(chain),
-            runOnResult         = (parameters.result.length !== 0) || false,
-            objs                = runOnResult ? parameters.result : parameters.objects,
+            runOnResult         = (coreObj.result.length !== 0) || false,
+            objs                = runOnResult ? coreObj.result : coreObj.objects,
             i                   = 0,
             l                   = objs.length;
 
         for (i = 0; i < l; i += 1) {
-            parameters.index    = i;
-            parameters.object   = objs[i];
+            coreObj.index    = i;
+            coreObj.object   = objs[i];
 
-            composedFunction(parameters);
+            composedFunction(coreObj);
 
-            if (parameters.match) {
+            if (coreObj.match) {
                 // When taking objects out of the tuple we need to compensate for
                 // the objects taken out to prevent out of bound error.
                 // This compensation should only be done on the tuple object array.
@@ -154,18 +154,30 @@
                     l = objs.length;
                     i--;
                 }
-                parameters.result.push(parameters.object);
+                coreObj.result.push(coreObj.object);
             }
         }
 
         if (onLoopEnd) {
-            onLoopEnd.call(null, parameters.result);
+            onLoopEnd.call(null, coreObj.result);
         }
 
-        parameters.result = [];
+        coreObj.result = [];
 
-        return parameters;
+        return coreObj;
     }
+
+
+    // Set storage type to use base on a config object
+
+    function setStorageType(config) {
+        if (config && config.type === 'session') {
+            return 'sessionStorage';
+        } else {
+            return 'localStorage';
+        }
+    }
+
 
 
     var db = {
@@ -177,7 +189,7 @@
         chain           : [],
         observers       : [],
 
-        parameters : {
+        core : {
             objects     : [],
             object      : undefined,
             result      : [],
@@ -192,6 +204,8 @@
 
         put : function(obj, onSuccess) {
 
+            var core = this.core;
+
             // Array of objects applied
             if (is.arr(obj)) {
 
@@ -201,19 +215,19 @@
                 });
 
                 // Merge appended array into internal objects array.
-                this.parameters.objects = this.parameters.objects.concat(obj);
-                this.parameters.result = this.parameters.result.concat(obj);
+                core.objects    = core.objects.concat(obj);
+                core.result     = core.result.concat(obj);
             }
 
             // Single object applied
             if (is.obj(obj) && !is.arr(obj)) {
-                this.parameters.objects.push(obj);
-                this.parameters.result.push(obj);
+                core.objects.push(obj);
+                core.result.push(obj);
             }
 
             if (onSuccess && is.fn(onSuccess)) {
-                onSuccess.call(this, this.parameters.result);
-                this.parameters.result = [];
+                onSuccess.call(this, core.result);
+                core.result = [];
             }
 
             return this;
@@ -223,11 +237,11 @@
         // Get object(s) from the database based on a template object
 
         get : function(template, onSuccess) {
-            this.parameters.template = template || {};
+            this.core.template = template || {};
             this.chain.push(match);
 
             if (onSuccess && is.fn(onSuccess)) {
-                loop(this.parameters, this.chain, onSuccess);
+                loop(this.core, this.chain, onSuccess);
             }
 
             return this;
@@ -237,12 +251,12 @@
         // Takes matching objects out of the database
 
         take : function(template, onSuccess) {
-            this.parameters.template = template || {};
+            this.core.template = template || {};
             this.chain.push(match);
             this.chain.push(remove);
 
             if (onSuccess && is.fn(onSuccess)) {
-                loop(this.parameters, this.chain, onSuccess);
+                loop(this.core, this.chain, onSuccess);
             }
 
             return this;
@@ -255,8 +269,8 @@
             this.chain.push(callback);
 
             if (onEach && is.fn(onEach)) {
-                this.parameters.callback = onEach;
-                loop(this.parameters, this.chain);
+                this.core.callback = onEach;
+                loop(this.core, this.chain);
             }
 
             this.chain = [];
@@ -267,7 +281,7 @@
         // Drop all database records in memory.
 
         drop : function(onSuccess) {
-            this.parameters.objects.splice(0, this.parameters.objects.length);
+            this.core.objects.splice(0, this.core.objects.length);
             if (onSuccess && is.fn(onSuccess)) {
                 onSuccess.call(null);
             }
@@ -284,11 +298,7 @@
 
         destroy : function(config, onSuccess) {
             var self    = this,
-                type    = 'localStorage';
-
-            if (config && config[type] === 'session') {
-                type = 'sessionStorage';
-            }
+                type    = setStorageType(config);
 
             if (config && is.str(config.name) && has.localStorage()) {
                 window[type].removeItem(config.name);
@@ -307,7 +317,7 @@
                 sorted  = [];
 
             if (is.str(key)) {
-                loop(this.parameters, this.chain, function(result){
+                loop(this.core, this.chain, function(result){
 
                     sorted = result.sort(function sortByObjectKey(object1, object2) {
                         var key1 = '',
@@ -331,7 +341,7 @@
                     }
                 });
 
-                this.parameters.result = sorted;
+                this.core.result = sorted;
             }
 
             return this;
@@ -348,15 +358,11 @@
         save : function(config, onSuccess) {
 
             var self    = this,
-                type    = 'localStorage';
-
-            if (config && config[type] === 'session') {
-                type = 'sessionStorage';
-            }
+                type    = setStorageType(config);
 
             if (config && is.str(config.name) && has.localStorage()) {
 
-                loop(this.parameters, this.chain, function(result){
+                loop(this.core, this.chain, function(result){
                     window[type].setItem(config.name, JSON.stringify({
                         creator     : self.config.name,
                         timestamp   : +new Date(),
@@ -387,13 +393,9 @@
 
         load : function(config, onLoaded) {
 
-            var type        = 'localStorage',
+            var type        = setStorageType(config),
                 loadedData  = '',
                 parsedData  = {};
-
-            if (config && config[type] === 'session') {
-                type = 'sessionStorage';
-            }
 
             if (config && is.str(config.name) && has.localStorage()) {
                 loadedData = window[type].getItem(config.name);
@@ -401,8 +403,8 @@
 
                 // Merge appended array into internal objects array.
                 if (parsedData.creator === this.config.name) {
-                    this.parameters.objects = this.parameters.objects.concat(parsedData.objects);
-                    this.parameters.result = this.parameters.result.concat(parsedData.objects);
+                    this.core.objects = this.core.objects.concat(parsedData.objects);
+                    this.core.result = this.core.result.concat(parsedData.objects);
                 }
 
             } else {
@@ -410,8 +412,8 @@
             }
 
             if (onLoaded && is.fn(onLoaded)) {
-                onLoaded.call(this, this.parameters.result);
-                this.parameters.result = [];
+                onLoaded.call(this, this.core.result);
+                this.core.result = [];
             }
 
             return this;
