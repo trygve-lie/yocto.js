@@ -374,8 +374,6 @@
                     }
                 });
 
-            } else {
-                throw new Error('Yocto tried to store data to ' + type + ' but no name was provided!');
             }
 
             this.chain = [];
@@ -407,8 +405,6 @@
                     this.core.result = this.core.result.concat(parsedData.objects);
                 }
 
-            } else {
-                throw new Error('Yocto tried to read data from ' + type + ' but no name was provided!');
             }
 
             if (onLoaded && is.fn(onLoaded)) {
