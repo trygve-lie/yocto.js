@@ -78,18 +78,22 @@
 
     // Compose an array of composition functions into one function
 
-    function compose(functions) {
+    function compose() {
+
+        var funcs = arguments;
+        
         return function() {
             var i       = 0,
-                l       = functions.length,
-                result  = arguments;
+                l       = funcs.length,
+                args    = arguments;
 
             for (i = 0; i < l; i += 1) {
-                result = [functions[i].apply(this,result)];
+                args = [funcs[i].apply(this, args)];
             }
 
-            return result[0];
+            return args[0];
         };
+
     }
 
 
@@ -134,7 +138,7 @@
 
     function loop(coreObj, chain, onLoopEnd) {
 
-        var composedFunction    = compose(chain),
+        var composedFunction    = compose.apply(null, chain),
             runOnResult         = (coreObj.result.length !== 0) || false,
             objs                = runOnResult ? coreObj.result : coreObj.objects,
             i                   = 0,
@@ -242,6 +246,7 @@
 
             if (onSuccess && is.fn(onSuccess)) {
                 loop(this.core, this.chain, onSuccess);
+                this.chain = [];
             }
 
             return this;
@@ -257,6 +262,7 @@
 
             if (onSuccess && is.fn(onSuccess)) {
                 loop(this.core, this.chain, onSuccess);
+                this.chain = [];
             }
 
             return this;
@@ -284,6 +290,7 @@
             this.core.objects.splice(0, this.core.objects.length);
             if (onSuccess && is.fn(onSuccess)) {
                 onSuccess.call(null);
+                this.chain = [];
             }
             return this;
         },
@@ -371,12 +378,11 @@
 
                     if (onSuccess && is.fn(onSuccess)) {
                         onSuccess.call(self, result);
+                        self.chain = [];
                     }
                 });
 
             }
-
-            this.chain = [];
 
             return this;
         },
@@ -410,6 +416,7 @@
             if (onLoaded && is.fn(onLoaded)) {
                 onLoaded.call(this, this.core.result);
                 this.core.result = [];
+                this.chain = [];
             }
 
             return this;
