@@ -72,7 +72,13 @@
             obj     : function(value) {return value instanceof Object;},
             fn      : function(value) {return typeof value === 'function';},
             str     : function(value) {return typeof value === 'string';},
-            num     : function(value) {return typeof value === 'number';}
+            num     : function(value) {return typeof value === 'number';},
+            empty   : function(obj) {
+                if (obj == null) {return true;}
+                if (is.arr(obj) || is.str(obj)) {return obj.length === 0;}
+                if (is.obj(obj)) {return Object.keys(obj).length === 0;}
+                return true;
+            }
     };
 
 
