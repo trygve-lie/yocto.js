@@ -5,15 +5,16 @@
 <body>
 <h1>Perf tests</h1>
 <button onclick="getTest()">Run test</button>
-<script src="yocto.js"></script>
+<script src="/js/es5.js"></script>
+<script src="/js/yocto.js"></script>
 <script>
 var db = yocto.db();
 
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'data.json');
+xhr.open('GET', '/mock/data.json');
 xhr.onload = function(e) {
   var data = JSON.parse(this.response);
-  
+  console.log(data.positions.length);
   db.put(data.positions, function(arr){
 	// console.log('put', arr.length);
   });
