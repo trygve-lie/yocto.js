@@ -2,7 +2,7 @@
 
 yocto.js is a tiny in-memory database with an [tuple space inspired API](http://code.google.com/p/gruple/wiki/TuplespaceUsage). In a way its a set of convinient methods to work on a list of objects.
 
-In many cases we do operate on small to medium sized data sets and in the browser this is mostly the case. yocto.js is intended to be used on such data sets in the browser and provides an easy way query data. yocto.js does also have methods for persisting and retreiving data to and from local storage.
+In many cases we do operate on small to medium sized data sets and in the browser this is mostly the case. yocto.js is intended to be used on such data sets in the browser and provides an easy way to query data. yocto.js does also have methods for persisting and retreiving data to and from local storage.
 
 yocto.js can also be used in [node.js](http://nodejs.org/). 
 
@@ -270,6 +270,7 @@ These "is" functions are:
 - is.fn(val) - Check if a value is a Function.
 - is.str(val) - Check if a value is a String.
 - is.num(val) - Check if a value is an Number.
+- is.empty(obj) - Check if a Array, Object or Sting is empty.
 
 All checks return a Boolean value.
 
