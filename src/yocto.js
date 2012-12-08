@@ -74,7 +74,7 @@
             str     : function(value) {return typeof value === 'string';},
             num     : function(value) {return typeof value === 'number';},
             empty   : function(obj) {
-                if (obj == null) {return true;}
+                if (obj === null) {return true;}
                 if (is.arr(obj) || is.str(obj)) {return obj.length === 0;}
                 if (is.obj(obj)) {return Object.keys(obj).length === 0;}
                 return true;
