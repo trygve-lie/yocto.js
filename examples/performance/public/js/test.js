@@ -1,21 +1,15 @@
-function perfTest(fn, iterations) {
-	var start 	= +new Date(),
-		end 	= 0,
-		i 		= iterations || 1000;
-
-	while(i--){
-		fn();
-	}
-
-	end = +new Date();	
+function perfTest(fn) {
+	var start = +new Date();
+	fn();
+	var end = +new Date();
 	return (end-start);
 }
 
 
 function testGet() {
 	var result = perfTest(function(){
-		db.get({free:false}, function(arr){
-			// console.log(arr.length);
+		db.get({cc:"061",cn:"New York County"}, function(arr){
+			// console.log(arr);
 		});
 	});
 	document.querySelectorAll('#testGet .result')[0].innerHTML = result + 'ms';
@@ -24,7 +18,7 @@ function testGet() {
 
 function testGetEach() {
 	var result = perfTest(function(){
-		db.get({free:false}).each(function(el){
+		db.get({cc:"061",cn:"New York County"}).each(function(el){
 			// console.log(el);
 		});
 	});
@@ -44,8 +38,8 @@ var xhr = new XMLHttpRequest();
 xhr.open('GET', '/mock/data.json');
 xhr.onload = function(e) {
   var data = JSON.parse(this.response);
-  db.put(data.positions, function(arr){
-	document.getElementById('info').innerHTML = data.positions.length + ' objects loaded into database';
+  db.put(data.codes, function(arr){
+	document.getElementById('info').innerHTML = data.codes.length + ' objects loaded into database';
 	document.getElementById('testGet').addEventListener('click', testGet);
 	document.getElementById('testGetEach').addEventListener('click', testGetEach);
   });
