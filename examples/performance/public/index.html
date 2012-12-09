@@ -1,38 +1,19 @@
 <!doctype html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" id="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,initial-scale=1.0">
+  <title>yocto.js - performance</title>
 </head>
 <body>
-<h1>Perf tests</h1>
-<button onclick="getTest()">Run test</button>
+  <h1>Performance</h1>
+  <p id="info">Loading database</p>
+  <ul>
+    <li id="testGet">get()<span class="result"></span></li>
+    <li id="testGetEach">get().each()<span class="result"></span></li>
+  </ul>
 <script src="/js/es5.js"></script>
 <script src="/js/yocto.js"></script>
-<script>
-var db = yocto.db();
-
-var xhr = new XMLHttpRequest();
-xhr.open('GET', '/mock/data.json');
-xhr.onload = function(e) {
-  var data = JSON.parse(this.response);
-  console.log(data.positions.length);
-  db.put(data.positions, function(arr){
-	// console.log('put', arr.length);
-  });
-}
-xhr.send();
-
-function getTest() {
-	var start = +new Date(),
-		end = 0,
-		i = 100;
-
-	while(i--){
-		db.get({free:false}, function(arr){ });
-	}
-
-	end = +new Date();
-	console.log((end-start)/1000);
-}
-</script>
+<script src="/js/test.js"></script>
 </body>
 </html>
