@@ -1,0 +1,16 @@
+{
+  "name": "yocto",
+  "main": "src/yocto.js",
+  "version": "0.0.1",
+  "author": {
+    "name": "Trygve Lie",
+    "email": "post@trygve-lie.com"
+  },
+  "description": "A tiny in-memory database with an tuple space inspired API aimed to be used at small to medium sized data sets.",
+  "scripts": {
+    "test": "buster test"
+  },
+  "devDependencies": {
+    "buster": "latest"
+  }
+}
