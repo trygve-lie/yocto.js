@@ -106,15 +106,18 @@
     // Composition function for matching an object with a template
 
     function match(coreObj) {
-        coreObj.match = Object.keys(coreObj.template).every(function(key) {
-            if (is.fn(coreObj.template[key])) {
-                return coreObj.template[key].call(this, coreObj.object[key], is);
 
+        var keys    = Object.keys(coreObj.template),
+            i       = keys.length;
+
+        while (i--) {
+            if (is.fn(coreObj.template[keys[i]])) {
+                coreObj.match = coreObj.template[keys[i]].call(this, coreObj.object[keys[i]], is);
             } else {
-                return coreObj.object[key] === coreObj.template[key];
-
+                coreObj.match = (coreObj.object[keys[i]] === coreObj.template[keys[i]]);
             }
-        });
+        }
+
         return coreObj;
     }
 

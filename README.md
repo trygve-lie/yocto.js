@@ -301,7 +301,6 @@ yocto.js utalize some new ES5 methods when working with lists and objects. These
 yocto.js use the following ES5 methods:
  - Object.create
  - Object.keys
- - Array.every
  - Array.filter
 
 yocto.js provide a separate es5.js file containing just these methods as a shim for older browsers. This shim extends the native types in the run time. If you need to support older browsers and don't already have a shim for the above methods, please include the es5.js shim file in your project also.
