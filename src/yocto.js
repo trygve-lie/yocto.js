@@ -106,18 +106,15 @@
     // Composition function for matching an object with a template
 
     function match(coreObj) {
+        coreObj.match = Object.keys(coreObj.template).every(function(key) {
+            if (is.fn(coreObj.template[key])) {
+                return coreObj.template[key].call(this, coreObj.object[key], is);
 
-        var keys    = Object.keys(coreObj.template),
-            i       = keys.length;
-
-        while (i--) {
-            if (is.fn(coreObj.template[keys[i]])) {
-                coreObj.match = coreObj.template[keys[i]].call(this, coreObj.object[keys[i]], is);
             } else {
-                coreObj.match = (coreObj.object[keys[i]] === coreObj.template[keys[i]]);
-            }
-        }
+                return coreObj.object[key] === coreObj.template[key];
 
+            }
+        });
         return coreObj;
     }
 
@@ -193,259 +190,261 @@
 
 
 
-    var db = {
+    function db() {
 
-        config          : {
-            name : 'yocto'
-        },
-
-        chain           : [],
-        observers       : [],
-
-        core : {
-            objects     : [],
-            object      : undefined,
-            result      : [],
-            index       : 0,
-            template    : {},
-            match       : true,
-            callback    : undefined
-        },
+        var config      = {
+                name : 'yocto'
+            },
+            chain       = [],
+            observers   = [],
+            core        = {
+                objects     : [],
+                object      : undefined,
+                result      : [],
+                index       : 0,
+                template    : {},
+                match       : true,
+                callback    : undefined
+            };
 
 
-        // Put a single object or an array of objects into the database
+        return {
 
-        put : function(obj, onSuccess) {
+            // Put a single object or an array of objects into the database
 
-            var core = this.core;
+            put : function(obj, onSuccess) {
 
-            // Array of objects applied
-            if (is.arr(obj)) {
+                // var core = this.core;
 
-                // Filter out non object entries.
-                obj = obj.filter(function(element){
-                    return (is.obj(element) && !is.arr(element));
-                });
+                // Array of objects applied
+                if (is.arr(obj)) {
 
-                // Merge appended array into internal objects array.
-                core.objects    = core.objects.concat(obj);
-                core.result     = core.result.concat(obj);
-            }
+                    // Filter out non object entries.
+                    obj = obj.filter(function(element){
+                        return (is.obj(element) && !is.arr(element));
+                    });
 
-            // Single object applied
-            if (is.obj(obj) && !is.arr(obj)) {
-                core.objects.push(obj);
-                core.result.push(obj);
-            }
+                    // Merge appended array into internal objects array.
+                    core.objects    = core.objects.concat(obj);
+                    core.result     = core.result.concat(obj);
+                }
 
-            if (onSuccess && is.fn(onSuccess)) {
-                onSuccess.call(this, core.result);
-                core.result = [];
-            }
+                // Single object applied
+                if (is.obj(obj) && !is.arr(obj)) {
+                    core.objects.push(obj);
+                    core.result.push(obj);
+                }
 
-            return this;
-        },
+                if (onSuccess && is.fn(onSuccess)) {
+                    onSuccess.call(this, core.result);
+                    core.result = [];
+                }
 
-
-        // Get object(s) from the database based on a template object
-
-        get : function(template, onSuccess) {
-            this.core.template = template || {};
-            this.chain.push(match);
-
-            if (onSuccess && is.fn(onSuccess)) {
-                loop(this.core, this.chain, onSuccess);
-                this.chain = [];
-            }
-
-            return this;
-        },
+                return this;
+            },
 
 
-        // Takes matching objects out of the database
+            // Get object(s) from the database based on a template object
 
-        take : function(template, onSuccess) {
-            this.core.template = template || {};
-            this.chain.push(match);
-            this.chain.push(remove);
+            get : function(template, onSuccess) {
+                core.template = template || {};
+                chain.push(match);
 
-            if (onSuccess && is.fn(onSuccess)) {
-                loop(this.core, this.chain, onSuccess);
-                this.chain = [];
-            }
+                if (onSuccess && is.fn(onSuccess)) {
+                    loop(core, chain, onSuccess);
+                    chain = [];
+                }
 
-            return this;
-        },
-
-
-        // Loop over each object in a returned list of objects
-
-        each : function(onEach) {
-            this.chain.push(callback);
-
-            if (onEach && is.fn(onEach)) {
-                this.core.callback = onEach;
-                loop(this.core, this.chain);
-            }
-
-            this.chain = [];
-            return this;
-        },
+                return this;
+            },
 
 
-        // Drop all database records in memory.
+            // Takes matching objects out of the database
 
-        drop : function(onSuccess) {
-            this.core.objects.splice(0, this.core.objects.length);
-            if (onSuccess && is.fn(onSuccess)) {
-                onSuccess.call(null);
-                this.chain = [];
-            }
-            return this;
-        },
+            take : function(template, onSuccess) {
+                core.template = template || {};
+                chain.push(match);
+                chain.push(remove);
 
+                if (onSuccess && is.fn(onSuccess)) {
+                    loop(core, chain, onSuccess);
+                    chain = [];
+                }
 
-        // Drop all database records in memory and in localstorage.
-        // Takes the following object as configuration:
-        // {
-        //     type : 'local' || 'session'
-        //     name : ''
-        // }
-
-        destroy : function(config, onSuccess) {
-            var self    = this,
-                type    = setStorageType(config);
-
-            if (config && is.str(config.name) && has.localStorage()) {
-                window[type].removeItem(config.name);
-            }
-
-            this.drop(onSuccess);
-
-            return this;
-        },
+                return this;
+            },
 
 
-        // Sort a returned list of objects based on a objects property name
+            // Loop over each object in a returned list of objects
 
-        sort : function(key, onSuccess) {
-            var self    = this,
-                sorted  = [];
+            each : function(onEach) {
+                chain.push(callback);
 
-            if (is.str(key)) {
-                loop(this.core, this.chain, function(result){
+                if (onEach && is.fn(onEach)) {
+                    core.callback = onEach;
+                    loop(core, chain);
+                }
 
-                    sorted = result.sort(function sortByObjectKey(object1, object2) {
-                        var key1 = '',
-                            key2 = '';
+                chain = [];
+                return this;
+            },
 
-                        if (is.obj(object1) && is.obj(object2) && object1 && object2) {
-                            key1 = object1[key];
-                            key2 = object2[key];
-                            if (key1 === key2) {
-                                return object1;
+
+            // Drop all database records in memory.
+
+            drop : function(onSuccess) {
+                core.objects.splice(0, core.objects.length);
+                if (onSuccess && is.fn(onSuccess)) {
+                    onSuccess.call(null);
+                    chain = [];
+                }
+                return this;
+            },
+
+
+            // Drop all database records in memory and in localstorage.
+            // Takes the following object as configuration:
+            // {
+            //     type : 'local' || 'session'
+            //     name : ''
+            // }
+// TODO: Why does this one have "self"???????????????????
+            destroy : function(config, onSuccess) {
+                var self    = this,
+                    type    = setStorageType(config);
+
+                if (config && is.str(config.name) && has.localStorage()) {
+                    window[type].removeItem(config.name);
+                }
+
+                this.drop(onSuccess);
+
+                return this;
+            },
+
+
+            // Sort a returned list of objects based on a objects property name
+
+            sort : function(key, onSuccess) {
+                var self    = this,
+                    sorted  = [];
+
+                if (is.str(key)) {
+                    loop(core, chain, function(result){
+
+                        sorted = result.sort(function sortByObjectKey(object1, object2) {
+                            var key1 = '',
+                                key2 = '';
+
+                            if (is.obj(object1) && is.obj(object2) && object1 && object2) {
+                                key1 = object1[key];
+                                key2 = object2[key];
+                                if (key1 === key2) {
+                                    return object1;
+                                }
+                                if (typeof key1 === typeof key2) {
+                                    return key1 < key2 ? -1 : 1;
+                                }
                             }
-                            if (typeof key1 === typeof key2) {
-                                return key1 < key2 ? -1 : 1;
-                            }
+                        });
+
+                        if (onSuccess && is.fn(onSuccess)) {
+                            onSuccess.call(self, sorted);
+                            sorted = [];
                         }
                     });
 
-                    if (onSuccess && is.fn(onSuccess)) {
-                        onSuccess.call(self, sorted);
-                        sorted = [];
-                    }
-                });
-
-                this.core.result = sorted;
-            }
-
-            return this;
-        },
-
-
-        // Save a list of records to localstorage
-        // Takes the following object as configuration:
-        // {
-        //     type : 'local' || 'session'
-        //     name : ''
-        // }
-
-        save : function(config, onSuccess) {
-
-            var self    = this,
-                type    = setStorageType(config);
-
-            if (config && is.str(config.name) && has.localStorage()) {
-
-                loop(this.core, this.chain, function(result){
-                    window[type].setItem(config.name, JSON.stringify({
-                        creator     : self.config.name,
-                        timestamp   : +new Date(),
-                        objects     : result
-                    }));
-
-                    if (onSuccess && is.fn(onSuccess)) {
-                        onSuccess.call(self, result);
-                        self.chain = [];
-                    }
-                });
-
-            }
-
-            return this;
-        },
-
-
-        // Load a list of records from localstorage
-        // Takes the following object as configuration:
-        // {
-        //     type : 'local' || 'session'
-        //     name : ''
-        // }
-
-        load : function(config, onLoaded) {
-
-            var type        = setStorageType(config),
-                loadedData  = '',
-                parsedData  = {};
-
-            if (config && is.str(config.name) && has.localStorage()) {
-                loadedData = window[type].getItem(config.name);
-                parsedData = JSON.parse(loadedData);
-
-                // Merge appended array into internal objects array.
-                if (parsedData.creator === this.config.name) {
-                    this.core.objects = this.core.objects.concat(parsedData.objects);
-                    this.core.result = this.core.result.concat(parsedData.objects);
+                    core.result = sorted;
                 }
 
+                return this;
+            },
+
+
+            // Save a list of records to localstorage
+            // Takes the following object as configuration:
+            // {
+            //     type : 'local' || 'session'
+            //     name : ''
+            // }
+
+            save : function(config, onSuccess) {
+
+                var self    = this,
+                    type    = setStorageType(config);
+
+                if (config && is.str(config.name) && has.localStorage()) {
+
+                    loop(core, chain, function(result){
+                        window[type].setItem(config.name, JSON.stringify({
+                            creator     : self.config.name,
+                            timestamp   : +new Date(),
+                            objects     : result
+                        }));
+
+                        if (onSuccess && is.fn(onSuccess)) {
+                            onSuccess.call(self, result);
+                            self.chain = [];
+                        }
+                    });
+
+                }
+
+                return this;
+            },
+
+
+            // Load a list of records from localstorage
+            // Takes the following object as configuration:
+            // {
+            //     type : 'local' || 'session'
+            //     name : ''
+            // }
+
+            load : function(config, onLoaded) {
+
+                var type        = setStorageType(config),
+                    loadedData  = '',
+                    parsedData  = {};
+
+                if (config && is.str(config.name) && has.localStorage()) {
+                    loadedData = window[type].getItem(config.name);
+                    parsedData = JSON.parse(loadedData);
+
+                    // Merge appended array into internal objects array.
+                    if (parsedData.creator === config.name) {
+                        core.objects = core.objects.concat(parsedData.objects);
+                        core.result = core.result.concat(parsedData.objects);
+                    }
+
+                }
+
+                if (onLoaded && is.fn(onLoaded)) {
+                    onLoaded.call(this, core.result);
+                    core.result = [];
+                    chain = [];
+                }
+
+                return this;
+            },
+
+
+            observe : function() {
+
+            },
+
+
+            unobserve : function() {
+
             }
-
-            if (onLoaded && is.fn(onLoaded)) {
-                onLoaded.call(this, this.core.result);
-                this.core.result = [];
-                this.chain = [];
-            }
-
-            return this;
-        },
-
-
-        observe : function() {
-
-        },
-
-
-        unobserve : function() {
-
+        
         }
 
     };
 
 
     exports.db = function createYocto() {
-        return Object.create(db);
+        return new db();
     };
 
 

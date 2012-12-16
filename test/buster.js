@@ -13,3 +13,6 @@ config["Client tests"] = {
         "test/yocto.get.test.js"
     ]
 };
+
+// TODO: Take a peek at when.js how to do dual browser and node testing
+// https://github.com/cujojs/when/blob/master/test/buster.js

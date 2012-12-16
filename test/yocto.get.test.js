@@ -1,88 +1,150 @@
-var testCase = buster.testCase("yocto.js Test - Get", {
+buster.testCase("yocto.js Test - Get", {
 
-    setUp: function() {
-        // this.db = yocto.db();
+    setUp: function(done) {
+        this.db = yocto.db();
 
         this.objs = [
-            {id: "NOR_01359", lat: 63.68496, lng:  9.66531, name: "Brekstad Hurtigladestasjon, Ørland", street: "Landfestet", streetNumber: "1-5", points: 1, open24h: true, free: false, maxTime: 1},
-            {id: "NOR_00633", lat: 63.58871, lng: 10.74054, name: "Frostasenteret, Frosta", street: "Frostasenteret", streetNumber: "", points: 1, open24h: true, free: true, maxTime: 4},
-            {id: "NOR_01338", lat: 59.92943, lng: 10.46686, name: "Coop Extra, Trondheim", street: "Valkyrieveien", streetNumber: "2", points: 1, open24h: true, free: true, maxTime: 6},
-            {id: "NOR_00481", lat: 63.41034, lng: 10.43997, name: "Moholt Storsenter, Trondheim", street: "Brøsetvegen", streetNumber: "177", points: 2, open24h: true, free : true, maxTime: 1},
-            {id: "NOR_00097", lat: 60.79564, lng: 11.08045, name: "Eidsiva Energi, Hamar", street: "Vangsvegen", streetNumber: "73", points: 2, open24h: false, free: true, maxTime: 2},
-            {id: "NOR_00725", lat: 60.15918, lng: 10.25634, name: "Eikliveien, Hønefoss", street: "Osloveien", streetNumber: "1", points: 4, open24h:true, free: false, maxTime: 8}
+            {id: "NOR_01359", lat: 63.68496, lng:  9.66531, name: "Brekstad Hurtigladestasjon, Ørland", street: "Landfestet", streetNumber: "1-5", points: 1, open24h: true, free: false, maxTime: 1, is: []},
+            {id: "NOR_00633", lat: 63.58871, lng: 10.74054, name: "Frostasenteret, Frosta", street: "Frostasenteret", streetNumber: "", points: 1, open24h: true, free: true, maxTime: 4, is: {}},
+            {id: "NOR_01338", lat: 59.92943, lng: 10.46686, name: "Coop Extra, Trondheim", street: "Valkyrieveien", streetNumber: "2", points: 1, open24h: true, free: true, maxTime: 6, is: function(foo){}},
+            {id: "NOR_00481", lat: 63.41034, lng: 10.43997, name: "Moholt Storsenter, Trondheim", street: "Brøsetvegen", streetNumber: "177", points: 2, open24h: true, free : true, maxTime: 1, is: "foo"},
+            {id: "NOR_00097", lat: 60.79564, lng: 11.08045, name: "Eidsiva Energi, Hamar", street: "Vangsvegen", streetNumber: "73", points: 2, open24h: false, free: true, maxTime: 2, is: 2},
+            {id: "NOR_00725", lat: 60.15918, lng: 10.25634, name: "Eikliveien, Hønefoss", street: "Osloveien", streetNumber: "1", points: 4, open24h:true, free: false, maxTime: 8, is: ""}
         ];
 
+        this.db.put(this.objs, function(objs){
+            done();
+        });
 
     },
 
     tearDown: function() {
-        //delete this.db;
-        // delete this.objs;
+        delete this.db;
+        delete this.objs;
     },
 
 
-
-    "single object - in callback returned number of objects should be 1 and its _id_ should have the value NOR_00481": function(done) {
-        // var self = this;
-        var db = yocto.db();
-
-        db.put(this.objs, function(records) { 
-            // Do nothing
-
-            db.get({id : "NOR_00481"}, function(r){
-    // console.log(self.db.parameters.objects.length);
-                buster.assert.equals(r.length, 1);
-                buster.assert.equals(r[0].id, 'NOR_00481');
-                done();
-            });
-
-            // done();
+    "single key - in callback returned number of objects should be 1 and its _id_ should have the value NOR_00481": function(done) {
+        this.db.get({id : "NOR_00481"}, function(objs){
+            buster.assert.equals(objs.length, 1);
+            buster.assert.equals(objs[0].id, 'NOR_00481');
+            done();
         });
+    },
 
 
-
-    }/*,
-
-
-    "test get of multiple objects - in callback, returned number of objects should be 2 and _open24h_ and _free_ should be true": function() {
-
-        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).get({open24h: true, free: true}, function(records) {
-            buster.assert.equals(records.length, 2);
-            buster.assert.equals(records[0].free, true);
-            buster.assert.equals(records[0].open24h, true);
-            buster.assert.equals(records[1].free, true);
-            buster.assert.equals(records[1].open24h, true);
+    "multiple keys - in callback, returned number of objects should be 1. _open24h_ should be false and _free_ should be true": function(done) {
+        this.db.get({open24h: false, free: true}, function(objs) {
+            buster.assert.equals(objs.length, 1);
+            buster.assert.equals(objs[0].open24h, false);
+            buster.assert.equals(objs[0].free, true);
+            done();
         })
     },
 
 
+    "multiple objects - in callback, returned number of objects should be 3. _points_ should be 1": function(done) {
+        this.db.get({points: 1}, function(objs) {
+            buster.assert.equals(objs.length, 3);
+            buster.assert.equals(objs[0].points, 1);
+            buster.assert.equals(objs[1].points, 1);
+            buster.assert.equals(objs[2].points, 1);
+            done();
+        })
+    },
 
-    // ### TAKE
 
-    "test take of single object - in callback, returned number of objects should be 1 and equal to the one taken, after execution _objects_ should be one less": function() {
-        var self = this;
+    "function as key vaule - in callback, returned number of objects should be 1. _name_ should be Coop Extra, Trondheim": function(done) {
+        function testName(obj, is){
+            return (obj.substring(0,4) === 'Coop');
+        }
 
-        this.db.put(this.arrayOfRecordsA).take({id: 'NOR_00481'}, function(records) {
-            buster.assert.equals(records.length, 1);
-            buster.assert.equals(records[0].id, 'NOR_00481');
-            buster.assert.equals(self.db.objects.length, 2);
-        });
+        this.db.get({name: testName}, function(objs) {
+            buster.assert.equals(objs.length, 1);
+            buster.assert.equals(objs[0].name, 'Coop Extra, Trondheim');
+            done();
+        })
+    },
 
-    }
-*/
 
-    // ### SORT
+    "function as key vaule - is.arr check - in callback, returned number of objects should be 1. _id_ should be NOR_01359": function(done) {
+        function isTest(obj, is){
+            return is.arr(obj);
+        }
+
+        this.db.get({is: isTest}, function(objs) {
+            buster.assert.equals(objs.length, 1);
+            buster.assert.equals(objs[0].id, 'NOR_01359');
+            done();
+        })
+    },
+
 /*
-    "test sort on strings": function() {
-        this.db.put(this.arrayOfRecordsA).put(this.arrayOfRecordsB).sort('id', function(records) {
-            buster.assert.equals(records[0].id, 'NOR_00039');
-            buster.assert.equals(records[1].id, 'NOR_00097');
-            buster.assert.equals(records[2].id, 'NOR_00481');
-            buster.assert.equals(records[3].id, 'NOR_00725');
-            buster.assert.equals(records[4].id, 'NOR_01338');
-        });
+    "function as key vaule - is.obj check - in callback, returned number of objects should be 1. _id_ should be NOR_00633": function(done) {
+        function isTest(obj, is){
+            return is.obj(obj);
+        }
+
+        this.db.get({is: isTest}, function(objs) {
+            buster.log(objs);
+            buster.assert.equals(objs.length, 1);
+            buster.assert.equals(objs[0].id, 'NOR_00633');
+            done();
+        })
     },
 */
 
+    "function as key vaule - is.fn check - in callback, returned number of objects should be 1. _id_ should be NOR_01338": function(done) {
+        function isTest(obj, is){
+            return is.fn(obj);
+        }
+
+        this.db.get({is: isTest}, function(objs) {
+            buster.assert.equals(objs.length, 1);
+            buster.assert.equals(objs[0].id, 'NOR_01338');
+            done();
+        })
+    },
+
+
+    "function as key vaule - is.str check - in callback, returned number of objects should be 2. _id_ should be NOR_00481 and NOR_00725": function(done) {
+        function isTest(obj, is){
+            return is.str(obj);
+        }
+
+        this.db.get({is: isTest}, function(objs) {
+            buster.assert.equals(objs.length, 2);
+            buster.assert.equals(objs[0].id, 'NOR_00481');
+            buster.assert.equals(objs[1].id, 'NOR_00725');
+            done();
+        })
+    },
+
+
+    "function as key vaule - is.num check - in callback, returned number of objects should be 1. _id_ should be NOR_00097": function(done) {
+        function isTest(obj, is){
+            return is.num(obj);
+        }
+
+        this.db.get({is: isTest}, function(objs) {
+            buster.assert.equals(objs.length, 1);
+            buster.assert.equals(objs[0].id, 'NOR_00097');
+            done();
+        })
+    },
+
+
+    "function as key vaule - is.empty check - in callback, returned number of objects should be 1. _id_ should be NOR_00725": function(done) {
+        function isTest(obj, is){
+            return is.empty(obj);
+        }
+
+        this.db.get({is: isTest}, function(objs) {
+
+            buster.assert.equals(objs.length, 1);
+            buster.assert.equals(objs[0].id, 'NOR_00725');
+            done();
+        })
+    }
 
 });
