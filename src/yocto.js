@@ -190,7 +190,7 @@
 
 
 
-    function db() {
+    function Yocto() {
 
         var config      = {
                 name : 'yocto'
@@ -438,13 +438,13 @@
 
             }
         
-        }
+        };
 
-    };
+    }
 
 
     exports.db = function createYocto() {
-        return new db();
+        return new Yocto();
     };
 
 
