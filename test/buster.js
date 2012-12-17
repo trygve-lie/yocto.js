@@ -10,7 +10,8 @@ config["Client tests"] = {
     tests: [
         "test/yocto.core.test.js",
         "test/yocto.put.test.js",
-        "test/yocto.get.test.js"
+        "test/yocto.get.test.js",
+        "test/yocto.take.test.js"
     ]
 };
 
