@@ -133,7 +133,7 @@ buster.testCase("yocto.js Test - Get", {
         })
     },
 
-
+/*
     "function as key vaule - is.empty check - in callback, returned number of objects should be 1. _id_ should be NOR_00725": function(done) {
         function isTest(obj, is){
             return is.empty(obj);
@@ -146,5 +146,6 @@ buster.testCase("yocto.js Test - Get", {
             done();
         })
     }
+*/
 
 });
