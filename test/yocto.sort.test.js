@@ -1,4 +1,4 @@
-buster.testCase("yocto.js Test - Take", {
+buster.testCase("yocto.js Test - Sort", {
 
     setUp: function(done) {
         this.db = yocto.db();
