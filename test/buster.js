@@ -15,9 +15,3 @@ config["Client tests"] = {
         "test/yocto.sort.test.js"
     ]
 };
-
-// TODO I: Take a peek at when.js how to do dual browser and node testing
-// https://github.com/cujojs/when/blob/master/test/buster.js
-
-// TODO II: Make tests run in TravisCI:
-// https://github.com/azu/BusterJS_TravisCI
