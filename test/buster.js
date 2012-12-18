@@ -13,6 +13,7 @@ config["Client tests"] = {
         "test/yocto.get.test.js",
         "test/yocto.take.test.js",
         "test/yocto.sort.test.js",
-        "test/yocto.each.test.js"
+        "test/yocto.each.test.js",
+        "test/yocto.drop.test.js"
     ]
 };
