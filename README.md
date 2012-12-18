@@ -4,7 +4,7 @@ yocto.js is a tiny in-memory database with an [tuple space inspired API](http://
 
 In many cases we do operate on small to medium sized data sets and in the browser this is mostly the case. yocto.js is intended to be used on such data sets in the browser and provides an easy way to query data. yocto.js does also have methods for persisting and retreiving data to and from local storage.
 
-yocto.js can also be used in [node.js](http://nodejs.org/). 
+yocto.js can also be used in [node.js](http://nodejs.org/).
 
 
 
@@ -261,7 +261,7 @@ It is worth noticing that this is done by exact matching. That implies that the 
 
 It is possible to do finer queries by providing a query function as the key value in templates. The query function must return "true" if the key evaluates as a match for what your quering and "false" if it does not.
 
-The query function is passed two method arguments. The first argument is the value of the key which the query function operate on. The second parameter is an object with convenient "is" functions which can be used to evaluate values in the query function. 
+The query function is passed two method arguments. The first argument is the value of the key which the query function operate on. The second parameter is an object with convenient "is" functions which can be used to evaluate values in the query function.
 
 These "is" functions are:
 
@@ -318,6 +318,8 @@ yocto.js does also use native JSON.parse() and JSON.stringify() to persist data 
 This small library did spinn out of the fact that I saw myself doing a lot of simmilar tasks on lists in different applications. I've found myself fetching a lot of generic lists of objects from a server and then wanting to select subsets in them without doing a round trip to the server. I've also found myself using localstorage to store these lists and object in the client to reduce round trips to a server. So; this small library came out of small needs I had and I found the API used in a tuple space to kinda fit the operations I do.
 
 There is probably plenty of room to improve both the API, the code, performance, tests, doc etc, etc so if you have any ideas and feedback on how to make this small library better, please feel free to create an issue, submit a pull request or ping me in any way :)
+
+[![Build Status](https://travis-ci.org/trygve-lie/yocto.js.png?branch=master)](https://travis-ci.org/trygve-lie/yocto.js)
 
 
 
