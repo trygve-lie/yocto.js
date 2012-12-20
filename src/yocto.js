@@ -60,7 +60,16 @@
     // Environment checks
 
     var has = {
-        storage    : function() {return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));}
+        storage : function() {
+          var tmp = '_y' + +new Date();
+          try {
+              localStorage.setItem(tmp, tmp);
+              localStorage.removeItem(tmp);
+              return true;
+          } catch(e) {
+              return false;
+          }
+        }
     };
 
 
