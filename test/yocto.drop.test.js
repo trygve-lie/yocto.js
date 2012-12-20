@@ -22,6 +22,7 @@ buster.testCase("yocto.js Test - Drop", {
     tearDown: function() {
         delete this.db;
         delete this.objs;
+        delete this.testTimeout;
     },
 
 

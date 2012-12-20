@@ -60,7 +60,7 @@
     // Environment checks
 
     var has = {
-        localStorage    : function() {return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));}
+        storage    : function() {return !!(window.hasOwnProperty && window.hasOwnProperty('localStorage'));}
     };
 
 
@@ -302,18 +302,17 @@
             },
 
 
-            // Drop all database records in memory and in localstorage.
+            // Drop all database records in memory and in localStorage.
             // Takes the following object as configuration:
             // {
             //     type : 'local' || 'session'
             //     name : ''
             // }
-// TODO: Why does this one have "self"???????????????????
-            destroy : function(config, onSuccess) {
-                var self    = this,
-                    type    = setStorageType(config);
 
-                if (config && is.str(config.name) && has.localStorage()) {
+            destroy : function(config, onSuccess) {
+                var type    = setStorageType(config);
+
+                if (config && is.str(config.name) && has.storage()) {
                     window[type].removeItem(config.name);
                 }
 
@@ -373,11 +372,11 @@
                 var self    = this,
                     type    = setStorageType(config);
 
-                if (config && is.str(config.name) && has.localStorage()) {
+                if (config && is.str(config.name) && has.storage()) {
 
                     loop(core, chain, function(result){
                         window[type].setItem(config.name, JSON.stringify({
-                            creator     : self.config.name,
+                            creator     : config.name,
                             timestamp   : +new Date(),
                             objects     : result
                         }));
@@ -407,7 +406,7 @@
                     loadedData  = '',
                     parsedData  = {};
 
-                if (config && is.str(config.name) && has.localStorage()) {
+                if (config && is.str(config.name) && has.storage()) {
                     loadedData = window[type].getItem(config.name);
                     parsedData = JSON.parse(loadedData);
 
