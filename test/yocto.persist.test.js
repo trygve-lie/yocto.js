@@ -1,10 +1,11 @@
 buster.testCase("yocto.js Test - Save - Load - Destroy", {
 
     setUp: function(done) {
-        
+
         this.timeout = 1000;
 
         this.db = yocto.db();
+        this.db2 = yocto.db();
 
         this.objs = [
             {id: "NOR_01359", lat: 63.68496, lng:  9.66531, name: "Brekstad Hurtigladestasjon, Ørland", street: "Landfestet", streetNumber: "1-5", points: 1, open24h: true, free: false, maxTime: 1, is: []},
@@ -23,6 +24,7 @@ buster.testCase("yocto.js Test - Save - Load - Destroy", {
 
     tearDown: function() {
         delete this.db;
+        delete this.db2;
         delete this.objs;
     },
 
@@ -59,7 +61,7 @@ buster.testCase("yocto.js Test - Save - Load - Destroy", {
     },
 
 
-    "save sessionStorage write - when read, number of objects should be 2, creator should be same as name and timestamp a number": function(done) {
+    "save sessionStorage write - when read, number of objects should be 2, creator should be same as name and timestamp should be a number": function(done) {
         var conf = {
             name : 'test',
             type : 'session'
@@ -75,5 +77,83 @@ buster.testCase("yocto.js Test - Save - Load - Destroy", {
             done();
         });
     },
+
+
+    "load localStorage - when loaded, in callback number of objects should be 2": function(done) {
+        var conf = {
+            name : 'test',
+            type : 'local'
+        };
+
+        this.db.get({free : false}).save(conf, function(objs) {
+            buster.assert.equals(objs.length, 2);
+        });
+
+        this.db2.load(conf, function(objs) {
+            buster.assert.equals(objs.length, 2);
+            window['localStorage'].removeItem(conf.name);
+            done();
+        });
+    },
+
+
+    "load sessionStorage - when loaded, in callback number of objects should be 2": function(done) {
+        var conf = {
+            name : 'test',
+            type : 'session'
+        };
+
+        this.db.get({free : false}).save(conf, function(objs) {
+            buster.assert.equals(objs.length, 2);
+        });
+
+        this.db2.load(conf, function(objs) {
+            buster.assert.equals(objs.length, 2);
+            window['sessionStorage'].removeItem(conf.name);
+            done();
+        });
+    },
+
+
+    "destroy localStorage - after destory, both database and storage should be empty": function(done) {
+        var conf = {
+            name : 'test',
+            type : 'local'
+        };
+
+        this.db.get({}).save(conf, function(objs) {
+            buster.assert.equals(objs.length, 6);
+        });
+
+        this.db.destroy(conf, function(){ });
+
+        this.db.get({}, function(objs){
+            var data = window['localStorage'].getItem(conf.name);
+            buster.assert.isNull(data);
+            buster.assert.equals(objs.length, 0);
+            done();
+        });
+    },
+
+
+    "destroy sessionStorage - after destory, both database and storage should be empty": function(done) {
+        var conf = {
+            name : 'test',
+            type : 'local'
+        };
+
+        this.db.get({}).save(conf, function(objs) {
+            buster.assert.equals(objs.length, 6);
+        });
+
+        this.db.destroy(conf, function(){ });
+
+        this.db.get({}, function(objs){
+            var data = window['sessionStorage'].getItem(conf.name);
+            buster.assert.isNull(data);
+            buster.assert.equals(objs.length, 0);
+            done();
+        });
+    }
 
 });
