@@ -61,7 +61,7 @@
 
     var has = {
         storage : function() {
-          var tmp = '_y' + +new Date();
+          var tmp = '__ytest';
           try {
               localStorage.setItem(tmp, tmp);
               localStorage.removeItem(tmp);
@@ -96,7 +96,7 @@
     function compose() {
 
         var funcs = arguments;
-        
+
         return function() {
             var i       = 0,
                 l       = funcs.length,
@@ -445,7 +445,7 @@
             unobserve : function() {
 
             }
-        
+
         };
 
     }
