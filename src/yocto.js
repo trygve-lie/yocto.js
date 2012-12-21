@@ -57,148 +57,6 @@
     "use strict";
 
 
-    // Environment checks
-
-    var has = {
-        storage : function() {
-          var tmp = '__ytest';
-          try {
-              localStorage.setItem(tmp, tmp);
-              localStorage.removeItem(tmp);
-              return true;
-          } catch(e) {
-              return false;
-          }
-        }
-    };
-
-
-    // Convenient "is" checks
-    // These checks is also passed on to any functions in a template
-
-    var is = {
-            arr     : function(value) {return value instanceof Array;},
-            obj     : function(value) {return value instanceof Object;},
-            fn      : function(value) {return typeof value === 'function';},
-            str     : function(value) {return typeof value === 'string';},
-            num     : function(value) {return typeof value === 'number';},
-            empty   : function(obj) {
-                if (obj === null) {return true;}
-                if (is.arr(obj) || is.str(obj)) {return obj.length === 0;}
-                if (is.obj(obj)) {return Object.keys(obj).length === 0;}
-                return true;
-            }
-    };
-
-
-    // Compose an array of composition functions into one function
-
-    function compose() {
-
-        var funcs = arguments;
-
-        return function() {
-            var i       = 0,
-                l       = funcs.length,
-                args    = arguments;
-
-            for (i = 0; i < l; i += 1) {
-                args = [funcs[i].apply(this, args)];
-            }
-
-            return args[0];
-        };
-
-    }
-
-
-    // Composition function for matching an object with a template
-
-    function match(coreObj) {
-        coreObj.match = Object.keys(coreObj.template).every(function(key) {
-            if (is.fn(coreObj.template[key])) {
-                return coreObj.template[key].call(this, coreObj.object[key], is);
-
-            } else {
-                return coreObj.object[key] === coreObj.template[key];
-
-            }
-        });
-        return coreObj;
-    }
-
-
-    // Composition function for removing an object from the storage array
-
-    function remove(coreObj) {
-        if (coreObj.match) {
-            coreObj.object = coreObj.objects.splice(coreObj.index, 1)[0];
-        }
-        return coreObj;
-    }
-
-
-    // Composition function for executing a callback
-
-    function callback(coreObj) {
-        if (coreObj.match) {
-            coreObj.callback.call(null, coreObj.object);
-        }
-        return coreObj;
-    }
-
-
-    // Single loop
-    // Takes the array of composition functions and runs the composed function in one loop
-
-    function loop(coreObj, chain, onLoopEnd) {
-
-        var composedFunction    = compose.apply(null, chain),
-            runOnResult         = (coreObj.result.length !== 0) || false,
-            objs                = runOnResult ? coreObj.result : coreObj.objects,
-            i                   = 0,
-            l                   = objs.length;
-
-        for (i = 0; i < l; i += 1) {
-            coreObj.index    = i;
-            coreObj.object   = objs[i];
-
-            composedFunction(coreObj);
-
-            if (coreObj.match) {
-                // When taking objects out of the tuple we need to compensate for
-                // the objects taken out to prevent out of bound error.
-                // This compensation should only be done on the tuple object array.
-                if (!runOnResult && l != objs.length) {
-                    l = objs.length;
-                    i--;
-                }
-                coreObj.result.push(coreObj.object);
-            }
-        }
-
-        if (onLoopEnd) {
-            onLoopEnd.call(null, coreObj.result);
-        }
-
-        coreObj.result = [];
-
-        return coreObj;
-    }
-
-
-    // Set storage type to use base on a config object
-
-    function setStorageType(config) {
-        if (config && config.type === 'session') {
-            return 'sessionStorage';
-        } else {
-            return 'localStorage';
-        }
-    }
-
-
-
     function Yocto() {
 
         var config      = {
@@ -216,6 +74,151 @@
                 callback    : undefined
             };
 
+
+
+        // Environment checks
+
+        var has = {
+            storage : function() {
+              var tmp = '__ytest';
+              try {
+                  localStorage.setItem(tmp, tmp);
+                  localStorage.removeItem(tmp);
+                  return true;
+              } catch(e) {
+                  return false;
+              }
+            }
+        };
+
+
+        // Convenient "is" checks
+        // These checks is also passed on to any functions in a template
+
+        var is = {
+                arr     : function(value) {return value instanceof Array;},
+                obj     : function(value) {return value instanceof Object;},
+                fn      : function(value) {return typeof value === 'function';},
+                str     : function(value) {return typeof value === 'string';},
+                num     : function(value) {return typeof value === 'number';},
+                empty   : function(obj) {
+                    if (obj === null) {return true;}
+                    if (is.arr(obj) || is.str(obj)) {return obj.length === 0;}
+                    if (is.obj(obj)) {return Object.keys(obj).length === 0;}
+                    return true;
+                }
+        };
+
+
+        // Compose an array of composition functions into one function
+
+        function compose() {
+
+            var funcs = arguments;
+
+            return function() {
+                var i       = 0,
+                    l       = funcs.length,
+                    args    = arguments;
+
+                for (i = 0; i < l; i += 1) {
+                    args = [funcs[i].apply(this, args)];
+                }
+
+                return args[0];
+            };
+
+        }
+
+
+        // Composition function for matching an object with a template
+
+        function match(coreObj) {
+            coreObj.match = Object.keys(coreObj.template).every(function(key) {
+                if (is.fn(coreObj.template[key])) {
+                    return coreObj.template[key].call(this, coreObj.object[key], is);
+
+                } else {
+                    return coreObj.object[key] === coreObj.template[key];
+
+                }
+            });
+            return coreObj;
+        }
+
+
+        // Composition function for removing an object from the storage array
+
+        function remove(coreObj) {
+            if (coreObj.match) {
+                coreObj.object = coreObj.objects.splice(coreObj.index, 1)[0];
+            }
+            return coreObj;
+        }
+
+
+        // Composition function for executing a callback
+
+        function callback(coreObj) {
+            if (coreObj.match) {
+                coreObj.callback.call(null, coreObj.object);
+            }
+            return coreObj;
+        }
+
+
+        // Single loop
+        // Takes the array of composition functions and runs the composed function in one loop
+
+        function loop(coreObj, chain, onLoopEnd) {
+
+            var composedFunction    = compose.apply(null, chain),
+                runOnResult         = (coreObj.result.length !== 0) || false,
+                objs                = runOnResult ? coreObj.result : coreObj.objects,
+                i                   = 0,
+                l                   = objs.length;
+
+            for (i = 0; i < l; i += 1) {
+                coreObj.index    = i;
+                coreObj.object   = objs[i];
+
+                composedFunction(coreObj);
+
+                if (coreObj.match) {
+                    // When taking objects out of the tuple we need to compensate for
+                    // the objects taken out to prevent out of bound error.
+                    // This compensation should only be done on the tuple object array.
+                    if (!runOnResult && l != objs.length) {
+                        l = objs.length;
+                        i--;
+                    }
+                    coreObj.result.push(coreObj.object);
+                }
+            }
+
+            if (onLoopEnd) {
+                onLoopEnd.call(null, coreObj.result);
+            }
+
+            coreObj.result = [];
+
+            return coreObj;
+        }
+
+
+        // Set storage type to use base on a config object
+
+        function setStorageType(config) {
+            if (config && config.type === 'session') {
+                return 'sessionStorage';
+            } else {
+                return 'localStorage';
+            }
+        }
+
+
+
+        // Public methods
 
         return {
 
