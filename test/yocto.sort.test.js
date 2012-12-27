@@ -1,3 +1,7 @@
+var buster  = this.buster   || require("buster"),
+    yocto   = this.yocto    || require("../src/yocto.js");
+
+
 buster.testCase("yocto.js Test - Sort", {
 
     setUp: function(done) {

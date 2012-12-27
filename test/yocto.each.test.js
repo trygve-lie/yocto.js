@@ -1,3 +1,7 @@
+var buster  = this.buster   || require("buster"),
+    yocto   = this.yocto    || require("../src/yocto.js");
+
+
 buster.testCase("yocto.js Test - Each", {
 
     setUp: function(done) {
@@ -16,7 +20,7 @@ buster.testCase("yocto.js Test - Each", {
             done();
         });
 
-        this.testTimeout = 100; // in milliseconds
+        this.testTimeout = 50; // in milliseconds
     },
 
     tearDown: function() {
