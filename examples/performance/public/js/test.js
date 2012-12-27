@@ -9,7 +9,8 @@ function perfTest(fn) {
 function testGet() {
 	var result = perfTest(function(){
 		db.get({cc:"061",cn:"New York County"}, function(arr){
-			// console.log(arr);
+		// db.get({code:19003}, function(arr){
+			console.log(arr);
 		});
 	});
 	document.querySelectorAll('#testGet .result')[0].innerHTML = result + 'ms';
@@ -19,7 +20,7 @@ function testGet() {
 function testGetEach() {
 	var result = perfTest(function(){
 		db.get({cc:"061",cn:"New York County"}).each(function(el){
-			// console.log(el);
+			console.log(el);
 		});
 	});
 	document.querySelectorAll('#testGetEach .result')[0].innerHTML = result + 'ms';

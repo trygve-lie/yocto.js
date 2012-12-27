@@ -24,6 +24,14 @@ buster.testCase("yocto.js Test - Get", {
     },
 
 
+    "no keys defined - in callback returned number of objects should be 6": function(done) {
+        this.db.get({}, function(objs){
+            buster.assert.equals(objs.length, 6);
+            done();
+        });
+    },
+
+
     "single key - in callback returned number of objects should be 1 and its _id_ should have the value NOR_00481": function(done) {
         this.db.get({id : "NOR_00481"}, function(objs){
             buster.assert.equals(objs.length, 1);

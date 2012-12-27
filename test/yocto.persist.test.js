@@ -2,8 +2,6 @@ buster.testCase("yocto.js Test - Save - Load - Destroy", {
 
     setUp: function(done) {
 
-        this.timeout = 1000;
-
         this.db = yocto.db();
         this.db2 = yocto.db();
 

@@ -45,7 +45,7 @@
 //    index       : 0,
 //    template    : {},
 //    match       : true,
-//    callback    : undefined
+//    onEach      : undefined
 // }
 //
 // Each function in the composition can then manipulate this object before its passed on to the
@@ -57,21 +57,27 @@
     "use strict";
 
 
-    function Yocto() {
+    function Yocto(options) {
 
         var config      = {
                 name : 'yocto'
             },
+
             chain       = [],
-            observers   = [],
+            
             core        = {
                 objects     : [],
-                object      : undefined,
-                result      : [],
-                index       : 0,
+                uuids       : {},
+                
                 template    : {},
-                match       : true,
-                callback    : undefined
+                
+                object      : undefined,
+                index       : 0,
+                match       : false,
+                onEach      : undefined,
+                
+                result      : [],
+                onEnd       : undefined
             };
 
 
@@ -110,6 +116,20 @@
         };
 
 
+        function reset(coreObj) {
+            coreObj.template    = {};
+            
+            coreObj.object      = undefined;
+            coreObj.index       = 0;
+            coreObj.match       = false;
+            coreObj.onEach      = undefined;
+            
+            coreObj.result      = [];
+            coreObj.onEnd       = undefined;
+        }
+
+
+
         // Compose an array of composition functions into one function
 
         function compose() {
@@ -131,9 +151,9 @@
         }
 
 
-        // Composition function for matching an object with a template
+        // Composition function for matching an object with a template based on key matching
 
-        function match(coreObj) {
+        function keysMatch(coreObj) {
             coreObj.match = Object.keys(coreObj.template).every(function(key) {
                 if (is.fn(coreObj.template[key])) {
                     return coreObj.template[key].call(this, coreObj.object[key], is);
@@ -149,60 +169,103 @@
 
         // Composition function for removing an object from the storage array
 
-        function remove(coreObj) {
+        function arrayRemove(coreObj) {
             if (coreObj.match) {
                 coreObj.object = coreObj.objects.splice(coreObj.index, 1)[0];
+                coreObj.index--;
             }
             return coreObj;
         }
 
 
-        // Composition function for executing a callback
+        // Removing an object from the uuid hash
 
-        function callback(coreObj) {
+        function hashRemove(coreObj) {
+            var key = coreObj.template[config.uuid];
+            delete coreObj.uuids[key];
+            return coreObj;
+        }
+
+
+        // Composition function for executing onEach callback
+
+        function doOnEach(coreObj) {
             if (coreObj.match) {
-                coreObj.callback.call(null, coreObj.object);
+                coreObj.onEach.call(null, coreObj.object);
             }
             return coreObj;
         }
 
 
-        // Single loop
+        // Look up objects in the object array
         // Takes the array of composition functions and runs the composed function in one loop
 
-        function loop(coreObj, chain, onLoopEnd) {
+        function arrayLookup(coreObj, chainArr) {
 
-            var composedFunction    = compose.apply(null, chain),
+            var composedFunction    = compose.apply(null, chainArr),
                 runOnResult         = (coreObj.result.length !== 0) || false,
                 objs                = runOnResult ? coreObj.result : coreObj.objects,
-                i                   = 0,
+                result              = [],
                 l                   = objs.length;
 
-            for (i = 0; i < l; i += 1) {
-                coreObj.index    = i;
-                coreObj.object   = objs[i];
+            for (coreObj.index = 0; coreObj.index < l; coreObj.index += 1) {
+                coreObj.object   = objs[coreObj.index];
 
                 composedFunction(coreObj);
 
                 if (coreObj.match) {
+
                     // When taking objects out of the tuple we need to compensate for
                     // the objects taken out to prevent out of bound error.
                     // This compensation should only be done on the tuple object array.
                     if (!runOnResult && l != objs.length) {
                         l = objs.length;
-                        i--;
                     }
-                    coreObj.result.push(coreObj.object);
+
+                    result.push(coreObj.object);
                 }
             }
 
-            if (onLoopEnd) {
-                onLoopEnd.call(null, coreObj.result);
+            coreObj.result = result;
+
+            if (coreObj.onEnd) {
+                coreObj.onEnd.call(null, coreObj.result);
             }
 
-            coreObj.result = [];
+            return coreObj;
+        }
+
+
+        // Look up an object in the uuid hash
+
+        function hashLookup(coreObj, chainArr) {
+
+            var composedFunction    = compose.apply(null, chainArr),
+                uuid                = coreObj.template[config.uuid];
+
+            coreObj.object = coreObj.uuids[uuid];
+            composedFunction(coreObj);
+            
+            if (coreObj.match) {
+                coreObj.result.push(coreObj.object);
+            }
+
+            if (coreObj.onEnd) {
+                coreObj.onEnd.call(null, coreObj.result);
+            }
 
             return coreObj;
+        }
+
+
+        // Lookup for switching between looking up in the array or hash
+
+        function lookup(coreObj, chainArr) {
+            if (config.uuid && coreObj.template[config.uuid]) {
+                return hashLookup(coreObj, chainArr);
+            } else {
+                return arrayLookup(coreObj, chainArr);
+            }
         }
 
 
@@ -217,6 +280,17 @@
         }
 
 
+        // Set config - Do not allow override of "name"
+
+        if (is.obj(options) && is.obj(config)) {
+            Object.keys(options).every(function(key){
+                if (key !== 'name') {
+                    config[key] = options[key];
+                }
+            });
+        }
+
+
 
         // Public methods
 
@@ -226,7 +300,11 @@
 
             put : function(obj, onSuccess) {
 
-                // var core = this.core;
+                var id  = '',
+                    i   = 0,
+                    l   = 0;
+
+                core.match = true;
 
                 // Array of objects applied
                 if (is.arr(obj)) {
@@ -239,12 +317,28 @@
                     // Merge appended array into internal objects array.
                     core.objects    = core.objects.concat(obj);
                     core.result     = core.result.concat(obj);
+
+// Set uuid in map
+                    if (config.uuid) {
+                        l = obj.length;
+                        for (i = 0; i < l; i += 1) {
+                            id = obj[i][config.uuid];
+                            core.uuids[obj[i][config.uuid]] = obj[i];
+                        }
+                    }
                 }
 
                 // Single object applied
                 if (is.obj(obj) && !is.arr(obj)) {
                     core.objects.push(obj);
                     core.result.push(obj);
+
+// Set uuid in map
+                    if (config.uuid) {
+                        id = obj[config.uuid];
+                        core.uuids[obj[config.uuid]] = obj;
+                    }
+
                 }
 
                 if (onSuccess && is.fn(onSuccess)) {
@@ -259,11 +353,14 @@
             // Get object(s) from the database based on a template object
 
             get : function(template, onSuccess) {
-                core.template = template || {};
-                chain.push(match);
+                core.template   = template || {};
+                chain.push(keysMatch);
+
+                core.onEnd = onSuccess;
 
                 if (onSuccess && is.fn(onSuccess)) {
-                    loop(core, chain, onSuccess);
+                    lookup(core, chain);
+                    reset(core);
                     chain = [];
                 }
 
@@ -275,11 +372,15 @@
 
             take : function(template, onSuccess) {
                 core.template = template || {};
-                chain.push(match);
-                chain.push(remove);
+                chain.push(keysMatch);
+                chain.push(arrayRemove);
+                chain.push(hashRemove);
+
+                core.onEnd = onSuccess;
 
                 if (onSuccess && is.fn(onSuccess)) {
-                    loop(core, chain, onSuccess);
+                    arrayLookup(core, chain);
+                    reset(core);
                     chain = [];
                 }
 
@@ -290,14 +391,16 @@
             // Loop over each object in a returned list of objects
 
             each : function(onEach) {
-                chain.push(callback);
+                chain.push(doOnEach);
+
+                core.onEach = onEach;
 
                 if (onEach && is.fn(onEach)) {
-                    core.callback = onEach;
-                    loop(core, chain);
+                    lookup(core, chain);
+                    reset(core);
+                    chain = [];
                 }
 
-                chain = [];
                 return this;
             },
 
@@ -306,8 +409,11 @@
 
             drop : function(onSuccess) {
                 core.objects.splice(0, core.objects.length);
+                core.uuids = {};
+
                 if (onSuccess && is.fn(onSuccess)) {
                     onSuccess.call(null);
+                    reset(core);
                     chain = [];
                 }
                 return this;
@@ -335,37 +441,37 @@
 
 
             // Sort a returned list of objects based on a objects property name
-
+// TODO: use a method parameter instead of access "core.result" directly?????
+// TODO: move inner function into standalone function
             sort : function(key, onSuccess) {
-                var self    = this,
-                    sorted  = [];
 
-                if (is.str(key)) {
-                    loop(core, chain, function(result){
+                core.onEnd = function(){
 
-                        sorted = result.sort(function sortByObjectKey(object1, object2) {
-                            var key1 = '',
-                                key2 = '';
+                    core.result = core.result.sort(function sortByObjectKey(object1, object2) {
+                        var key1 = '',
+                            key2 = '';
 
-                            if (is.obj(object1) && is.obj(object2) && object1 && object2) {
-                                key1 = object1[key];
-                                key2 = object2[key];
-                                if (key1 === key2) {
-                                    return object1;
-                                }
-                                if (typeof key1 === typeof key2) {
-                                    return key1 < key2 ? -1 : 1;
-                                }
+                        if (is.obj(object1) && is.obj(object2) && object1 && object2) {
+                            key1 = object1[key];
+                            key2 = object2[key];
+                            if (key1 === key2) {
+                                return object1;
                             }
-                        });
-
-                        if (onSuccess && is.fn(onSuccess)) {
-                            onSuccess.call(self, sorted);
-                            sorted = [];
+                            if (typeof key1 === typeof key2) {
+                                return key1 < key2 ? -1 : 1;
+                            }
                         }
                     });
 
-                    core.result = sorted;
+                    if (onSuccess && is.fn(onSuccess)) {
+                        onSuccess.call(null, core.result);
+                    }
+                };
+
+                if (onSuccess && is.fn(onSuccess)) {
+                    lookup(core, chain);
+                    reset(core);
+                    chain = [];
                 }
 
                 return this;
@@ -378,26 +484,31 @@
             //     type : 'local' || 'session'
             //     name : ''
             // }
-
+// TODO: use a method parameter instead of access "core.result" directly?????
+// TODO: move inner function into standalone function
             save : function(config, onSuccess) {
 
-                var self    = this,
-                    type    = setStorageType(config);
+                var type = setStorageType(config);
 
                 if (config && is.str(config.name) && has.storage()) {
 
-                    loop(core, chain, function(result){
+                    core.onEnd = function(){
                         window[type].setItem(config.name, JSON.stringify({
                             creator     : config.name,
                             timestamp   : +new Date(),
-                            objects     : result
+                            objects     : core.result
                         }));
 
                         if (onSuccess && is.fn(onSuccess)) {
-                            onSuccess.call(self, result);
-                            self.chain = [];
+                            onSuccess.call(null, core.result);
                         }
-                    });
+                    }
+
+                    if (onSuccess && is.fn(onSuccess)) {
+                        lookup(core, chain);
+                        reset(core);
+                        chain = [];
+                    }
 
                 }
 
@@ -421,32 +532,11 @@
                 if (config && is.str(config.name) && has.storage()) {
                     loadedData = window[type].getItem(config.name);
                     parsedData = JSON.parse(loadedData);
-
-                    // Merge appended array into internal objects array.
-                    if (parsedData.creator === config.name) {
-                        core.objects = core.objects.concat(parsedData.objects);
-                        core.result = core.result.concat(parsedData.objects);
-                    }
-
                 }
 
-                if (onLoaded && is.fn(onLoaded)) {
-                    onLoaded.call(this, core.result);
-                    core.result = [];
-                    chain = [];
-                }
+                this.put(is.empty(parsedData) ? [] : parsedData.objects, onLoaded);
 
                 return this;
-            },
-
-
-            observe : function() {
-
-            },
-
-
-            unobserve : function() {
-
             }
 
         };
@@ -454,8 +544,8 @@
     }
 
 
-    exports.db = function createYocto() {
-        return new Yocto();
+    exports.db = function createYocto(options) {
+        return new Yocto(options);
     };
 
 

@@ -2,7 +2,7 @@ var testCase = buster.testCase("yocto.js Test - Put", {
 
     setUp: function() {
         
-        this.db = yocto.db();
+        this.db = yocto.db({uuid:'id'});
 
         this.singleRecordA = {  
             id: "NOR_01359", lat: 63.68496, lng:  9.66531, name: "Brekstad Hurtigladestasjon, Ørland", street: "Landfestet", streetNumber: "1-5", points: 1, open24h: true, free: false, maxTime: 1

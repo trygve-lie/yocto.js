@@ -28,39 +28,39 @@ buster.testCase("yocto.js Test - Take", {
         this.db.take({id : "NOR_00481"}, function(objs){
             buster.assert.equals(objs.length, 1);
             buster.assert.equals(objs[0].id, 'NOR_00481');
-            
         });
 
         this.db.get({}, function(objs){
             buster.assert.equals(objs.length, 5);
             done();
         });
+
     },
 
 
     "multiple objects - in callback returned number of objects should be 5 and a get on all objects after take should be 1": function(done) {
         this.db.take({open24h : true}, function(objs){
             buster.assert.equals(objs.length, 5);
-            
         });
 
         this.db.get({}, function(objs){
             buster.assert.equals(objs.length, 1);
             done();
         });
+
     },
 
 
     "all objects - in callback returned number of objects should be 6 and a get on all objects after take should be 0": function(done) {
         this.db.take({}, function(objs){
             buster.assert.equals(objs.length, 6);
-            
         });
 
         this.db.get({}, function(objs){
             buster.assert.equals(objs.length, 0);
             done();
         });
+
     }    
 
 });

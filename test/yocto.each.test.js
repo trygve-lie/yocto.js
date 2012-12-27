@@ -47,7 +47,7 @@ buster.testCase("yocto.js Test - Each", {
     },
 
 
-    "get().each() - after loop, number of objects should be 2 and both _free_ should be true": function(done) {
+    "get().each() - after loop, number of objects should be 2 and both _free_ should be false": function(done) {
         var objs = [];
         this.db.get({free:false}).each(function(obj){
             objs.push(obj);
@@ -62,7 +62,7 @@ buster.testCase("yocto.js Test - Each", {
     },
 
 
-    "take().each() - after loop, number of objects should be 2 and both _free_ should be true": function(done) {
+    "take().each() - after loop, number of objects should be 2 and both _free_ should be false": function(done) {
         var objs = [];
         this.db.take({free:false}).each(function(obj){
             objs.push(obj);
@@ -76,7 +76,7 @@ buster.testCase("yocto.js Test - Each", {
         }, this.testTimeout);
     },
 
-
+/*
     "get().sort().each() - after loop, number of objects should be 2 and _id_ should be in sorted order": function(done) {
         var objs = [];
         this.db.get({free:false}).sort('id').each(function(obj){
@@ -90,5 +90,5 @@ buster.testCase("yocto.js Test - Each", {
             done();
         }, this.testTimeout);
     }
-
+*/
 });

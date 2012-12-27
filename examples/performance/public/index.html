@@ -42,6 +42,58 @@
   </ul>
 <script src="/js/es5.js"></script>
 <script src="/js/yocto.js"></script>
-<script src="/js/test.js"></script>
+<script src="/js/benchmark.js"></script>
+<!--script src="/js/test.js"></script-->
+<script>
+
+// Init a database
+
+
+
+
+// Load data from server
+var db = yocto.db({uuid:'code'});
+
+
+function testGet() {
+
+  var bench = new Benchmark.Suite;
+
+  bench.add('get()', function(){
+    // db.get({cc:"061",cn:"New York County"}, function(arr){ /* Do nothing */ });
+    db.get({code:19003}, function(arr){ /* Do nothing */ });
+
+  }).on('start', function(){
+    // console.log('running');
+
+  }).on('cycle', function(event){
+    document.getElementById('testGet').innerHTML = String(event.target);
+    // console.log(String(event.target));
+
+  }).on('complete', function(){
+    // console.log('complete');
+
+  }).run({'async': true});
+
+}
+
+
+
+var xhr = new XMLHttpRequest();
+xhr.open('GET', '/mock/data.json');
+xhr.onload = function(e) {
+  var data = JSON.parse(this.response);
+  db.put(data.codes, function(arr){
+  // document.getElementById('info').innerHTML = data.codes.length + ' objects loaded into database';
+  document.getElementById('testGet').addEventListener('click', testGet);
+  // document.getElementById('testGetEach').addEventListener('click', testGetEach);
+  });
+}
+xhr.send();
+
+
+
+
+</script>
 </body>
 </html>

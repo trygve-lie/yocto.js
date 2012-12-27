@@ -15,6 +15,7 @@ config["Client tests"] = {
         "test/yocto.sort.test.js",
         "test/yocto.each.test.js",
         "test/yocto.drop.test.js",
-        "test/yocto.persist.test.js"
+        "test/yocto.persist.test.js",
+        "test/yocto.uuid.test.js"
     ]
 };
