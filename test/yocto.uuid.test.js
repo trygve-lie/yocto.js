@@ -30,7 +30,7 @@ buster.testCase("yocto.js Test - UUID", {
             done();
         });
         
-        this.testTimeout = 100; // in milliseconds
+        this.testTimeout = 50; // in milliseconds
     },
 
     tearDown: function() {
