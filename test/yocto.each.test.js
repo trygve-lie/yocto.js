@@ -80,7 +80,7 @@ buster.testCase("yocto.js Test - Each", {
         }, this.testTimeout);
     },
 
-/*
+
     "get().sort().each() - after loop, number of objects should be 2 and _id_ should be in sorted order": function(done) {
         var objs = [];
         this.db.get({free:false}).sort('id').each(function(obj){
@@ -94,5 +94,5 @@ buster.testCase("yocto.js Test - Each", {
             done();
         }, this.testTimeout);
     }
-*/
+
 });

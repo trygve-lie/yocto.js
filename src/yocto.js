@@ -463,13 +463,12 @@
                         }
                     });
 
-                    if (onSuccess && is.fn(onSuccess)) {
-                        onSuccess.call(null, core.result);
-                    }
                 };
+                
+                lookup(core, chain);
 
                 if (onSuccess && is.fn(onSuccess)) {
-                    lookup(core, chain);
+                    onSuccess.call(null, core.result);
                     reset(core);
                     chain = [];
                 }
