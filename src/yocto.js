@@ -502,7 +502,7 @@
                         if (onSuccess && is.fn(onSuccess)) {
                             onSuccess.call(null, core.result);
                         }
-                    }
+                    };
 
                     if (onSuccess && is.fn(onSuccess)) {
                         lookup(core, chain);
