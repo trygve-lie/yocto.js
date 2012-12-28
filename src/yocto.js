@@ -312,7 +312,8 @@
 
             put : function(obj, onSuccess) {
 
-                var id  = '',
+                var now = +new Date(),
+                    id  = '',
                     i   = 0,
                     l   = 0;
 
@@ -331,17 +332,29 @@
                     core.result     = core.result.concat(obj);
 
                     // Append all objects in array into internal object hash
-                    if (config.uuid) {
+                    if (config.uuid || config.timestamp) {
                         l = obj.length;
                         for (i = 0; i < l; i += 1) {
-                            id = obj[i][config.uuid];
-                            core.uuids[obj[i][config.uuid]] = obj[i];
+                            
+                            if (config.uuid) {
+                                id = obj[i][config.uuid];
+                                core.uuids[obj[i][config.uuid]] = obj[i];
+                            }
+
+                            if (config.timestamp && !obj[i][config.timestamp]) {
+                                obj[i][config.timestamp] = now;
+                            }
                         }
                     }
                 }
 
                 // Single object applied
                 if (is.obj(obj) && !is.arr(obj)) {
+
+                    if (config.timestamp && !obj[config.timestamp]) {
+                        obj[config.timestamp] = now;
+                    }
+
                     core.objects.push(obj);
                     core.result.push(obj);
 
@@ -355,7 +368,8 @@
 
                 if (onSuccess && is.fn(onSuccess)) {
                     onSuccess.call(this, core.result);
-                    core.result = [];
+                    reset(core);
+                    chain = [];
                 }
 
                 return this;
