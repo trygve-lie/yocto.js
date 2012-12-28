@@ -86,36 +86,46 @@
         // Environment checks
 
         var has = {
-            storage : function() {
-              var tmp = '__ytest';
-              try {
-                  localStorage.setItem(tmp, tmp);
-                  localStorage.removeItem(tmp);
-                  return true;
-              } catch(e) {
-                  return false;
-              }
-            }
+            storage : supportsLocalStorage()
         };
+
 
 
         // Convenient "is" checks
         // These checks is also passed on to any functions in a template
 
         var is = {
-                arr     : function(value) {return value instanceof Array;},
-                obj     : function(value) {return value instanceof Object;},
-                fn      : function(value) {return typeof value === 'function';},
-                str     : function(value) {return typeof value === 'string';},
-                num     : function(value) {return typeof value === 'number';},
-                empty   : function(obj) {
-                    if (obj === null) {return true;}
-                    if (is.arr(obj) || is.str(obj)) {return obj.length === 0;}
-                    if (is.obj(obj)) {return Object.keys(obj).length === 0;}
-                    return true;
-                }
+            arr     : function(value) {return value instanceof Array;},
+            obj     : function(value) {return value instanceof Object;},
+            fn      : function(value) {return typeof value === 'function';},
+            str     : function(value) {return typeof value === 'string';},
+            num     : function(value) {return typeof value === 'number';},
+            empty   : function(obj) {
+                if (obj === null) {return true;}
+                if (is.arr(obj) || is.str(obj)) {return obj.length === 0;}
+                if (is.obj(obj)) {return Object.keys(obj).length === 0;}
+                return true;
+            }
         };
 
+
+
+        // Check to see if localstorage is supported in the run time
+
+        function supportsLocalStorage() {
+            var tmp = '__ytest';
+            try {
+                localStorage.setItem(tmp,tmp);
+                localStorage.removeItem(tmp);
+                return true;
+            } catch(e) {
+                return false;
+            }
+        }
+
+
+
+        // Reset additional properties on the core object
 
         function reset(coreObj) {
             coreObj.template        = {};
@@ -292,6 +302,7 @@
             });
         }
 
+        reset(core);
 
 
         // Public methods
@@ -434,7 +445,7 @@
             destroy : function(config, onSuccess) {
                 var type    = setStorageType(config);
 
-                if (config && is.str(config.name) && has.storage()) {
+                if (config && is.str(config.name) && has.storage) {
                     window[type].removeItem(config.name);
                 }
 
@@ -493,7 +504,7 @@
 
                 var type = setStorageType(config);
 
-                if (config && is.str(config.name) && has.storage()) {
+                if (config && is.str(config.name) && has.storage) {
 
                     core.onEnd = function(){
                         window[type].setItem(config.name, JSON.stringify({
@@ -532,7 +543,7 @@
                     loadedData  = '',
                     parsedData  = {};
 
-                if (config && is.str(config.name) && has.storage()) {
+                if (config && is.str(config.name) && has.storage) {
                     loadedData = window[type].getItem(config.name);
                     parsedData = JSON.parse(loadedData);
                 }
