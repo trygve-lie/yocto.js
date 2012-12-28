@@ -110,7 +110,7 @@
 
 
 
-        // Check to see if localstorage is supported in the run time
+        // Is localstorage supported in the run time
 
         function supportsLocalStorage() {
             var tmp = '__ytest';
@@ -270,7 +270,7 @@
         }
 
 
-        // Switch between looking up in the array or hash
+        // Switch between looking up in the object array or object hash
 
         function lookup(coreObj, chainArr) {
             if (config.uuid && coreObj.template[config.uuid] && coreObj.doHashLookup) {
@@ -302,7 +302,6 @@
             });
         }
 
-        reset(core);
 
 
         // Public methods
@@ -456,12 +455,10 @@
 
 
             // Sort a returned list of objects based on a objects property name
-// TODO: use a method parameter instead of access "core.result" directly?????
-// TODO: move inner function into standalone function
+
             sort : function(key, onSuccess) {
 
                 core.onEnd = function(){
-
                     core.result = core.result.sort(function sortByObjectKey(object1, object2) {
                         var key1 = '',
                             key2 = '';
@@ -477,7 +474,6 @@
                             }
                         }
                     });
-
                 };
                 
                 lookup(core, chain);
@@ -498,8 +494,7 @@
             //     type : 'local' || 'session'
             //     name : ''
             // }
-// TODO: use a method parameter instead of access "core.result" directly?????
-// TODO: move inner function into standalone function
+
             save : function(config, onSuccess) {
 
                 var type = setStorageType(config);
