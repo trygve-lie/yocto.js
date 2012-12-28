@@ -88,6 +88,16 @@ var db = yocto.db();
 
 All further methods does then operate on the assigned variable.
 
+The db method can take a, optional, configuration object to configure certain behaviour in yocto.js.
+
+```javascript
+var db = yocto.db({feature : 'value'});
+```
+
+The config object has the following parameters:
+
+ - uuid - Defines one key in each object to be treated as a unique id for each object. This allows yocto.js have an ultra fast look-up of single objects. Please see the pharagraph enitled "uuids" for further information.
+
 
 
 ### .put() - Put data into the database
@@ -285,6 +295,33 @@ A template with a query function can look like this:
 ```
 
 The above template will match all objects where they value for the key "year" is between "1985" and "1990".
+
+
+
+## UUIDS
+
+In many cases we only need to look up an object based on a single unique key value (an uuid). The performance of looking up a single object based on an uuid can be increased dramaticly by telling yocto.js what object key in our objects that holds an unique value. 
+
+We can tell yocto.js this by providing the key name for what we want to use as a uuid in our objects to the "uuid" key in the configuration that can be passed on to the yocto.db() method.
+
+In other words, lets say that we are working with the objects shown under the paragraph "Working with yocto.js". They hold an "id" key which has an unique value for each object. By telling yocto.js which key that holds an unique value like this:
+
+```javascript
+var db = yocto.db({uuid : 'id'});
+```
+
+a query like this will be dramaticly faster:
+
+```javascript
+db.get({id : 3}, function(objs){
+	// do something	
+});
+```
+
+Do note the following when using "uuids":
+
+ - If multiple objects has the same "uuid" the get() method will only return one object which is the last object put into the database. The take() method will in this case return all multiple objects in an array to the callback function.
+ - A faster lookup due to the precense of "uuid" only applies to the get() method.
 
 
 
