@@ -66,26 +66,22 @@ buster.testCase("yocto.js Test - UUID", {
     },
 
 
-    "take() - in callback, returned number of objects should be 2 and _id_ of both objects should be NOR_00097": function(done) {
-        var self = this;
+    "take() - in callback, returned number of objects should be 2 and _id_ of both objects should be NOR_00097. A get() should then return 0": function(done) {
+        var db = this.db;
 
-        this.db.take({id: "NOR_00097"}, function(objs) {
+        db.take({id: "NOR_00097"}, function(objs) {
             buster.assert.equals(objs.length, 2);
             buster.assert.equals(objs[0].id, "NOR_00097");
             buster.assert.equals(objs[1].id, "NOR_00097");
-           done();
         });
-/*
+
         setTimeout(function(){
-            self.db.get({id: "NOR_00097"}, function(objs) {
+            db.get({id: "NOR_00097"}, function(objs) {
                 buster.assert.equals(objs.length, 0);
-                //buster.assert.equals(objs[0].id, "NOR_00097");
                 done();
             });
         }, this.testTimeout);
-*/
-
-    }/*,
+    },
 
 
     "take().each() - after loop, number of objects should be 2 and _id_ of returned object should be NOR_00097": function(done) {
@@ -97,11 +93,11 @@ buster.testCase("yocto.js Test - UUID", {
         });
 
         setTimeout(function(){
-            buster.assert.equals(objs.length, 1);
+            buster.assert.equals(objs.length, 2);
             buster.assert.equals(objs[0].id, "NOR_00097");
+            buster.assert.equals(objs[1].id, "NOR_00097");
             done();
         }, this.testTimeout);
-
     }
-*/
+
 });

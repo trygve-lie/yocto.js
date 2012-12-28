@@ -66,18 +66,19 @@
             chain       = [],
             
             core        = {
-                objects     : [],
-                uuids       : {},
+                objects         : [],
+                uuids           : {},
                 
-                template    : {},
+                template        : {},
+                doHashLookup    : false,
                 
-                object      : undefined,
-                index       : 0,
-                match       : false,
-                onEach      : undefined,
+                object          : undefined,
+                index           : 0,
+                match           : false,
+                onEach          : undefined,
                 
-                result      : [],
-                onEnd       : undefined
+                result          : [],
+                onEnd           : undefined
             };
 
 
@@ -117,15 +118,16 @@
 
 
         function reset(coreObj) {
-            coreObj.template    = {};
+            coreObj.template        = {};
+            coreObj.doHashLookup    = false;
             
-            coreObj.object      = undefined;
-            coreObj.index       = 0;
-            coreObj.match       = false;
-            coreObj.onEach      = undefined;
+            coreObj.object          = undefined;
+            coreObj.index           = 0;
+            coreObj.match           = false;
+            coreObj.onEach          = undefined;
             
-            coreObj.result      = [];
-            coreObj.onEnd       = undefined;
+            coreObj.result          = [];
+            coreObj.onEnd           = undefined;
         }
 
 
@@ -243,7 +245,7 @@
             var composedFunction    = compose.apply(null, chainArr),
                 uuid                = coreObj.template[config.uuid];
 
-            coreObj.object = coreObj.uuids[uuid];
+            coreObj.object = coreObj.uuids[uuid] ? coreObj.uuids[uuid] : {};
             composedFunction(coreObj);
             
             if (coreObj.match) {
@@ -258,10 +260,10 @@
         }
 
 
-        // Lookup for switching between looking up in the array or hash
+        // Switch between looking up in the array or hash
 
         function lookup(coreObj, chainArr) {
-            if (config.uuid && coreObj.template[config.uuid]) {
+            if (config.uuid && coreObj.template[config.uuid] && coreObj.doHashLookup) {
                 return hashLookup(coreObj, chainArr);
             } else {
                 return arrayLookup(coreObj, chainArr);
@@ -318,7 +320,7 @@
                     core.objects    = core.objects.concat(obj);
                     core.result     = core.result.concat(obj);
 
-// Set uuid in map
+                    // Append all objects in array into internal object hash
                     if (config.uuid) {
                         l = obj.length;
                         for (i = 0; i < l; i += 1) {
@@ -333,7 +335,7 @@
                     core.objects.push(obj);
                     core.result.push(obj);
 
-// Set uuid in map
+                    // Put object into internal object hash
                     if (config.uuid) {
                         id = obj[config.uuid];
                         core.uuids[obj[config.uuid]] = obj;
@@ -353,7 +355,9 @@
             // Get object(s) from the database based on a template object
 
             get : function(template, onSuccess) {
-                core.template   = template || {};
+                core.template       = template || {};
+                core.doHashLookup   = true;
+
                 chain.push(keysMatch);
 
                 core.onEnd = onSuccess;
@@ -379,7 +383,7 @@
                 core.onEnd = onSuccess;
 
                 if (onSuccess && is.fn(onSuccess)) {
-                    arrayLookup(core, chain);
+                    lookup(core, chain);
                     reset(core);
                     chain = [];
                 }
