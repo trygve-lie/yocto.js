@@ -242,6 +242,23 @@ db.destroy({}, function(){ });
 
 
 
+### .status() - Status information
+
+Returns an object with a status about the database.
+
+```javascript
+db.status(function(obj){
+	console.log('Status', obj);
+});
+```
+
+The status object has the following values:
+
+ - count - A numeric value of how many objects the database holds in memory.
+ - updated - A timestamp of when something was last put into the database.
+
+
+
 ### .observe() - Observe if objects enters or leaves the database
 
 To be implemented

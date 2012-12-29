@@ -564,6 +564,8 @@
             },
 
 
+            // Returns misc status information about the database
+
             status : function(onSuccess) {
                 onSuccess.call(null, {
                     count   : core.objects.length,
