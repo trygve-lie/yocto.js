@@ -68,6 +68,7 @@
             core        = {
                 objects         : [],
                 uuids           : {},
+                updated         : -1,
                 
                 template        : {},
                 doHashLookup    : false,
@@ -190,11 +191,21 @@
         }
 
 
-        // Removing an object from the uuid hash
+        // Remove an object from the object hash
 
         function hashRemove(coreObj) {
             var key = coreObj.template[config.uuid];
             delete coreObj.uuids[key];
+            return coreObj;
+        }
+
+
+        // Append an object to the object hash
+
+        function hashAppend(conf, obj, coreObj) {
+            if (conf.uuid) {
+                coreObj.uuids[obj[conf.uuid]] = obj;
+            }
             return coreObj;
         }
 
@@ -283,11 +294,20 @@
 
         // Set storage type to use base on a config object
 
-        function setStorageType(config) {
-            if (config && config.type === 'session') {
+        function setStorageType(conf) {
+            if (conf && conf.type === 'session') {
                 return 'sessionStorage';
             } else {
                 return 'localStorage';
+            }
+        }
+
+
+        // Append a timestamp to an object
+
+        function setTimestamp(conf, obj, coreObj) {
+            if (conf.timestamp && !obj[conf.timestamp]) {
+                obj[conf.timestamp] = coreObj.updated;
             }
         }
 
@@ -312,12 +332,11 @@
 
             put : function(obj, onSuccess) {
 
-                var now = +new Date(),
-                    id  = '',
-                    i   = 0,
+                var i   = 0,
                     l   = 0;
 
                 core.match = true;
+                core.updated = +new Date();
 
                 // Array of objects applied
                 if (is.arr(obj)) {
@@ -327,43 +346,25 @@
                         return (is.obj(element) && !is.arr(element));
                     });
 
-                    // Merge appended array into internal objects array.
-                    core.objects    = core.objects.concat(obj);
-                    core.result     = core.result.concat(obj);
-
-                    // Append all objects in array into internal object hash
                     if (config.uuid || config.timestamp) {
                         l = obj.length;
                         for (i = 0; i < l; i += 1) {
-                            
-                            if (config.uuid) {
-                                id = obj[i][config.uuid];
-                                core.uuids[obj[i][config.uuid]] = obj[i];
-                            }
-
-                            if (config.timestamp && !obj[i][config.timestamp]) {
-                                obj[i][config.timestamp] = now;
-                            }
+                            setTimestamp(config, obj[i], core);
+                            hashAppend(config, obj[i], core);
                         }
                     }
+
+                    core.objects    = core.objects.concat(obj);
+                    core.result     = core.result.concat(obj);
                 }
 
                 // Single object applied
                 if (is.obj(obj) && !is.arr(obj)) {
-
-                    if (config.timestamp && !obj[config.timestamp]) {
-                        obj[config.timestamp] = now;
-                    }
+                    setTimestamp(config, obj, core);
+                    hashAppend(config, obj, core);
 
                     core.objects.push(obj);
                     core.result.push(obj);
-
-                    // Put object into internal object hash
-                    if (config.uuid) {
-                        id = obj[config.uuid];
-                        core.uuids[obj[config.uuid]] = obj;
-                    }
-
                 }
 
                 if (onSuccess && is.fn(onSuccess)) {
