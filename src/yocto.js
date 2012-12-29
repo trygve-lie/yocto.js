@@ -561,6 +561,16 @@
                 this.put(is.empty(parsedData) ? [] : parsedData.objects, onLoaded);
 
                 return this;
+            },
+
+
+            status : function(onSuccess) {
+                onSuccess.call(null, {
+                    count   : core.objects.length,
+                    updated : core.updated
+                });
+
+                return this;
             }
 
         };
