@@ -4,6 +4,7 @@ buster.testCase("yocto.js Test - Save - Load - Destroy", {
 
         this.db = yocto.db();
         this.db2 = yocto.db();
+        this.db3 = yocto.db({timestamp:'timestamp'});
 
         this.objs = [
             {id: "NOR_01359", lat: 63.68496, lng:  9.66531, name: "Brekstad Hurtigladestasjon, Ørland", street: "Landfestet", streetNumber: "1-5", points: 1, open24h: true, free: false, maxTime: 1, is: []},
@@ -23,6 +24,7 @@ buster.testCase("yocto.js Test - Save - Load - Destroy", {
     tearDown: function() {
         delete this.db;
         delete this.db2;
+        delete this.db3;
         delete this.objs;
     },
 
@@ -150,6 +152,44 @@ buster.testCase("yocto.js Test - Save - Load - Destroy", {
             var data = window['sessionStorage'].getItem(conf.name);
             buster.assert.isNull(data);
             buster.assert.equals(objs.length, 0);
+            done();
+        });
+    },
+
+
+    "timestamp - after saved and loaded from localstorage each object should have a timestamp which is a number" : function(done) {
+        var conf = {
+            name:'timestamp:test', 
+            type:'local'
+        };
+
+        this.db3.put(this.objs, function(objs){
+            buster.assert.equals(objs.length, 6);
+        });
+
+        this.db3.get({}).save(conf, function(objs){
+            buster.assert.equals(objs.length, 6);
+        });
+
+        this.db3.drop(function(){});
+
+        this.db3.get({}, function(objs){
+            buster.assert.equals(objs.length, 0);
+        });
+
+        this.db3.load(conf, function(objs) {
+            buster.assert.equals(objs.length, 6);
+        });
+
+        this.db3.get({}, function(objs){
+            buster.assert.equals(objs.length, 6);
+            buster.assert.isNumber(objs[0].timestamp);
+            buster.assert.isNumber(objs[1].timestamp);
+            buster.assert.isNumber(objs[2].timestamp);
+            buster.assert.isNumber(objs[3].timestamp);
+            buster.assert.isNumber(objs[4].timestamp);
+            buster.assert.isNumber(objs[5].timestamp);
+            window['localStorage'].removeItem(conf.name);
             done();
         });
     }
