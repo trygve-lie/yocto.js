@@ -33,7 +33,7 @@ namespace("min", function(){
         var input   = new jake.FileList();
         input.include('src/yocto.js');
 
-        var cmd = ['uglifyjs ' + input.toArray().join(' ') + ' -o ' + output + ' --source-map ' + output + '.map -c dead-code=true,unsafe=true -m'];
+        var cmd = ['uglifyjs ' + input.toArray().join(' ') + ' --output ' + output + ' --source-map ' + output + '.map --compress dead-code=true,unsafe=true,unused=true --mangle sort=true'];
             jake.exec(cmd, function(){
                 console.log('min:yocto is done');
             }, {printStdout: true});
@@ -47,7 +47,7 @@ namespace("min", function(){
         input.include('src/es5.js');
         input.include('src/yocto.js');
 
-        var cmd = ['uglifyjs ' + input.toArray().join(' ') + ' -o ' + output + ' --source-map ' + output + '.map -c dead-code=true,unsafe=true -m'];
+        var cmd = ['uglifyjs ' + input.toArray().join(' ') + ' --output ' + output + ' --source-map ' + output + '.map --compress dead-code=true,unsafe=true,unused=true --mangle sort=true'];
             jake.exec(cmd, function(){
                 console.log('min:yocto-es5 is done');
             }, {printStdout: true});
@@ -59,6 +59,15 @@ namespace("min", function(){
 
 desc("Run all minify tasks");
 task('minify', [], function() {
+    jake.Task["min:yocto"].invoke();
+    jake.Task["min:yocto-es5"].invoke();
+});
+
+
+
+desc("Build everything");
+task('build', [], function() {
+    jake.Task["lint:all"].invoke();
     jake.Task["min:yocto"].invoke();
     jake.Task["min:yocto-es5"].invoke();
 });
