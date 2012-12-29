@@ -1,0 +1,5 @@
+build
+examples
+node_modules
+Jakefile.js
+npm-debug.log
