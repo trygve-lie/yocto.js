@@ -96,7 +96,8 @@ var db = yocto.db({feature : 'value'});
 
 The config object has the following parameters:
 
- - uuid - Defines one key in each object to be treated as a unique id for each object. This allows yocto.js have an ultra fast look-up of single objects. Please see the pharagraph enitled "uuids" for further information.
+ - uuid - Defines one key in each object to be treated as a unique id for each object. This allows yocto.js have an ultra fast look-up of single objects. Please see the paragraph enitled "uuid" for further information.
+ - timestamp - Enables timestamping of each object put into the database. The value provided to this key will be the name of the key holding the timestamp in each object. Please see the paragraph enitled "Timestamps" for further information.
 
 
 
@@ -315,7 +316,7 @@ The above template will match all objects where they value for the key "year" is
 
 
 
-## UUIDS
+## uuids
 
 In many cases we only need to look up an object based on a single unique key value (an uuid). The performance of looking up a single object based on an uuid can be increased dramaticly by telling yocto.js what object key in our objects that holds an unique value. 
 
@@ -339,6 +340,31 @@ Do note the following when using "uuids":
 
  - If multiple objects has the same "uuid" the get() method will only return one object which is the last object put into the database. The take() method will in this case return all multiple objects in an array to the callback function.
  - A faster lookup due to the precense of "uuid" only applies to the get() method.
+
+
+
+## Timestamps
+
+By enabling timestamping in the configuration object passed on to the yocto.db(), method yocto.js can append a key holding a timestamp value for when a object are put into the database. 
+
+In other words, if we set up a database and put a object into the database like this:
+
+```javascript
+var db = yocto.db({timestamp : 'tstamp'});
+db.put({foo:'bar'}, function(objs){
+	// do something
+});
+```
+
+Then the inserted object will contain a 'tstamp' key when retrieved:
+
+```javascript
+{foo : 'bar', tstamp : 1356799270734}
+```
+
+If an object already contains a key matching the configured timestamp key name, the existing key in the object will not be modified.
+
+All timestamps created by yocto.js is number of milliseconds since the epoch.
 
 
 
