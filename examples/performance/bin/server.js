@@ -5,7 +5,8 @@ var http            = require('http'),
     port            = process.argv[2] ? process.argv[2] : 8000,
     docRoot         = './public';
 
-function router(request, response, next) {
+
+function scripts(request, response, next) {
 
     var parsedUrl = request.urlparsed = urlparser.parse(request.url, true);
 
@@ -40,7 +41,7 @@ function router(request, response, next) {
 }
 
 var httpServer = connect().use(
-		router
+		scripts
 	).use(
         connect.static(docRoot)
     ).listen(port);

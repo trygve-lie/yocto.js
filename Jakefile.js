@@ -1,4 +1,5 @@
-var fs      = require("fs");
+var fs      = require("fs"),
+    cr      = require("complexity-report");
 
 var package =  JSON.parse(fs.readFileSync('./package.json'));
 console.log('===========================');
@@ -55,6 +56,15 @@ namespace("min", function(){
 
 });
 
+
+
+desc('run complexity reporter');
+task('complexity', [], function() {
+
+    var report = cr.run('src/yocto.js');
+    console.log(report);
+
+});
 
 
 desc("Run all minify tasks");

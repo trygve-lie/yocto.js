@@ -1,0 +1,14 @@
+{
+  "name": "yocto_node_browser_sync",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/server.js"
+  },
+  "engines": {
+    "node": "0.8.x"
+  },
+  "dependencies": {
+    "express": "latest"
+  }
+}
