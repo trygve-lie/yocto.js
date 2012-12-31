@@ -1,9 +1,9 @@
 var http            = require('http'),
-	fs 				= require('fs'),
+    fs              = require('fs'),
     connect         = require('connect'),
-    express 		= require('express'),
-    app 			= express(),
-    yocto			= require('../../../'),
+    express         = require('express'),
+    app             = express(),
+    yocto           = require('../../../'),
     port            = process.argv[2] ? process.argv[2] : 8000,
     docRoot         = './public';
 
@@ -18,7 +18,7 @@ var db = yocto.db({uuid:'code'});
 fs.readFile('../mock_data/data.json', "binary", function(error, data) {
     var parsed = JSON.parse(data);
     db.put(parsed.codes, function(objs) {
-    	console.log('Inserted ' + objs.length + ' objects into database');
+        console.log('Inserted ' + objs.length + ' objects into database');
     })
 });
 
@@ -33,18 +33,18 @@ app.configure('all',function () {
 // REST API - Status
 
 app.get('/api/status', function(req, res, next) {
-	db.status(function(obj){
-	    res.json({result:obj});
-	});
+    db.status(function(obj){
+        res.json({result:obj});
+    });
 });
 
 
 // REST API - Get
 
 app.get('/api/get', function(req, res, next) {
-	db.get(req.query, function(objs){
-	    res.json({result:objs});
-	});
+    db.get(req.query, function(objs){
+        res.json({result:objs});
+    });
 });
 
 
