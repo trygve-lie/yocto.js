@@ -1,6 +1,5 @@
 var http            = require('http'),
     fs              = require('fs'),
-    connect         = require('connect'),
     express         = require('express'),
     app             = express(),
     yocto           = require('../../../'),
