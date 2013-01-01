@@ -76,6 +76,22 @@ buster.testCase("yocto.js Test - Timestamp", {
             buster.assert.equals(objs[0].timestamp, 666);
             done();
         })
+    },
+
+
+    "put().get() both timestamp and uuid is set in config - in callback timestamp should exist and be anumber": function(done) {
+        
+        var db = yocto.db({timestamp:'timestamp', uuid:'id'});
+
+        db.put(this.singleRecordA, function(objs){
+            buster.assert.equals(objs.length, 1);
+        });
+
+        db.get({id:'NOR_01359'}, function(objs){
+            buster.assert.equals(objs[0].id, 'NOR_01359');
+            buster.assert.isNumber(objs[0].timestamp);
+            done();
+        })
     }
 
 });
