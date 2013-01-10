@@ -64,20 +64,20 @@
             },
 
             chain       = [],
-            
+
             core        = {
                 objects         : [],
                 uuids           : {},
                 updated         : -1,
-                
+
                 template        : {},
                 doHashLookup    : false,
-                
+
                 object          : undefined,
                 index           : 0,
                 match           : false,
                 onEach          : undefined,
-                
+
                 result          : [],
                 onEnd           : undefined
             };
@@ -131,12 +131,12 @@
         function reset(coreObj) {
             coreObj.template        = {};
             coreObj.doHashLookup    = false;
-            
+
             coreObj.object          = undefined;
             coreObj.index           = 0;
             coreObj.match           = false;
             coreObj.onEach          = undefined;
-            
+
             coreObj.result          = [];
             coreObj.onEnd           = undefined;
         }
@@ -268,7 +268,7 @@
 
             coreObj.object = coreObj.uuids[uuid] ? coreObj.uuids[uuid] : {};
             composedFunction(coreObj);
-            
+
             if (coreObj.match) {
                 coreObj.result.push(coreObj.object);
             }
@@ -466,11 +466,11 @@
             //     name : ''
             // }
 
-            destroy : function(config, onSuccess) {
-                var type    = setStorageType(config);
+            destroy : function(conf, onSuccess) {
+                var type    = setStorageType(conf);
 
-                if (config && is.str(config.name) && has.storage) {
-                    window[type].removeItem(config.name);
+                if (conf && is.str(conf.name) && has.storage) {
+                    window[type].removeItem(conf.name);
                 }
 
                 this.drop(onSuccess);
@@ -500,7 +500,7 @@
                         }
                     });
                 };
-                
+
                 lookup(core, chain);
 
                 if (onSuccess && is.fn(onSuccess)) {
@@ -520,15 +520,15 @@
             //     name : ''
             // }
 
-            save : function(config, onSuccess) {
+            save : function(conf, onSuccess) {
 
-                var type = setStorageType(config);
+                var type = setStorageType(conf);
 
-                if (config && is.str(config.name) && has.storage) {
+                if (conf && is.str(conf.name) && has.storage) {
 
                     core.onEnd = function(){
-                        window[type].setItem(config.name, JSON.stringify({
-                            creator     : config.name,
+                        window[type].setItem(conf.name, JSON.stringify({
+                            creator     : conf.name,
                             timestamp   : +new Date(),
                             objects     : core.result
                         }));
@@ -557,14 +557,14 @@
             //     name : ''
             // }
 
-            load : function(config, onLoaded) {
+            load : function(conf, onLoaded) {
 
-                var type        = setStorageType(config),
+                var type        = setStorageType(conf),
                     loadedData  = '',
                     parsedData  = {};
 
-                if (config && is.str(config.name) && has.storage) {
-                    loadedData = window[type].getItem(config.name);
+                if (conf && is.str(conf.name) && has.storage) {
+                    loadedData = window[type].getItem(conf.name);
                     parsedData = JSON.parse(loadedData);
                 }
 
