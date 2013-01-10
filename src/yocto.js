@@ -314,7 +314,7 @@
 
         // Get the highest number of a key in an array
 
-        function getHighestNum(arr, key) {
+        function getHighestNumber(arr, key) {
             return Math.max.apply(Math, arr.map(function(obj){
                 return obj[key];
             }));
@@ -328,6 +328,7 @@
                 if (key !== 'name') {
                     config[key] = options[key];
                 }
+                return true;
             });
         }
 
@@ -579,7 +580,7 @@
                 onSuccess.call(null, {
                     count   : core.objects.length,
                     updated : core.updated,
-                    highest : getHighestNum(core.objects, 'timestamp')
+                    latest  : config.timestamp ? getHighestNumber(core.objects, config.timestamp) : -1
                 });
 
                 return this;
