@@ -187,6 +187,12 @@
                 coreObj.object = coreObj.objects.splice(coreObj.index, 1)[0];
                 coreObj.index--;
             }
+
+            // Autosave all objects to localstorage
+            if (is.obj(config.autosave)) {
+                save(config.autosave, coreObj.objects);
+            }
+
             return coreObj;
         }
 
@@ -303,6 +309,21 @@
         }
 
 
+        // Save objects to localstorage
+
+        function save(conf, objs) {
+            var type = setStorageType(conf);
+
+            if (conf && is.str(conf.name) && has.storage) {
+                window[type].setItem(conf.name, JSON.stringify({
+                    creator     : conf.name,
+                    timestamp   : +new Date(),
+                    objects     : objs
+                }));
+            }
+        }
+
+
         // Append a timestamp to an object
 
         function setTimestamp(conf, obj, coreObj) {
@@ -375,6 +396,11 @@
 
                     core.objects.push(obj);
                     core.result.push(obj);
+                }
+
+                // Autosave all objects to localstorage
+                if (is.obj(config.autosave)) {
+                    save(config.autosave, core.objects);
                 }
 
                 if (onSuccess && is.fn(onSuccess)) {
@@ -522,28 +548,18 @@
 
             save : function(conf, onSuccess) {
 
-                var type = setStorageType(conf);
-
-                if (conf && is.str(conf.name) && has.storage) {
-
-                    core.onEnd = function(){
-                        window[type].setItem(conf.name, JSON.stringify({
-                            creator     : conf.name,
-                            timestamp   : +new Date(),
-                            objects     : core.result
-                        }));
-
-                        if (onSuccess && is.fn(onSuccess)) {
-                            onSuccess.call(null, core.result);
-                        }
-                    };
+                core.onEnd = function(){
+                    save(conf, core.result);
 
                     if (onSuccess && is.fn(onSuccess)) {
-                        lookup(core, chain);
-                        reset(core);
-                        chain = [];
+                        onSuccess.call(null, core.result);
                     }
+                };
 
+                if (onSuccess && is.fn(onSuccess)) {
+                    lookup(core, chain);
+                    reset(core);
+                    chain = [];
                 }
 
                 return this;

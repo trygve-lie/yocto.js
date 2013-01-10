@@ -159,7 +159,7 @@ buster.testCase("yocto.js Test - Save - Load - Destroy", {
 
     "timestamp - after saved and loaded from localstorage each object should have a timestamp which is a number" : function(done) {
         var conf = {
-            name:'timestamp:test', 
+            name:'timestamp:test',
             type:'local'
         };
 
