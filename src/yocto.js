@@ -63,6 +63,8 @@
                 name : 'yocto'
             },
 
+            observers   = [],
+
             chain       = [],
 
             core        = {
@@ -587,6 +589,16 @@
                 this.put(is.empty(parsedData) ? [] : parsedData.objects, onLoaded);
 
                 return this;
+            },
+
+
+            observe : function(template, onMatch){
+                observers.push([template, onMatch]);
+            },
+
+
+            unobserve : function(template) {
+
             },
 
 
