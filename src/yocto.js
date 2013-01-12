@@ -479,7 +479,7 @@
 
                     // Run the result trough the observers
                     observerMatch('take', result);
-                }
+                };
 
                 if (onSuccess && is.fn(onSuccess)) {
                     lookup(core, chain);
@@ -633,7 +633,6 @@
                     template : template,
                     fn : onMatch
                 });
-                console.log('inserted observer', observers);
                 return this;
             },
 
@@ -645,7 +644,6 @@
                         observers.splice(i,1);
                     }
                 }
-                console.log('removed observer', observers);
                 return this;
             },
 
