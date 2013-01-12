@@ -335,6 +335,32 @@
         }
 
 
+        function observerMatch(ev, objs) {
+            var i = 0,
+                l = objs.length,
+                w = 0;
+
+            function match(template, obj){
+                return Object.keys(template).every(function(key) {
+                    if (is.fn(template[key])) {
+                        return template[key].call(this, obj[key], is);
+                    } else {
+                        return obj[key] === template[key];
+                    }
+                });
+            }
+
+            for (i = 0; i < l; i += 1) {
+                w = observers.length;
+                while(w--) {
+                    if (match(observers[w].template, objs[i])) {
+                        observers[w].fn.call(null, ev, objs[i]);
+                    }
+                }
+            }
+        }
+
+
         // Get the highest number of a key in an array
 
         function getHighestNumber(arr, key) {
@@ -405,6 +431,9 @@
                     save(config.autosave, core.objects);
                 }
 
+                // Run the result trough the observers
+                observerMatch('put', core.result);
+
                 if (onSuccess && is.fn(onSuccess)) {
                     onSuccess.call(this, core.result);
                     reset(core);
@@ -443,7 +472,14 @@
                 chain.push(arrayRemove);
                 chain.push(hashRemove);
 
-                core.onEnd = onSuccess;
+                core.onEnd = function(result){
+                    if(onSuccess && is.fn(onSuccess)) {
+                        onSuccess(result);
+                    }
+
+                    // Run the result trough the observers
+                    observerMatch('take', result);
+                }
 
                 if (onSuccess && is.fn(onSuccess)) {
                     lookup(core, chain);
@@ -593,12 +629,24 @@
 
 
             observe : function(template, onMatch){
-                observers.push([template, onMatch]);
+                observers.push({
+                    template : template,
+                    fn : onMatch
+                });
+                console.log('inserted observer', observers);
+                return this;
             },
 
 
             unobserve : function(template) {
-
+                var i = observers.length;
+                while(i--) {
+                    if (observers[i].template === template) {
+                        observers.splice(i,1);
+                    }
+                }
+                console.log('removed observer', observers);
+                return this;
             },
 
 
