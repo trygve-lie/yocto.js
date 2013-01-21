@@ -1,17 +1,35 @@
 {
   "name": "yocto",
   "main": "src/yocto.js",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "author": {
     "name": "Trygve Lie",
     "email": "post@trygve-lie.com"
   },
   "description": "A tiny in-memory database with an tuple space inspired API aimed to be used at small to medium sized data sets.",
+  "keywords": [
+    "mobile",
+    "small data",
+    "database"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trygve-lie/yocto.js"
+  },
+  "bugs": {
+    "url": "https://github.com/trygve-lie/yocto.js/issues?state=open"
+  },
   "scripts": {
     "test": "buster test"
   },
+  "engine": "node 0.8.x",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://mit-license.org/"
+    }
+  ],
   "devDependencies": {
-    "buster": "latest",
-    "complexity-report" : "latest"
+    "buster": "latest"
   }
 }
