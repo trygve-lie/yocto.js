@@ -1,0 +1,12 @@
+{
+  "groups": {
+    "default": {
+      "packages": [
+        "examples/node_browser_sync/package.json",
+        "examples/node_simple/package.json",
+        "examples/performance/package.json",
+        "package.json"
+      ]
+    }
+  }
+}

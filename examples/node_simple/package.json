@@ -9,6 +9,6 @@
     "node": "0.8.x"
   },
   "dependencies": {
-    "express": "3.x"
+    "express": "^4.16.3"
   }
 }
