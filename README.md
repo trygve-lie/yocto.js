@@ -399,7 +399,7 @@ This small library did spinn out of the fact that I saw myself doing a lot of si
 
 There is probably plenty of room to improve both the API, the code, performance, tests, doc etc, etc so if you have any ideas and feedback on how to make this small library better, please feel free to create an issue, submit a pull request or ping me in any way :)
 
-[![Build Status](https://travis-ci.org/trygve-lie/yocto.js.png?branch=master)](https://travis-ci.org/trygve-lie/yocto.js)
+[![Build Status](https://travis-ci.org/trygve-lie/yocto.js.png?branch=master)](https://travis-ci.org/trygve-lie/yocto.js) [![Greenkeeper badge](https://badges.greenkeeper.io/trygve-lie/yocto.js.svg)](https://greenkeeper.io/)
 
 
 
